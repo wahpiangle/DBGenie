@@ -1,0 +1,18 @@
+# Setup Embeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_postgres import PGVector
+
+modelPath = "Alibaba-NLP/gte-base-en-v1.5"
+model_kwargs = { "device": "cpu", "trust_remote_code": True }
+encode_kwargs = {'normalize_embeddings': True}
+hugging_face_embeddings = HuggingFaceEmbeddings(
+    model_name=modelPath,     # Provide the pre-trained model's path
+    model_kwargs=model_kwargs, # Pass the model configuration options
+    encode_kwargs=encode_kwargs, # Pass the encoding options
+)
+
+vectorstore = PGVector(
+    embeddings=hugging_face_embeddings,
+    collection_name="test_docs",
+    connection="postgresql+psycopg://postgres:admin@localhost:5432/fyp",
+)
