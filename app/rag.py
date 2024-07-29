@@ -1,7 +1,6 @@
 import bs4
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain_core.callbacks import CallbackManager
-from langchain import hub
 from langchain_community.llms import Ollama
 from vector_store import vectorstore
 from langchain_community.document_loaders import WebBaseLoader
