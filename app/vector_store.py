@@ -13,6 +13,6 @@ hugging_face_embeddings = HuggingFaceEmbeddings(
 
 vectorstore = PGVector(
     embeddings=hugging_face_embeddings,
-    collection_name="test_docs",
+    collection_name="vector_store",
     connection="postgresql+psycopg://postgres:admin@localhost:5432/fyp",
 )
