@@ -1,5 +1,3 @@
-# async function
-
 import requests
 
 searxngUrl = "localhost:8080"

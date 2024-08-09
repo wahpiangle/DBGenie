@@ -12,7 +12,6 @@ charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
 comm==0.2.2
-Crawl4AI @ git+https://github.com/unclecode/crawl4ai.git@e5e6a34e8097cb5ff72c026b19859b5b98246378
 dataclasses-json==0.6.7
 debugpy==1.8.2
 decorator==5.1.1
