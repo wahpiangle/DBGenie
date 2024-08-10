@@ -1,25 +1,12 @@
 from datetime import datetime
 from pydantic import BaseModel
 
-from app.schemas.MessagesSchema import MessageOutput
-
-# class ChatBase(BaseModel):
-#     pass
-
-
-# class ChatCreate(ChatBase):
-#     pass
-# class Chat(ChatBase):
-#     id: int
-#     created_at: datetime
-
-#     class Config:
-#         orm_mode = True
 class ChatInput(BaseModel):
     pass
 
 class ChatInDb(BaseModel):
     id: int
+    title: str
     created_at: datetime
 
     class Config:
@@ -27,5 +14,5 @@ class ChatInDb(BaseModel):
 
 class ChatOutput(BaseModel):
     id: int
+    title: str
     created_at: datetime
-    messages: list[MessageOutput]

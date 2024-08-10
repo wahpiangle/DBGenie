@@ -4,14 +4,9 @@ from fastapi import Depends, FastAPI, HTTPException
 from app.api.v1.routes import routers as v1_router
 from app.utils.init_db import create_tables
 
-
 app = FastAPI()
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    create_tables()
-    yield
-    
+create_tables()
 
 app.include_router(v1_router, prefix="/v1")
 
