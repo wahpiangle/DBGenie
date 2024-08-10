@@ -4,6 +4,7 @@ from app.model.message import Role
 class MessageInput(BaseModel):
     content: str
     role: Role
+    metadata: str
 
 class MessageOutput(BaseModel):
     id: int

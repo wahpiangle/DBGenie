@@ -11,8 +11,11 @@ router = APIRouter(
 )
 
 @router.get("/")
-def read_root():
-    return {"Hello": "World"}
+def read_chats(
+    session: Session = Depends(get_db),
+):
+    _chatService = ChatService(session)
+    return _chatService.get_chats()
 
 @router.post("/")
 def create_chat(
