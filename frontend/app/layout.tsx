@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-primary-bright text-white">
+      <body >
         <TanStackProvider>
           {children}
         </TanStackProvider>
