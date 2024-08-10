@@ -3,7 +3,10 @@ from fastapi import FastAPI
 from app.api.v1.routes import routers as v1_router
 from app.utils.init_db import create_tables
 
-app = FastAPI()
+app = FastAPI(
+    # redoc_url=None,
+    # docs_url=None,
+)
 
 create_tables()
 
