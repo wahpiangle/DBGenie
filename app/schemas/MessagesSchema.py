@@ -1,14 +1,11 @@
 from pydantic import BaseModel
-from app.db.models import Role
+from app.model.message import Role
 
-class MessageBase(BaseModel):
-    pass
-
-class MessageCreate(MessageBase):
+class MessageInput(BaseModel):
     content: str
     role: Role
 
-class Message(MessageBase):
+class MessageOutput(BaseModel):
     id: int
     content: str
     chat_id: int
