@@ -33,14 +33,16 @@ workflow = StateGraph(GraphState)
 # Define the nodes
 workflow.add_node("web_search", web_search)  # web search
 workflow.add_node("retrieve", retrieve)  # retrieve
+workflow.add_node("initial_retrieve", retrieve)  # retrieve
+
 workflow.add_node("grade_documents", grade_documents)  # grade documents
 workflow.add_node("generate", generate)  # generatae
 workflow.add_node("transform_query", transform_query)  # transform_query
 
 # Build graph
-workflow.add_edge(START, "retrieve")
+workflow.add_edge(START, "initial_retrieve")
 workflow.add_conditional_edges(
-    "retrieve",
+    "initial_retrieve",
     route_question,
     {
         "web_search": "web_search",
