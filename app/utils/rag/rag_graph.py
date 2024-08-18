@@ -37,9 +37,10 @@ workflow.add_node("grade_documents", grade_documents)  # grade documents
 workflow.add_node("generate", generate)  # generatae
 workflow.add_node("transform_query", transform_query)  # transform_query
 
-
+# Build graph
+workflow.add_edge(START, "retrieve")
 workflow.add_conditional_edges(
-    START,
+    "retrieve",
     route_question,
     {
         "web_search": "web_search",

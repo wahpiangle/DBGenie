@@ -126,6 +126,8 @@ def transform_query(state):
 
     # Re-write question
     better_question = question_rewriter.invoke({"question": question})
+    print("---TRANSFORMED QUESTION---")
+    print(better_question)
     return {"documents": documents, "question": better_question}
 
 
@@ -169,16 +171,20 @@ def route_question(state):
     Returns:
         str: Next node to call
     """
-
     print("---ROUTE QUESTION---")
     question = state["question"]
-    source = question_router.invoke({"question": question})
-    if source["datasource"] == "web_search":
-        print("---ROUTE QUESTION TO WEB SEARCH---")
-        return "web_search"
-    elif source["datasource"] == "vectorstore":
+    retrieved_documents = state["documents"]
+
+    vector_search = question_router.invoke(
+        {"question": question, "documents": retrieved_documents}
+    )
+    print(f"Vector search: {vector_search}")
+    if vector_search.strip() == "yes":
         print("---ROUTE QUESTION TO RAG---")
         return "vectorstore"
+    elif vector_search.strip() == "no":
+        print("---ROUTE QUESTION TO WEB SEARCH---")
+        return "web_search"
 
 
 def decide_to_generate(state):
