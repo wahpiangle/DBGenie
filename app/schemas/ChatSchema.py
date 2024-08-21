@@ -1,10 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel
 
-
 class ChatInput(BaseModel):
     pass
-
 
 class ChatInDb(BaseModel):
     id: int
@@ -12,8 +10,7 @@ class ChatInDb(BaseModel):
     created_at: datetime
 
     class Config:
-        from_attributes = True
-
+        orm_mode = True
 
 class ChatOutput(BaseModel):
     id: int
