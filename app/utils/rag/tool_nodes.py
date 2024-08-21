@@ -179,10 +179,10 @@ def route_question(state):
         {"question": question, "documents": retrieved_documents}
     )
     print(f"Vector search: {vector_search}")
-    if vector_search.strip() == "yes":
+    if vector_search.strip().lower() == "yes":
         print("---ROUTE QUESTION TO RAG---")
         return "vectorstore"
-    elif vector_search.strip() == "no":
+    elif vector_search.strip().lower() == "no":
         print("---ROUTE QUESTION TO WEB SEARCH---")
         return "web_search"
 
