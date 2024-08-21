@@ -1,10 +1,12 @@
 from pydantic import BaseModel
 from app.model.message import Role
 
+
 class MessageInput(BaseModel):
     content: str
     role: Role
     metadata: str
+
 
 class MessageOutput(BaseModel):
     id: int
@@ -12,6 +14,6 @@ class MessageOutput(BaseModel):
     chat_id: int
     role: Role
     metadata: str
-    
+
     class Config:
-        orm_mode = True
+        from_attributes = True
