@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TanStackProvider from "@/providers/TanStackProvider";
 import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,11 +17,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-gray-900 text-white">
-        <TanStackProvider>
-          {children}
-        </TanStackProvider>
-        <Toaster />
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TanStackProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+          </TanStackProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
