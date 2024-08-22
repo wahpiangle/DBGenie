@@ -59,7 +59,6 @@ workflow.add_conditional_edges(
         "generate": "generate",
     },
 )
-workflow.add_edge("transform_query", "retrieve")
 workflow.add_conditional_edges(
     "generate",
     grade_generation_v_documents_and_question,
@@ -69,6 +68,7 @@ workflow.add_conditional_edges(
         "not useful": "transform_query",
     },
 )
+workflow.add_edge("transform_query", "retrieve")
 
 # Compile
 app = workflow.compile()
