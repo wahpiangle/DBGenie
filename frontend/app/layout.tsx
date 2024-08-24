@@ -4,6 +4,7 @@ import TanStackProvider from "@/providers/TanStackProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider"
+import SideNav from "@/components/side-nav";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,7 +26,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TanStackProvider>
-            <TooltipProvider>{children}</TooltipProvider>
+            <TooltipProvider>
+              <div className="h-screen w-full flex">
+                <SideNav />
+                {children}
+              </div>
+            </TooltipProvider>
           </TanStackProvider>
           <Toaster />
         </ThemeProvider>
