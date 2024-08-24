@@ -15,7 +15,7 @@ prompt = PromptTemplate(
     2. If the context has enough information to directly answer the query, return "yes"
     3. If the context does not contain enough information to answer the query or is missing key details, return "no"
 
-    Respond only with "yes" or "no".
+    Respond only with "yes" or "no". Don't provide any additional information.
 
     Context: {documents}
     User Query: {question}""",

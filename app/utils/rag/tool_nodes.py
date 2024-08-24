@@ -12,6 +12,8 @@ from app.utils.rag.answer_grader import answer_grader
 from app.utils.rag.question_router import question_router
 
 from app.vector_store import vectorstore
+from app.utils.searxng import searchSearxng
+from app.utils.firecrawl import crawl_and_save_docs
 
 prompt = PromptTemplate(
     template="""
@@ -41,15 +43,6 @@ retrieval_grader = prompt | llm | JsonOutputParser()
 
 
 def retrieve(state):
-    """
-    Retrieve documents
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        state (dict): New key added to state, documents, that contains retrieved documents
-    """
     print("---RETRIEVE---")
     question = state["question"]
 
@@ -60,15 +53,6 @@ def retrieve(state):
 
 
 def generate(state):
-    """
-    Generate answer
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        state (dict): New key added to state, generation, that contains LLM generation
-    """
     print("---GENERATE---")
     question = state["question"]
     documents = state["documents"]
@@ -132,29 +116,15 @@ def transform_query(state):
 
 
 def web_search(state):
-    """
-    Web search based on the re-phrased question.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        state (dict): Updates documents key with appended web results
-    """
-
     print("---WEB SEARCH---")
     question = state["question"]
 
     # Web search
-    # docs = web_search_tool.invoke({"query": question})
-    docs = [
-        {"content": "Web search result 1"},
-        {"content": "Web search result 2"},
-        {"content": "Web search result 3"},
-    ]
-    web_results = "\n".join([d["content"] for d in docs])
-    web_results = Document(page_content=web_results)
-
+    searchResults = searchSearxng(question)
+    for result in searchResults:
+        crawl_and_save_docs(result.url)
+        
+    web_results = vectorstore.as_retriever().invoke(question)
     return {"documents": web_results, "question": question}
 
 
@@ -162,15 +132,6 @@ def web_search(state):
 
 
 def route_question(state):
-    """
-    Route question to web search or RAG.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        str: Next node to call
-    """
     print("---ROUTE QUESTION---")
     question = state["question"]
     retrieved_documents = state["documents"]
@@ -178,7 +139,6 @@ def route_question(state):
     vector_search = question_router.invoke(
         {"question": question, "documents": retrieved_documents}
     )
-    print(f"Vector search: {vector_search}")
     if vector_search.strip().lower() == "yes":
         print("---ROUTE QUESTION TO RAG---")
         return "vectorstore"
@@ -188,16 +148,6 @@ def route_question(state):
 
 
 def decide_to_generate(state):
-    """
-    Determines whether to generate an answer, or re-generate a question.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        str: Binary decision for next node to call
-    """
-
     print("---ASSESS GRADED DOCUMENTS---")
     state["question"]
     filtered_documents = state["documents"]
@@ -216,16 +166,6 @@ def decide_to_generate(state):
 
 
 def grade_generation_v_documents_and_question(state):
-    """
-    Determines whether the generation is grounded in the document and answers question.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        str: Decision for next node to call
-    """
-
     print("---CHECK HALLUCINATIONS---")
     question = state["question"]
     documents = state["documents"]

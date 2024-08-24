@@ -20,5 +20,5 @@ def searchSearxng(query: str) -> list[SearxngResult]:
             content=result["snippet"],
             url=result["link"],
         )
-        for result in search.results(query, num_results=5)
+        for result in search.results(query, num_results=3)
     ]

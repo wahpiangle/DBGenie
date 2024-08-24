@@ -19,10 +19,6 @@ def read_root():
 
     inputs = {"question": "What is the AlphaCodium paper about?"}
     try:
-        # Run the RAG app
-        for output in rag_app.stream(inputs, {"recursion_limit": 2}):
-            for key, value in output.items():
-                print(f"Node '{key}':")
-            print("\n---\n")
+        print(rag_app.invoke(inputs, {"recursion_limit": 4}))
     except Exception as e:
         print(e)
