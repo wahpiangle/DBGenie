@@ -9,5 +9,8 @@ class ChatService():
     def get_chats(self, skip: int = 0, limit: int = 100):
         return self.chat_repository.get_chats(skip, limit)
 
-    def create_chat(self, chat):
-        return self.chat_repository.create_chat(chat)
+    def create_chat(self):
+        return self.chat_repository.create_chat()
+
+    def get_chat(self, chat_id: int):
+        return self.chat_repository.get_chat(chat_id)

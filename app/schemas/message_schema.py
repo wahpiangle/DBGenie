@@ -5,7 +5,7 @@ from app.model.message import Role
 class MessageInput(BaseModel):
     content: str
     role: Role
-    metadata: str
+    metadata: dict
 
 
 class MessageOutput(BaseModel):

@@ -1,11 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
 
-
-class ChatInput(BaseModel):
-    pass
-
-
 class ChatInDb(BaseModel):
     id: int
     title: str
