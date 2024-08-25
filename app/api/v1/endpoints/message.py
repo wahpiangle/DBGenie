@@ -4,7 +4,7 @@ from app.config.database import get_db
 from app.schemas.message_schema import MessageInput
 from app.services.chat_service import ChatService
 from app.services.message_service import MessageService
-
+from app.utils.rag.rag_graph import app as rag_app
 
 router = APIRouter(
     prefix="/message",
@@ -29,8 +29,15 @@ def create_message(
 ):
     # check if chat_id exists
     _chatService = ChatService(session)
-    chat = _chatService.get_chat(chat_id)
-    if not chat:
-        chat = _chatService.create_chat()
+    chat = _chatService.get_chat(chat_id) or _chatService.create_chat()
     _messageService = MessageService(session)
-    return _messageService.create_message(chat.id, message.content, message.role, message.metadata)
+    _messageService.create_message(chat.id, message.content, message.role, message.metadata)
+    response = rag_app.invoke(
+        {
+            "question": message.content,
+            "chat_id": chat.id,
+        },
+        {"recursion_limit": 4})
+    print(response)
+    return None
+    # return res

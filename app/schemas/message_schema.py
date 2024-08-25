@@ -14,6 +14,7 @@ class MessageOutput(BaseModel):
     chat_id: int
     role: Role
     metadata: str
+    created_at: str
 
     class Config:
         from_attributes = True

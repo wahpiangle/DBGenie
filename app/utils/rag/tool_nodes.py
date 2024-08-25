@@ -1,15 +1,18 @@
 ### Nodes
 
-from langchain.schema import Document
-from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
+from langchain_core.output_parsers import  StrOutputParser
 from langchain_core.prompts.prompt import PromptTemplate
+from app.config.database import get_db
 from app.lib.llm import llm
 
 # from app.utils.rag.retrieval_grader import retrieval_grader
-from app.utils.rag.question_rewriter import question_rewriter
-from app.utils.rag.hallucination_grader import hallucination_grader
-from app.utils.rag.answer_grader import answer_grader
-from app.utils.rag.question_router import question_router
+from app.services.message_service import MessageService
+from app.utils.rag.agents.retrieval_grader import retrieval_grader
+from app.utils.rag.agents.determine_follow_up import determine_follow_up
+from app.utils.rag.agents.question_rewriter import question_rewriter
+from app.utils.rag.agents.hallucination_grader import hallucination_grader
+from app.utils.rag.agents.answer_grader import answer_grader
+from app.utils.rag.agents.question_router import question_router
 
 from app.vector_store import vectorstore
 from app.utils.searxng import searchSearxng
@@ -17,7 +20,11 @@ from app.utils.firecrawl import crawl_and_save_docs
 
 prompt = PromptTemplate(
     template="""
-    You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.\n
+    You are an assistant for question-answering tasks.
+    Do not try to guess the answer and provide only the information that you can confidently retrieve.
+    Use the following pieces of retrieved context to answer the question.
+    If the context doesn't answer the question or is insufficient, just say that you don't know.
+    Use three sentences maximum and keep the answer concise.\n
     Question: {question} \n
     Context: {context} \n
     Answer:
@@ -26,21 +33,6 @@ prompt = PromptTemplate(
 )
 
 rag_chain = prompt | llm | StrOutputParser()
-
-
-prompt = PromptTemplate(
-    template="""You are a grader assessing relevance of a retrieved document to a user question. \n 
-    Here is the retrieved document: \n\n {document} \n\n
-    Here is the user question: {question} \n
-    If the document contains keywords related to the user question, grade it as relevant. \n
-    It does not need to be a stringent test. The goal is to filter out erroneous retrievals. \n
-    Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question. \n
-    Provide the binary score as a JSON with a single key 'score' and no premable or explanation.""",
-    input_variables=["question", "document"],
-)
-
-retrieval_grader = prompt | llm | JsonOutputParser()
-
 
 def retrieve(state):
     print("---RETRIEVE---")
@@ -63,16 +55,6 @@ def generate(state):
 
 
 def grade_documents(state):
-    """
-    Determines whether the retrieved documents are relevant to the question.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        state (dict): Updates documents key with only filtered relevant documents
-    """
-
     print("---CHECK DOCUMENT RELEVANCE TO QUESTION---")
     question = state["question"]
     documents = state["documents"]
@@ -127,9 +109,21 @@ def web_search(state):
     web_results = vectorstore.as_retriever().invoke(question)
     return {"documents": web_results, "question": question}
 
+def check_follow_up(state):
+    print("---DETERMINE FOLLOW UP---")
+    chat_id = state["chat_id"]
+    chat_history = [msg.content for msg in MessageService(next(get_db())).get_messages_by_chat_id(chat_id, 0, 10)]
+    question = state["question"]
+
+    updated_question = determine_follow_up.invoke(
+        {
+            "chat_history": chat_history,
+            "question": question,
+        }
+    )
+    return {"question": updated_question}
 
 ### Edges ###
-
 
 def route_question(state):
     print("---ROUTE QUESTION---")

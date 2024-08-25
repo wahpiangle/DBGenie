@@ -2,6 +2,7 @@ from langgraph.graph import END, StateGraph, START
 from typing import List
 from typing_extensions import TypedDict
 from app.utils.rag.tool_nodes import (
+    check_follow_up,
     retrieve,
     generate,
     grade_documents,
@@ -11,36 +12,34 @@ from app.utils.rag.tool_nodes import (
     decide_to_generate,
     grade_generation_v_documents_and_question,
 )
-
-
 class GraphState(TypedDict):
     """
     Represents the state of our graph.
 
     Attributes:
         question: question
+        chat_id: chat_id
         generation: LLM generation
         documents: list of documents
     """
-
+    chat_id: int
     question: str
     generation: str
     documents: List[str]
 
-
 workflow = StateGraph(GraphState)
 
-# Define the nodes
-workflow.add_node("web_search", web_search)  # web search
-workflow.add_node("retrieve", retrieve)  # retrieve
-workflow.add_node("initial_retrieve", retrieve)  # retrieve
-
-workflow.add_node("grade_documents", grade_documents)  # grade documents
-workflow.add_node("generate", generate)  # generatae
-workflow.add_node("transform_query", transform_query)  # transform_query
+workflow.add_node("web_search", web_search)
+workflow.add_node("retrieve", retrieve)  
+workflow.add_node("initial_retrieve", retrieve)  
+workflow.add_node("grade_documents", grade_documents)
+workflow.add_node("generate", generate)  
+workflow.add_node("transform_query", transform_query)  
+workflow.add_node("determine_follow_up", check_follow_up)  
 
 # Build graph
-workflow.add_edge(START, "initial_retrieve")
+workflow.add_edge(START, "determine_follow_up")
+workflow.add_edge("determine_follow_up", "initial_retrieve")
 workflow.add_conditional_edges(
     "initial_retrieve",
     route_question,
