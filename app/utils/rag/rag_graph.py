@@ -67,7 +67,7 @@ workflow.add_conditional_edges(
         "not useful": "transform_query",
     },
 )
-workflow.add_edge("transform_query", "retrieve")
+workflow.add_edge("transform_query", "initial_retrieve")
 
 # Compile
 app = workflow.compile()
