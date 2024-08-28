@@ -1,11 +1,16 @@
-FROM python:3.12-alpine3.20
+FROM python:3.12
 
-WORKDIR /code
+WORKDIR /app
 
-COPY ./requirements.txt /code/requirements.txt
+COPY ./requirements_mac.txt ./app/requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN apt-get update
+RUN apt-get install gcc python3-dev musl-dev libc-dev libffi-dev -y
 
-COPY ./app /code/app
+RUN pip install --no-cache-dir --upgrade -r ./app/requirements.txt
+ENV POSTGRES_URL=postgresql+psycopg://postgres:admin@postgres:5432/fyp
+COPY ./app ./app
 
-CMD ["fastapi", "run", "app/main.py", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+EXPOSE 8000

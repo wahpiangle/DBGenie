@@ -1,7 +1,10 @@
 # Setup Embeddings
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_postgres import PGVector
-
+from dotenv import load_dotenv
+import os
+load_dotenv() 
+ 
 modelPath = "Alibaba-NLP/gte-base-en-v1.5"
 model_kwargs = { "device": "cpu", "trust_remote_code": True }
 encode_kwargs = {'normalize_embeddings': True}
@@ -14,5 +17,6 @@ hugging_face_embeddings = HuggingFaceEmbeddings(
 vectorstore = PGVector(
     embeddings=hugging_face_embeddings,
     collection_name="vector_store",
-    connection="postgresql+psycopg://postgres:admin@localhost:5432/fyp",
+    # postgresql+psycopg://postgres:admin@localhost:5432/fyp
+    connection=os.getenv("POSTGRES_URL"),
 )

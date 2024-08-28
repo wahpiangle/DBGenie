@@ -1,0 +1,9 @@
+FROM pgvector/pgvector:0.6.0-pg14
+
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=admin
+ENV POSTGRES_DB=fyp
+
+EXPOSE 5432
+
+CMD ["postgres"]
