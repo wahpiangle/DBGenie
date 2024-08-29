@@ -23,7 +23,6 @@ def get_messages_by_chat_id(
     return _messageService.get_messages_by_chat_id(chat_id, skip, limit)
 
 def rag_stream(info):
-    # rag_app.invoke(info, {"recursion_limit": 4})
     for output in rag_app.stream(info, {"recursion_limit": 4}):
         for node_name, node_results in output.items():
             chunk_messages = node_results.get("messages", [])
@@ -46,4 +45,18 @@ async def create_message(
         "chat_id": chat.id,
     }
    
+    return StreamingResponse(rag_stream(info), media_type="text/event-stream")
+
+@router.post("/{chat_id}")
+async def create_message_by_chat_id(
+    chat_id: int,
+    message : MessageInput,
+    session: Session = Depends(get_db),
+):
+    _messageService = MessageService(session)
+    _messageService.create_message(chat_id, message.content, message.role, message.metadata)
+    info = {
+        "question": message.content,
+        "chat_id": chat_id,
+    }
     return StreamingResponse(rag_stream(info), media_type="text/event-stream")

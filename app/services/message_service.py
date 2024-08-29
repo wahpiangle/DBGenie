@@ -11,5 +11,5 @@ class MessageService():
     def get_messages_by_chat_id(self, chat_id: int, skip:int = 0, limit: int =100):
         return self.message_repository.get_messages_by_chat_id(chat_id, skip, limit)
     
-    def create_message(self, chat_id: int, content: str, role:str, metadata: str = None):
+    def create_message(self, chat_id: int, content: str, role:str, metadata: dict = None):
         return self.message_repository.create_message(chat_id, content, role, metadata)

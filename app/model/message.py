@@ -1,7 +1,7 @@
 from datetime import datetime
 import enum
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, JSON
 from sqlalchemy.orm import relationship
 
 from app.config.database import Base
@@ -20,7 +20,7 @@ class Message(Base):
     content = Column(String)
     chat_id = Column(Integer, ForeignKey("chats.id"))
     role = Column(Enum(Role))
-    metadata_ = Column("metadata", String)
+    metadata_ = Column("metadata", JSON)
     created_at = Column(DateTime, default=datetime.now())
 
     chat = relationship("Chat", back_populates="messages")
