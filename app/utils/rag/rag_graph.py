@@ -2,7 +2,7 @@ from langgraph.graph import END, StateGraph, START
 from typing import List
 from typing_extensions import TypedDict
 from app.utils.rag.tool_nodes import (
-    check_follow_up,
+    generate_general_response,
     retrieve,
     generate,
     grade_documents,
@@ -11,6 +11,7 @@ from app.utils.rag.tool_nodes import (
     web_search,
     decide_to_generate,
     grade_generation_v_documents_and_question,
+    check_general_question
 )
 class GraphState(TypedDict):
     """
@@ -35,11 +36,19 @@ workflow.add_node("initial_retrieve", retrieve)
 workflow.add_node("grade_documents", grade_documents)
 workflow.add_node("generate", generate)  
 workflow.add_node("transform_query", transform_query)  
-workflow.add_node("determine_follow_up", check_follow_up)  
+workflow.add_node("generate_general_response", generate_general_response)
 
 # Build graph
-workflow.add_edge(START, "determine_follow_up")
-workflow.add_edge("determine_follow_up", "initial_retrieve")
+workflow.add_conditional_edges(
+    START,
+    check_general_question,
+    {
+        "yes": "initial_retrieve",
+        "no": "generate_general_response",
+    }
+)
+workflow.add_edge("generate_general_response", END)
+
 workflow.add_conditional_edges(
     "initial_retrieve",
     route_question,

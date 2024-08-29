@@ -8,11 +8,12 @@ from app.lib.llm import llm
 # from app.utils.rag.retrieval_grader import retrieval_grader
 from app.services.message_service import MessageService
 from app.utils.rag.agents.retrieval_grader import retrieval_grader
-from app.utils.rag.agents.determine_follow_up import determine_follow_up
+from app.utils.rag.agents.determine_general_question import determine_general_question
 from app.utils.rag.agents.question_rewriter import question_rewriter
 from app.utils.rag.agents.hallucination_grader import hallucination_grader
 from app.utils.rag.agents.answer_grader import answer_grader
 from app.utils.rag.agents.question_router import question_router
+from app.utils.rag.agents.generate_general_response import general_response_generator
 
 from app.vector_store import vectorstore
 from app.utils.searxng import searchSearxng
@@ -109,20 +110,6 @@ def web_search(state):
     web_results = vectorstore.as_retriever().invoke(question)
     return {"documents": web_results, "question": question}
 
-def check_follow_up(state):
-    print("---DETERMINE FOLLOW UP---")
-    chat_id = state["chat_id"]
-    chat_history = [msg.content for msg in MessageService(next(get_db())).get_messages_by_chat_id(chat_id, 0, 10)]
-    question = state["question"]
-
-    updated_question = determine_follow_up.invoke(
-        {
-            "chat_history": chat_history,
-            "question": question,
-        }
-    )
-    return {"question": updated_question}
-
 ### Edges ###
 
 def route_question(state):
@@ -186,3 +173,25 @@ def grade_generation_v_documents_and_question(state):
     else:
         print("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
         return "not supported"
+
+def generate_general_response(state):
+    print("---GENERATE GENERAL RESPONSE---")
+    return {"generation": general_response_generator.invoke({"question": state["question"]})}
+
+def check_general_question(state):
+    print("---DETERMINE GENERAL QUESTION---")
+    chat_id = state["chat_id"]
+    chat_history = [msg.content for msg in MessageService(next(get_db())).get_messages_by_chat_id(chat_id, 0, 10)]
+    question = state["question"]
+
+    response = determine_general_question.invoke(
+        {
+            "chat_history": chat_history,
+            "question": question,
+        }
+    )
+    score = response["score"]
+    if score == "yes":
+        return "yes"
+    elif score == "no":
+        return "no"
