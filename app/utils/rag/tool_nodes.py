@@ -180,14 +180,10 @@ def generate_general_response(state):
 
 def check_general_question(state):
     print("---DETERMINE GENERAL QUESTION---")
-    chat_id = state["chat_id"]
-    chat_history = [msg.content for msg in MessageService(next(get_db())).get_messages_by_chat_id(chat_id, 0, 10)]
-    question = state["question"]
 
     response = determine_general_question.invoke(
         {
-            "chat_history": chat_history,
-            "question": question,
+            "question": state["question"],
         }
     )
     score = response["score"]
