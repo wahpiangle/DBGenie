@@ -176,7 +176,11 @@ def grade_generation_v_documents_and_question(state):
 
 def generate_general_response(state):
     print("---GENERATE GENERAL RESPONSE---")
-    return {"generation": general_response_generator.invoke({"question": state["question"]})}
+    return {"generation": general_response_generator.invoke({
+        "question": state["question"]
+        }, config={
+            "tags": ["generate_general_response"]
+        })}
 
 def check_general_question(state):
     print("---DETERMINE GENERAL QUESTION---")

@@ -22,20 +22,20 @@ def get_messages_by_chat_id(
     _messageService = MessageService(session)
     return _messageService.get_messages_by_chat_id(chat_id, skip, limit)
 
-def rag_stream(info):
-    for output in rag_app.stream(info, {"recursion_limit": 4}):
-        for node_name, node_results in output.items():
-            chunk_messages = node_results.get("messages", [])
-            for message in chunk_messages:
-                data_str = f"data: {message.content}"
-                yield f"{data_str}\n"
+# async def rag_stream(info):
+#     async for event in rag_app.astream_events(info, version="v2"):
+#         kind = event["event"]
+#         tags = event.get("tags", [])
+#         if kind == "on_llm_stream" and ("generate_general_response" in tags):
+#             data = event["data"]
+#             if data["chunk"].text:
+#                 yield f"data: {data['chunk'].text}\n\n"
 
 @router.post("/")
 async def create_message(
     message : MessageInput,
     session: Session = Depends(get_db),
 ):
-    # check if chat_id exists
     _chatService = ChatService(session)
     chat = _chatService.create_chat()
     _messageService = MessageService(session)
@@ -44,8 +44,7 @@ async def create_message(
         "question": message.content,
         "chat_id": chat.id,
     }
-   
-    return StreamingResponse(rag_stream(info), media_type="text/event-stream")
+    return rag_app.invoke(info)['generation']
 
 @router.post("/{chat_id}")
 async def create_message_by_chat_id(
@@ -59,4 +58,4 @@ async def create_message_by_chat_id(
         "question": message.content,
         "chat_id": chat_id,
     }
-    return StreamingResponse(rag_stream(info), media_type="text/event-stream")
+    return rag_app.invoke(info)['generation']

@@ -1,6 +1,5 @@
-from langgraph.graph import END, StateGraph, START
-from typing import List
-from typing_extensions import TypedDict
+from langgraph.graph import END, START
+
 from app.utils.rag.tool_nodes import (
     generate_general_response,
     retrieve,
@@ -13,22 +12,8 @@ from app.utils.rag.tool_nodes import (
     grade_generation_v_documents_and_question,
     check_general_question
 )
-class GraphState(TypedDict):
-    """
-    Represents the state of our graph.
+from app.utils.rag.graph_state import workflow
 
-    Attributes:
-        question: question
-        chat_id: chat_id
-        generation: LLM generation
-        documents: list of documents
-    """
-    chat_id: int
-    question: str
-    generation: str
-    documents: List[str]
-
-workflow = StateGraph(GraphState)
 
 workflow.add_node("web_search", web_search)
 workflow.add_node("retrieve", retrieve)  
