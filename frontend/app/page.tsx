@@ -1,25 +1,15 @@
 import {
-    CornerDownLeft,
-    Mic,
-    Paperclip,
     Sidebar,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { ModeToggle } from "@/components/mode-toggle"
-import { Input } from "@/components/ui/input"
 import { SheetContent, SheetTrigger, Sheet } from "@/components/ui/sheet"
 import NavContent from "@/components/nav/nav-content"
+import Chatbox from "@/components/chatbox/chatbox"
 
 export default function Dashboard() {
     return (
-        <div className="flex flex-col dark:bg-darkSecondary w-full">
+        <div className="flex flex-col dark:bg-darkSecondary  w-full">
             <header className="sticky flex items-center justify-between shadow-md dark:shadow-none px-4 py-2 dark:border-none">
                 <Sheet>
                     <SheetTrigger className="sm:hidden">
@@ -36,42 +26,7 @@ export default function Dashboard() {
                 <div className="flex h-full min-h-[50vh] flex-col rounded-xl 0 p-4 lg:col-span-2 ">
                     <div className="flex-1 justify-center flex items-center flex-col gap-8">
                         <h2 className="text-2xl">Ask me anything!</h2>
-                        <div
-                            className="dark:border-gray-400 border focus-within:ring-1 dark:focus-within:ring-1 dark:ring-white md:w-9/12 w-11/12 rounded-lg"
-                        >
-                            <Label htmlFor="message" className="sr-only">
-                                Message
-                            </Label>
-                            <Input
-                                id="message"
-                                placeholder="Type your message here..."
-                                className="min-h-12 p-3 shadow-none rounded-b-none dark:bg-darkTertiary border-none focus:border-none transition-none"
-                            />
-                            <div className="flex items-center p-3 pt-0 dark:bg-darkTertiary rounded-b-lg">
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                            <Paperclip className="size-4" />
-                                            <span className="sr-only">Attach file</span>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top">Attach File</TooltipContent>
-                                </Tooltip>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                            <Mic className="size-4" />
-                                            <span className="sr-only">Use Microphone</span>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top">Use Microphone</TooltipContent>
-                                </Tooltip>
-                                <Button type="button" size="sm" className="ml-auto gap-1.5">
-                                    Send Message
-                                    <CornerDownLeft className="size-3.5" />
-                                </Button>
-                            </div>
-                        </div>
+                        <Chatbox />
                     </div>
                 </div>
             </main>

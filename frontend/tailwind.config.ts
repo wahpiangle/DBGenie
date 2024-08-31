@@ -22,6 +22,7 @@ const config = {
         darkPrimary: "#1b1b1b",
         darkSecondary: "#262626",
         darkTertiary: "#333333",
+        darkTertiaryBright: "#444444",
       },
       keyframes: {
         "accordion-down": {
