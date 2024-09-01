@@ -5,29 +5,32 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from "../ui/button"
-import { Mic } from "lucide-react"
-import { useRef, useState, useMemo, useCallback } from "react"
+import { Mic, Trash } from "lucide-react"
+import { useRef, useState, useMemo, useCallback, useEffect } from "react"
 import { useWavesurfer } from '@wavesurfer/react'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
 
-export default function RecordAudioButton() {
+export default function RecordAudioButton({ isRecording, setIsRecording }: { isRecording: boolean, setIsRecording: (isRecording: boolean) => void }) {
     const containerRef = useRef(null)
-    const [audioUrl, setAudioUrl] = useState('test.mp3')
-    const [isRecordings, setIsRecording] = useState(false)
+    const [recordingTime, setRecordingTime] = useState(0)
 
-    // @ts-ignore
-    const { wavesurfer, isPlaying, currentTime, isRecording } = useWavesurfer({
+    const { wavesurfer, isPlaying } = useWavesurfer({
         container: containerRef,
-        height: 100,
+        height: 50,
         waveColor: '#ddd',
         progressColor: '#ff006c',
-        barWidth: 0,
-        barRadius: 0,
-        url: audioUrl,
-        plugins: useMemo(() => [RecordPlugin.create({ scrollingWaveform: true })], []),
+        barWidth: 3,
+        barRadius: 3,
+        barHeight: 3,
+        normalize: false,
+        plugins: useMemo(() => [RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: true })], []),
     })
-    const formatTime = (seconds: number) => [seconds / 60, seconds % 60].map((v) => `0${Math.floor(v)}`.slice(-2)).join(':')
-
+    const formatTime = (milliseconds: number) => {
+        const seconds = milliseconds / 1000
+        const minutes = Math.floor(seconds / 60)
+        const remainingSeconds = Math.floor(seconds % 60)
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+    }
     const onPlayPause = useCallback(() => {
         wavesurfer && wavesurfer.playPause()
     }, [wavesurfer])
@@ -35,11 +38,12 @@ export default function RecordAudioButton() {
     const startRecord = async () => {
         const record = wavesurfer?.getActivePlugins()[0]
         // @ts-ignore
-        if (record?.isRecording()) {
-            console.log('stop recording')
+        if (record?.isRecording() && isRecording) {
             // @ts-ignore
             await record.stopRecording()
+            // @ts-ignore
             setIsRecording(false)
+            setRecordingTime(0)
             return
         } else {
             // @ts-ignore
@@ -48,27 +52,49 @@ export default function RecordAudioButton() {
             console.log('start recording')
         }
     }
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (isRecording) {
+                setRecordingTime((prev) => prev + 1000)
+            }
+        }
+            , 1000)
+        return () => {
+            clearInterval(interval)
+        }
+    }, [isRecording])
     return (
         <>
-            <div className="w-[500px]" ref={containerRef} />
-
-            <p>Current time: {formatTime(currentTime)}</p>
-
-            <div style={{ margin: '1em 0', display: 'flex', gap: '1em' }}>
-
-                <button onClick={onPlayPause} style={{ minWidth: '5em' }}>
-                    {isPlaying ? 'Pause' : 'Play'}
-                </button>
-
-                <button onClick={startRecord} style={{ minWidth: '5em' }}>
-                    {isRecordings ? 'Stop record' : 'Start record'}
-                </button>
+            {/* <div className={isRecording ? "" : "hidden"}> */}
+            <div className="bg-black flex items-center">
+                <Button variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                        startRecord()
+                    }}
+                >
+                    <Trash className="size-4" />
+                </Button>
+                <div className="w-[200px]" ref={containerRef} />
+                <p>Recording time: {formatTime(recordingTime)}</p>
+                <div style={{ margin: '1em 0', display: 'flex', gap: '1em' }}>
+                    <button onClick={onPlayPause} style={{ minWidth: '5em' }}>
+                        {isPlaying ? 'Pause' : 'Play'}
+                    </button>
+                    <button onClick={startRecord} style={{ minWidth: '5em' }}>
+                        {isRecording ? 'Stop record' : 'Start record'}
+                    </button>
+                </div>
             </div>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className={`dark:hover:bg-darkSecondary ${isRecordings ? "hidden" : ""}`} >
+                    <Button variant="ghost"
+                        size="icon"
+                        className={`dark:hover:bg-darkSecondary ${isRecording ? "hidden" : ""}`}
+                        onClick={() => { setIsRecording(true); startRecord() }}
+                    >
                         <Mic className="size-4" />
-                        <span className="sr-only">Use Microphone</span>
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top">Use Microphone</TooltipContent>
