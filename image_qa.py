@@ -1,46 +1,34 @@
+# test.py
 from PIL import Image
-import requests
-from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+from transformers import AutoModel, AutoTokenizer
 
-# Load the model in half-precision on the available device(s)
-model = Qwen2VLForConditionalGeneration.from_pretrained(
-    "Qwen/Qwen2-VL-2B-Instruct", torch_dtype="auto", device_map="auto"
+model = AutoModel.from_pretrained('openbmb/MiniCPM-V-2_6-int4', trust_remote_code=True)
+tokenizer = AutoTokenizer.from_pretrained('openbmb/MiniCPM-V-2_6-int4', trust_remote_code=True)
+model.eval()
+
+image = Image.open('demo.jpeg').convert('RGB')
+question = 'What is in the image?'
+msgs = [{'role': 'user', 'content': [image, question]}]
+
+res = model.chat(
+    image=None,
+    msgs=msgs,
+    tokenizer=tokenizer
 )
-processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct")
+print(res)
 
-# Image
-url = "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg"
-image = Image.open(requests.get(url, stream=True).raw)
-
-conversation = [
-    {
-        "role": "user",
-        "content": [
-            {
-                "type": "image",
-            },
-            {"type": "text", "text": "Describe this image."},
-        ],
-    }
-]
-
-
-# Preprocess the inputs
-text_prompt = processor.apply_chat_template(conversation, add_generation_prompt=True)
-# Excepted output: '<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe this image.<|im_end|>\n<|im_start|>assistant\n'
-
-inputs = processor(
-    text=[text_prompt], images=[image], padding=True, return_tensors="pt"
+## if you want to use streaming, please make sure sampling=True and stream=True
+## the model.chat will return a generator
+res = model.chat(
+    image=None,
+    msgs=msgs,
+    tokenizer=tokenizer,
+    sampling=True,
+    temperature=0.7,
+    stream=True
 )
-inputs = inputs.to("cuda")
 
-# Inference: Generation of the output
-output_ids = model.generate(**inputs, max_new_tokens=128)
-generated_ids = [
-    output_ids[len(input_ids) :]
-    for input_ids, output_ids in zip(inputs.input_ids, output_ids)
-]
-output_text = processor.batch_decode(
-    generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True
-)
-print(output_text)
+generated_text = ""
+for new_text in res:
+    generated_text += new_text
+    print(new_text, flush=True, end='')
