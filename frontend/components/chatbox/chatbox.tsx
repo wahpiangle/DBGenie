@@ -1,6 +1,7 @@
 "use client";
 import {
     CornerDownLeft,
+    SendHorizonalIcon,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -12,25 +13,33 @@ import { useState } from "react";
 
 export default function Chatbox() {
     const [isRecording, setIsRecording] = useState(false)
+    const [inputText, setInputText] = useState('')
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputText(e.target.value)
+    }
     return (
         <div
-            className="dark:border-none border focus-within:ring-1 dark:focus-within:ring-1 dark:ring-gray-500 md:w-9/12 w-11/12 rounded-lg"
+            className="flex p-4 dark:border-none border md:w-9/12 w-11/12 rounded-lg dark:bg-darkTertiary items-center gap-2 justify-between"
         >
+            <AttachFileButton />
             <Input
                 id="message"
                 placeholder="Type your message here..."
-                className={`min-h-12 p-3 shadow-none rounded-b-none dark:bg-darkTertiary border-none focus:border-none transition-none
-                    ${isRecording ?? 'placeholder:none'}
-                `}
+                className={`shadow-none dark:bg-darkSecondary border-none focus:border-none transition-none
+                        ${isRecording ? 'hidden' : 'block'}
+                    `}
+                onInput={handleInput}
             />
-            <div className="flex items-center p-3 pt-0 dark:bg-darkTertiary rounded-b-lg">
-                <AttachFileButton />
-                <RecordAudioButton isRecording={isRecording} setIsRecording={setIsRecording} />
-                <Button type="button" size="sm" className="ml-auto gap-1.5">
-                    Send Message
-                    <CornerDownLeft className="size-3.5" />
-                </Button>
-            </div>
+            {
+                inputText.length === 0 ? (
+                    <RecordAudioButton isRecording={isRecording} setIsRecording={setIsRecording} />
+                ) : (
+                    <Button type="button" className="">
+                        <SendHorizonalIcon className="size-4" />
+                        Send
+                    </Button>
+                )
+            }
         </div>
     )
 }

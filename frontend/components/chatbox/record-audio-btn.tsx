@@ -5,7 +5,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from "../ui/button"
-import { Mic, Trash } from "lucide-react"
+import { Mic, Pause, PauseCircle, PauseCircleIcon, Play, SendHorizonalIcon, Trash } from "lucide-react"
 import { useRef, useState, useMemo, useCallback, useEffect } from "react"
 import { useWavesurfer } from '@wavesurfer/react'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
@@ -22,6 +22,7 @@ export default function RecordAudioButton({ isRecording, setIsRecording }: { isR
         barWidth: 3,
         barRadius: 3,
         barHeight: 3,
+
         normalize: false,
         plugins: useMemo(() => [RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: true })], []),
     })
@@ -49,7 +50,6 @@ export default function RecordAudioButton({ isRecording, setIsRecording }: { isR
             // @ts-ignore
             await record?.startRecording()
             setIsRecording(true)
-            console.log('start recording')
         }
     }
 
@@ -65,41 +65,47 @@ export default function RecordAudioButton({ isRecording, setIsRecording }: { isR
         }
     }, [isRecording])
     return (
-        <>
-            {/* <div className={isRecording ? "" : "hidden"}> */}
-            <div className="bg-black flex items-center">
-                <Button variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                        startRecord()
-                    }}
-                >
-                    <Trash className="size-4" />
-                </Button>
-                <div className="w-[200px]" ref={containerRef} />
-                <p>Recording time: {formatTime(recordingTime)}</p>
-                <div style={{ margin: '1em 0', display: 'flex', gap: '1em' }}>
-                    <button onClick={onPlayPause} style={{ minWidth: '5em' }}>
-                        {isPlaying ? 'Pause' : 'Play'}
-                    </button>
-                    <button onClick={startRecord} style={{ minWidth: '5em' }}>
-                        {isRecording ? 'Stop record' : 'Start record'}
-                    </button>
-                </div>
+        <div className="flex items-center gap-2">
+            <Button variant="ghost"
+                size="icon"
+                onClick={() => {
+                    startRecord()
+                }}
+            >
+                <Trash />
+            </Button>
+            <p>{formatTime(recordingTime)}</p>
+            <div className="flex dark:bg-darkSecondary items-center p-2 rounded-lg">
+                {!isRecording && <Button variant="ghost" size="icon"
+                    onClick={onPlayPause}
+                    >
+                    <Play />
+                    </Button>}
+                <div className={`w-[180px]`} ref={containerRef} />
             </div>
-            <Tooltip>
-                <TooltipTrigger asChild>
+            {
+                isRecording ? (
                     <Button variant="ghost"
                         size="icon"
-                        className={`dark:hover:bg-darkSecondary ${isRecording ? "hidden" : ""}`}
-                        onClick={() => { setIsRecording(true); startRecord() }}
+                        className="dark:hover:bg-darkSecondary"
                     >
-                        <Mic className="size-4" />
+                        <SendHorizonalIcon />
                     </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Use Microphone</TooltipContent>
-            </Tooltip>
-        </>
-
+                ) :
+                    (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost"
+                                    size="icon"
+                                    className={` ${isRecording ? "hidden" : ""}`}
+                                    onClick={() => { setIsRecording(true); startRecord() }}
+                                >
+                                    <Mic />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">Use Microphone</TooltipContent>
+                        </Tooltip>)
+            }
+        </div>
     )
 }
