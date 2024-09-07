@@ -9,6 +9,7 @@ import { Mic, Pause, PauseCircle, PauseCircleIcon, Play, SendHorizonalIcon, Tras
 import { useRef, useState, useMemo, useCallback, useEffect } from "react"
 import { useWavesurfer } from '@wavesurfer/react'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
+import audioBufferToWav from 'audiobuffer-to-wav'
 
 export default function RecordAudioButton(
     { isRecording,
@@ -69,6 +70,13 @@ export default function RecordAudioButton(
         recordingSaved ? setHasRecording(true) : setHasRecording(false)
     }
 
+    const sendAudio = () => {
+        stopRecord(false)
+        const audio = wavesurfer?.getDecodedData() as AudioBuffer
+        const blob = new Blob([audioBufferToWav(audio)], { type: 'audio/wav' })
+        const url = URL.createObjectURL(blob)
+    }
+
     useEffect(() => {
         const interval = setInterval(() => {
             if (isRecording) {
@@ -116,7 +124,7 @@ export default function RecordAudioButton(
                             size="icon"
                             className="dark:hover:bg-darkSecondary"
                         >
-                            <SendHorizonalIcon />
+                            <SendHorizonalIcon onClick={sendAudio} />
                         </Button>
                     ) :
                     (
