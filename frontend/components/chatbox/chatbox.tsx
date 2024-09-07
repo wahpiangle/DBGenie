@@ -13,6 +13,7 @@ import { useState } from "react";
 
 export default function Chatbox() {
     const [isRecording, setIsRecording] = useState(false)
+    const [hasRecording, setHasRecording] = useState(false)
     const [inputText, setInputText] = useState('')
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputText(e.target.value)
@@ -26,13 +27,13 @@ export default function Chatbox() {
                 id="message"
                 placeholder="Type your message here..."
                 className={`shadow-none dark:bg-darkSecondary border-none focus:border-none transition-none
-                        ${isRecording ? 'hidden' : 'block'}
+                        ${isRecording || hasRecording ? 'hidden' : 'block'}
                     `}
                 onInput={handleInput}
             />
             {
                 inputText.length === 0 ? (
-                    <RecordAudioButton isRecording={isRecording} setIsRecording={setIsRecording} />
+                    <RecordAudioButton isRecording={isRecording} setIsRecording={setIsRecording} hasRecording={hasRecording} setHasRecording={setHasRecording} />
                 ) : (
                     <Button type="button" className="">
                         <SendHorizonalIcon className="size-4" />
