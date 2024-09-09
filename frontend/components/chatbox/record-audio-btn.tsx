@@ -35,9 +35,8 @@ export default function RecordAudioButton(
         barWidth: 3,
         barRadius: 3,
         barHeight: 3,
-
-        normalize: false,
-        plugins: useMemo(() => [RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: true })], []),
+        backend: 'WebAudio',
+        plugins: useMemo(() => [RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: true, audioBitsPerSecond: 256000 })], []),
     })
     const formatTime = (milliseconds: number) => {
         const seconds = milliseconds / 1000
