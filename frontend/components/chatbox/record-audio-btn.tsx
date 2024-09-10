@@ -49,20 +49,15 @@ export default function RecordAudioButton(
     }, [wavesurfer])
 
     const startRecord = async () => {
-        const record = wavesurfer?.getActivePlugins()[0]
-        // @ts-ignore
+        const record = wavesurfer?.getActivePlugins()[0] as RecordPlugin
         await record?.startRecording()
-        // @ts-ignore
         setIsRecording(true)
     }
 
     const stopRecord = (recordingSaved: boolean) => {
-        const record = wavesurfer?.getActivePlugins()[0]
-        // @ts-ignore
+        const record = wavesurfer?.getActivePlugins()[0] as RecordPlugin
         if (record?.isRecording()) {
-            // @ts-ignore
             record.stopRecording()
-            // @ts-ignore
             setIsRecording(false)
             setRecordingTime(0)
         }
@@ -74,6 +69,7 @@ export default function RecordAudioButton(
         const audio = wavesurfer?.getDecodedData() as AudioBuffer
         const blob = new Blob([audioBufferToWav(audio)], { type: 'audio/wav' })
         const url = URL.createObjectURL(blob)
+        // TODO: send audio to server
     }
 
     useEffect(() => {
