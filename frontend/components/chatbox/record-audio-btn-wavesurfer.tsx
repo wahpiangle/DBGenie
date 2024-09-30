@@ -8,43 +8,62 @@ import { Button } from "../ui/button"
 import { Mic, Pause, PauseCircle, PauseCircleIcon, Play, SendHorizonalIcon, Trash } from "lucide-react"
 import { useRef, useState, useMemo, useCallback, useEffect } from "react"
 import { useWavesurfer } from '@wavesurfer/react'
+import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
 import audioBufferToWav from 'audiobuffer-to-wav'
 import { useMutation } from "@tanstack/react-query"
-import { useAudioRecorder } from 'react-audio-voice-recorder';
 
 export default function RecordAudioButton(
-    {
+    { isRecording,
         setIsRecording,
         hasRecording,
         setHasRecording
     }:
         {
+            isRecording: boolean,
             setIsRecording: (isRecording: boolean) => void,
             hasRecording: boolean,
             setHasRecording: (hasRecording: boolean) => void
         }
 ) {
     const containerRef = useRef(null)
+    const [recordingTime, setRecordingTime] = useState(0)
 
-    const {
-        startRecording,
-        stopRecording,
-        togglePauseResume,
-        recordingBlob,
-        isRecording,
-        isPaused,
-        recordingTime,
-        mediaRecorder
-    } = useAudioRecorder();
-
+    const { wavesurfer, isPlaying } = useWavesurfer({
+        container: containerRef,
+        height: 50,
+        waveColor: '#ddd',
+        progressColor: '#ff006c',
+        barWidth: 3,
+        barRadius: 3,
+        barHeight: 3,
+        backend: 'WebAudio',
+        plugins: useMemo(() => [RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: true })], []),
+    })
     const formatTime = (milliseconds: number) => {
         const seconds = milliseconds / 1000
         const minutes = Math.floor(seconds / 60)
         const remainingSeconds = Math.floor(seconds % 60)
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
     }
+    const onPlayPause = useCallback(() => {
+        wavesurfer && wavesurfer.playPause()
+    }, [wavesurfer])
 
+    const startRecord = async () => {
+        const record = wavesurfer?.getActivePlugins()[0] as RecordPlugin
+        await record?.startRecording()
+        setIsRecording(true)
+    }
 
+    const stopRecord = (recordingSaved: boolean) => {
+        const record = wavesurfer?.getActivePlugins()[0] as RecordPlugin
+        if (record?.isRecording()) {
+            record.stopRecording()
+            setIsRecording(false)
+            setRecordingTime(0)
+        }
+        recordingSaved ? setHasRecording(true) : setHasRecording(false)
+    }
 
     const mutation = useMutation({
         mutationFn: async (audio: Blob) => {
@@ -59,18 +78,31 @@ export default function RecordAudioButton(
     })
 
     const sendAudio = () => {
-        // const blob = new Blob([audioBufferToWav(audio)], { type: 'audio/wav' })
-        // mutation.mutate(blob)
-        stopRecording()
-        mutation.mutate(recordingBlob as Blob)
+        stopRecord(false)
+        const audio = wavesurfer?.getDecodedData() as AudioBuffer
+        const blob = new Blob([audioBufferToWav(audio)], { type: 'audio/wav' })
+        mutation.mutate(blob)
 
     }
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (isRecording) {
+                setRecordingTime((prev) => prev + 1000)
+            }
+        }
+            , 1000)
+        return () => {
+            clearInterval(interval)
+        }
+    }, [isRecording])
+
     return (
         <div className="flex items-center">
             <div className={`${!(isRecording || hasRecording) && "hidden"} flex items-center gap-2`}>
                 <Button variant="ghost"
                     size="icon"
-                    onClick={() => { stopRecording }}
+                    onClick={() => { stopRecord(false) }}
                 >
                     <Trash />
                 </Button>
@@ -78,17 +110,16 @@ export default function RecordAudioButton(
                 <div className="flex dark:bg-darkSecondary items-center p-2 rounded-lg">
                     {!isRecording &&
                         <Button variant="ghost" size="icon"
-                            onClick={() => { togglePauseResume() }}
+                            onClick={onPlayPause}
                         >
                             {
-                                isPaused
-                                    ? <Pause /> : <Play />
+                                isPlaying ? <Pause /> : <Play />
                             }
                         </Button>
                     }
                     <div className={`w-[180px] mx-1`} ref={containerRef} />
                     {isRecording && <Button variant="ghost" size="icon"
-                        onClick={() => { stopRecording }}
+                        onClick={() => { stopRecord(true) }}
                     >
                         <PauseCircle className="text-red-600" />
                     </Button>}
@@ -110,7 +141,7 @@ export default function RecordAudioButton(
                                 <Button variant="ghost"
                                     size="icon"
                                     className={` ${isRecording ? "hidden" : ""}`}
-                                    onClick={() => { startRecording() }}
+                                    onClick={() => { startRecord() }}
                                 >
                                     <Mic />
                                 </Button>

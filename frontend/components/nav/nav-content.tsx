@@ -2,25 +2,19 @@ import React from 'react'
 import { Button } from '../ui/button'
 import { ScrollArea } from '../ui/scroll-area'
 import ChatButton from '../chat-button'
-import { Triangle } from 'lucide-react'
+import { MessageCircle, Package2, Triangle } from 'lucide-react'
 
 export default function NavContent() {
     const mockData = [
         {
-            id: 1,
-            title: "Home is where asfjkdlksjaklfalasjf",
+            title: "Chat",
+            icon: <MessageCircle />,
+            link: "/",
         },
         {
-            id: 2,
-            title: "About",
-        },
-        {
-            id: 3,
-            title: "Services",
-        },
-        {
-            id: 4,
-            title: "Contact",
+            title: "Products",
+            icon: <Package2 />,
+            link: "/products",
         },
     ]
     return (
@@ -30,8 +24,9 @@ export default function NavContent() {
             </Button>
             <ScrollArea className="mt-2">
                 <div className="flex flex-col gap-1">
+                    {/* Bolded Text to categorise */}
                     {mockData.map((item) => (
-                        <ChatButton item={item} key={item.id} />
+                        <ChatButton item={item} key={item.link} />
                     ))}
                 </div>
             </ScrollArea>

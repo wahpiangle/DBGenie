@@ -65,10 +65,8 @@ async def create_message_by_chat_id(
 
 @router.post("/speech/")
 async def upload_audio(file: UploadFile = File(...)):
-    # create a temporary file to store the audio in app/storage
     with NamedTemporaryFile(delete=False, suffix=".wav", dir="app/storage") as temp_audio:
         temp_audio.write(file.file.read())
         result = get_speech_as_text(temp_audio.name)
-        os.unlink(temp_audio.name)
 
     return {"transcript": result}
