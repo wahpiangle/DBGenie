@@ -25,6 +25,8 @@ model Property {
   price              Float
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
+  createdById        String
+  createdBy          User                 @relation(fields: [createdById], references: [id])
   bookings           Booking[]
   MaintenanceRequest MaintenanceRequest[]
 }
@@ -51,13 +53,14 @@ model MaintenanceRequest {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   name      String
-  email     String   @unique
+  email     String     @unique
   password  String
   role      Role
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Property  Property[]
 }
 
 model Session {

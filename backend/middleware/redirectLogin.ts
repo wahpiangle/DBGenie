@@ -2,7 +2,7 @@ import { type NextFunction, type Request, type Response } from 'express';
 
 const redirectLogin = (req: Request, res: Response, next: NextFunction) => {
     if (!req.session.user) {
-        res.redirect('/auth/login');
+        res.json({ message: 'You need to be logged in to access this route' });
     } else {
         next();
     }

@@ -3,6 +3,7 @@ import session from 'express-session';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import { prisma } from "./prisma";
 import authRoute from './routes/authRoutes';
+import propertyRoute from './routes/propertyRoutes';
 
 const app = express();
 const port = 8080;
@@ -28,6 +29,7 @@ app.use(
 )
 
 app.use('/auth', authRoute)
+app.use('/properties', propertyRoute)
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}...`);
