@@ -17,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.propdash.Greeting
 import com.example.propdash.data.model.User
 import com.example.propdash.viewModel.UserViewModel
 
@@ -30,11 +29,12 @@ fun UserScreen(userViewModel: UserViewModel = viewModel()) {
         userViewModel.fetchUsers()
     }
 
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.padding(innerPadding))
         } else {
-            UserList(users)
+//            UserList(users)
         }
     }
 

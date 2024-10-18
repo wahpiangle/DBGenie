@@ -1,5 +1,6 @@
 package com.example.propdash.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.propdash.data.model.User
@@ -28,7 +29,7 @@ class UserViewModel : ViewModel() {
                 val users = repository.getUsers()
                 _userState.value = users
             } catch (e: Exception) {
-                // Handle error
+                Log.e("UserViewModel", "Error fetching users", e)
             } finally {
                 _isLoading.value = false
             }

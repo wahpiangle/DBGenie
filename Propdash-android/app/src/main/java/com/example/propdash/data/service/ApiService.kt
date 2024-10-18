@@ -8,12 +8,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 interface ApiService {
     @GET("/users")
     suspend fun getUsers(): List<User>
+
+    @GET("/")
+    suspend fun test(): Any
 }
 
 // Singleton object for Retrofit
 object ApiClient {
-    private const val BASE_URL = "http://localhost:8080"  // Replace with your API base URL
-
+    private const val BASE_URL = "http://192.168.1.110:8080/"
     val apiService: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
