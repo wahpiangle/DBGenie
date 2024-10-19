@@ -7,4 +7,10 @@ const CreateBookingSchema = z.object({
     userId: z.string()
 });
 
-export { CreateBookingSchema };
+const CheckBookingsByPropertySchema = z.object({
+    propertyId: z.string(),
+    checkIn: z.date(),
+    checkOut: z.date()
+});
+
+export { CreateBookingSchema, CheckBookingsByPropertySchema };
