@@ -62,7 +62,7 @@ export class BookingController {
     }
 
     public static async checkBookingsByProperty(req: Request, res: Response) {
-        const propertyId = req.params.id;
+        const propertyId = req.params.propertyId;
         const { checkIn, checkOut } = req.body;
         try {
             CheckBookingsByPropertySchema.parse({
