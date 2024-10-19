@@ -45,25 +45,40 @@ model Booking {
 }
 
 model MaintenanceRequest {
-  id          String   @id @default(cuid())
-  propertyId  String
-  userId      String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  property    Property @relation(fields: [propertyId], references: [id])
+  id                        String                     @id @default(cuid())
+  propertyId                String
+  userId                    String
+  description               String
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  property                  Property                   @relation(fields: [propertyId], references: [id])
+  maintenanceRequestUpdates MaintenanceRequestUpdate[]
+  user                      User                       @relation(fields: [userId], references: [id])
+}
+
+model MaintenanceRequestUpdate {
+  id                   String             @id @default(cuid())
+  maintenanceRequestId String
+  description          String
+  userId               String
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  maintenanceRequest   MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id])
+  user                 User               @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id        String     @id @default(cuid())
-  name      String
-  email     String     @unique
-  password  String
-  role      Role
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Property  Property[]
-  Booking   Booking[]
+  id                       String                     @id @default(cuid())
+  name                     String
+  email                    String                     @unique
+  password                 String
+  role                     Role
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+  Property                 Property[]
+  Booking                  Booking[]
+  maintenanceRequest       MaintenanceRequest[]
+  maintenanceRequestUpdate MaintenanceRequestUpdate[]
 }
 
 model Session {

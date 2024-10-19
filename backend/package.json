@@ -5,7 +5,8 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/express": "^5.0.0",
-    "@types/express-session": "^1.18.0"
+    "@types/express-session": "^1.18.0",
+    "prisma": "^5.21.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -14,13 +15,12 @@
     "@langchain/core": "^0.3.6",
     "@langchain/langgraph": "^0.2.11",
     "@langchain/ollama": "^0.1.0",
-    "@prisma/client": "^5.20.0",
+    "@prisma/client": "^5.21.1",
     "@quixo3/prisma-session-store": "^3.1.13",
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
     "express": "^4.21.0",
     "express-session": "^1.18.0",
-    "prisma": "^5.20.0",
     "zod": "^3.23.8"
   }
 }
