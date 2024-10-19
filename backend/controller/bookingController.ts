@@ -5,13 +5,14 @@ import { ZodError } from "zod";
 
 export class BookingController {
     public static async createBooking(req: Request, res: Response) {
-        const { propertyId, checkIn, checkOut } = req.body;
+        const { propertyId, checkIn, checkOut, rentalPrice } = req.body;
         const user = req.session.user;
         try {
             CreateBookingSchema.parse({
                 propertyId,
                 checkIn,
-                checkOut
+                checkOut,
+                rentalPrice
             });
             const property = await prisma.property.findUnique({
                 where: {
@@ -43,7 +44,8 @@ export class BookingController {
                     propertyId,
                     checkIn,
                     checkOut,
-                    userId: user.id
+                    userId: user.id,
+                    rentalPrice
                 },
             });
             res.json(booking);
