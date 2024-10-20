@@ -32,16 +32,17 @@ model Property {
 }
 
 model Booking {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   propertyId  String
   userId      String
   checkIn     DateTime
   checkOut    DateTime
   rentalPrice Decimal
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  property    Property @relation(fields: [propertyId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  property    Property  @relation(fields: [propertyId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  payment     Payment[]
 }
 
 model MaintenanceRequest {
@@ -67,6 +68,17 @@ model MaintenanceRequestUpdate {
   user                 User               @relation(fields: [userId], references: [id])
 }
 
+model Payment {
+  id        String   @id @default(cuid())
+  bookingId String
+  userId    String
+  amount    Decimal
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
 model User {
   id                       String                     @id @default(cuid())
   name                     String
@@ -76,6 +88,7 @@ model User {
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
   Property                 Property[]
+  Payment                  Payment[]
   Booking                  Booking[]
   maintenanceRequest       MaintenanceRequest[]
   maintenanceRequestUpdate MaintenanceRequestUpdate[]
