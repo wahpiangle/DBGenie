@@ -6,11 +6,13 @@ import { ZodError } from "zod";
 import { RegisterSchema } from "../validation/authSchema";
 export class AuthController {
     public static async register(req: Request, res: Response) {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
         try {
             RegisterSchema.parse({
+                name,
                 email,
                 password,
+                role
             });
             const existingUser = await prisma.user.findUnique({
                 where: {
@@ -28,7 +30,14 @@ export class AuthController {
                     name,
                     email,
                     password: hashedPassword,
-                    role: Role.TENANT
+                    role: role as Role
+                }
+            });
+
+            await prisma.verificationToken.create({
+                data: {
+                    userId: user.id,
+                    token: Math.floor(100000 + Math.random() * 900000).toString()
                 }
             });
 
@@ -44,6 +53,65 @@ export class AuthController {
             }
             return;
         }
+    }
+
+    public static async verifyNumber(req: Request, res: Response) {
+        const { user } = req.session;
+        const { code } = req.body;
+        const userWithCode = await prisma.user.findUnique({
+            where: {
+                id: user.id
+            },
+            include: {
+                verificationToken: true
+            }
+        });
+
+        if (userWithCode?.verified) {
+            res.status(400).json({ error: 'User already verified' });
+            return;
+        }
+
+        if (!userWithCode?.verificationToken) {
+            res.status(400).json({ error: 'No verification token found' });
+            await prisma.verificationToken.create({
+                data: {
+                    userId: user.id,
+                    token: Math.floor(100000 + Math.random() * 900000).toString()
+                }
+            });
+            return;
+        }
+
+        // 1 hour expiry
+        if (userWithCode?.verificationToken?.createdAt < new Date(new Date().getTime() - 60 * 60 * 1000)) {
+            res.status(400).json({ error: 'Token expired, a new one has been sent' });
+            await prisma.verificationToken.update({
+                where: {
+                    id: userWithCode.verificationToken.id
+                },
+                data: {
+                    token: Math.floor(100000 + Math.random() * 900000).toString()
+                }
+            });
+            return;
+        }
+
+        if (userWithCode?.verificationToken?.token !== code) {
+            res.status(400).json({ error: 'Invalid code' });
+            return;
+        }
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                verified: true
+            }
+        });
+        req.session.user = { ...user, verified: true };
+        res.json({ message: 'Phone number verified' });
+        return;
     }
 
     public static async login(req: Request, res: Response) {

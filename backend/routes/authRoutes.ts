@@ -11,5 +11,6 @@ router.get('/', redirectLogin, (req, res) => {
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
 router.get('/logout', AuthController.logout);
+router.post('/verify-number', AuthController.verifyNumber);
 
 export default router;
