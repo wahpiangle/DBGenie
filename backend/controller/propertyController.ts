@@ -10,7 +10,6 @@ export class PropertyController {
             CreatePropertySchema.parse({
                 name: req.body.name,
                 description: req.body.description,
-                price: req.body.price,
             });
             const property = await prisma.property.create({
                 data: {

@@ -5,14 +5,16 @@ import { ZodError } from "zod";
 
 export class BookingController {
     public static async createBooking(req: Request, res: Response) {
-        const { propertyId, checkIn, checkOut, rentalPrice } = req.body;
+        const { propertyId, checkIn, checkOut, rentalPrice, remarks, rentCollectionDay } = req.body;
         const user = req.session.user;
         try {
             CreateBookingSchema.parse({
                 propertyId,
                 checkIn,
                 checkOut,
-                rentalPrice
+                rentalPrice,
+                rentCollectionDay,
+                remarks
             });
             const property = await prisma.property.findUnique({
                 where: {
@@ -35,17 +37,16 @@ export class BookingController {
                     }
                 }
             });
-            if (bookings.length > 0) {
-                res.status(400).json({ error: 'Property is not available' });
-                return;
-            }
+
             const booking = await prisma.booking.create({
                 data: {
                     propertyId,
                     checkIn,
                     checkOut,
                     userId: user.id,
-                    rentalPrice
+                    rentalPrice,
+                    rentCollectionDay,
+                    remarks
                 },
             });
             res.json(booking);

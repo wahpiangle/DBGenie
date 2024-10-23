@@ -5,7 +5,9 @@ const CreateBookingSchema = z.object({
     checkIn: z.string(),
     checkOut: z.string(),
     userId: z.string(),
-    rentalPrice: z.number()
+    rentalPrice: z.number(),
+    remarks: z.string().nullable(),
+    rentCollectionDay: z.number().min(1).max(28)
 });
 
 const CheckBookingsByPropertySchema = z.object({
