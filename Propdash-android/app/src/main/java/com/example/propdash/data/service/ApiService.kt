@@ -1,9 +1,12 @@
 package com.example.propdash.data.service
 
+import com.example.propdash.data.model.RegisterRequest
 import com.example.propdash.data.model.User
 import retrofit2.http.GET
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface ApiService {
     @GET("/users")
@@ -11,6 +14,12 @@ interface ApiService {
 
     @GET("/")
     suspend fun test(): Any
+
+    @POST("/register")
+    suspend fun register(@Body user: RegisterRequest): User
+
+    @POST("/login")
+    suspend fun login(@Body user: RegisterRequest): User
 }
 
 // Singleton object for Retrofit
