@@ -11,7 +11,7 @@ import com.example.propdash.data.model.Role
 import com.example.propdash.data.model.User
 
 @Composable
-fun LoginScreen(onLoginSuccess: (String, String, String, Role, Boolean, String) -> Unit, userSession: User?) {
+fun TenantScreen(userSession: User?, clearSession: () -> Unit) {
     Scaffold(
         topBar = {
             Text("Login")
@@ -20,12 +20,13 @@ fun LoginScreen(onLoginSuccess: (String, String, String, Role, Boolean, String) 
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
+            Text(userSession.toString())
             Button(
                 onClick = {
-                    onLoginSuccess("1", "John Doe", "1", Role.TENANT, true, "cookie")
+                    clearSession()
                 }
             ) {
-                Text(userSession.toString())
+                Text("Logout")
             }
         }
     }

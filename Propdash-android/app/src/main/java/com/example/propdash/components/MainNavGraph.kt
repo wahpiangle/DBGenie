@@ -43,8 +43,18 @@ fun MainNavGraph(userViewModel: UserViewModel) {
                             Screen.TenantScreen.route
                         }
                     )
-                }
+                },
+                userSession = userSession
             )
+        }
+
+        composable(Screen.TenantScreen.route) {
+            TenantScreen(userSession) {
+                userViewModel.clearSession()
+                navController.navigate(Screen.LoginScreen.route) {
+                    popUpTo(Screen.TenantScreen.route) { inclusive = true }
+                }
+            }
         }
 
 //        composable("home") {
