@@ -15,7 +15,6 @@ export class PropertyController {
                 data: {
                     name: req.body.name,
                     description: req.body.description,
-                    price: req.body.price,
                     createdBy: {
                         connect: {
                             id: user.id
