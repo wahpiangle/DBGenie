@@ -1,10 +1,15 @@
 import { Annotation } from "@langchain/langgraph"
 import { sqlQueryChain } from "./chatbot"
 import { questionEvaluation } from "./tools/questionEvaluator"
+import { prisma } from "../prisma"
+import { type User } from "@prisma/client"
+import { userQueryChecker } from "./tools/userQueryChecker"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
     generation: Annotation<string>,
+    user: Annotation<User>,
+    rejected: Annotation<boolean>,
 })
 
 const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
@@ -13,6 +18,41 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
         question: state.question
     })
     return { generation: generatedQuery }
+}
+
+const checkUserQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
+    // check if the user is updating or deleting a record that does not belong to them
+    console.log("Checking if the user is updating or deleting a record that does not belong to them")
+    const user = state.user
+    const ids = await prisma.user.findUnique({
+        where: {
+            id: user.id
+        },
+        include: {
+            Booking: true,
+            maintenanceRequest: true,
+            Property: true,
+            Payment: true
+        }
+    })
+    // check if the user is updating or deleting a record that does not belong to them
+
+    const sqlQuery = state.generation
+    return {}
+}
+
+const blockUsersTable = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
+    console.log("Blocking users from updating the users table")
+    const sqlQuery = state.generation
+    const userQuery = await userQueryChecker.invoke({
+        sql_statement: sqlQuery
+    })
+    // get the first word of the sql query
+    const firstWord = userQuery.split(' ')[0].toLowerCase()
+    if (firstWord === 'yes') {
+        return { rejected: true }
+    }
+    return { rejected: false }
 }
 
 const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
@@ -27,4 +67,5 @@ const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
 
 const runQueryToDb = async (state: typeof GraphState.State) => {
     console.log("Running query to database")
+    prisma.$executeRawUnsafe(state.generation)
 }

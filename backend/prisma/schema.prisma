@@ -24,8 +24,8 @@ model Property {
   description        String
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
-  createdById        String
-  createdBy          User                 @relation(fields: [createdById], references: [id])
+  userId             String //manager
+  createdBy          User                 @relation(fields: [userId], references: [id])
   bookings           Booking[]
   MaintenanceRequest MaintenanceRequest[]
 }
@@ -33,7 +33,7 @@ model Property {
 model Booking {
   id                String       @id @default(cuid())
   propertyId        String
-  userId            String
+  userId            String //tenant
   remarks           String?
   checkIn           DateTime
   checkOut          DateTime
@@ -50,7 +50,7 @@ model Booking {
 model MaintenanceRequest {
   id                        String                     @id @default(cuid())
   propertyId                String
-  userId                    String
+  userId                    String //tenant
   description               String
   createdAt                 DateTime                   @default(now())
   updatedAt                 DateTime                   @updatedAt
@@ -63,7 +63,7 @@ model MaintenanceRequestUpdate {
   id                   String             @id @default(cuid())
   maintenanceRequestId String
   description          String
-  userId               String
+  userId               String //tenant or manager
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
   maintenanceRequest   MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id])
@@ -73,7 +73,7 @@ model MaintenanceRequestUpdate {
 model RentalBill {
   id        String   @id @default(cuid())
   bookingId String
-  userId    String
+  userId    String //tenant
   amount    Decimal
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -84,7 +84,7 @@ model RentalBill {
 model Payment {
   id        String   @id @default(cuid())
   bookingId String
-  userId    String
+  userId    String //tenant
   amount    Decimal
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

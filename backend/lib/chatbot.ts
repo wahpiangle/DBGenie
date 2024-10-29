@@ -2,6 +2,7 @@ import { SqlDatabase } from "langchain/sql_db";
 import { DataSource } from "typeorm";
 import { llm } from "./llm";
 import { createSqlQueryChain } from "langchain/chains/sql_db";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 const dataSource = new DataSource({
     type: "postgres",
@@ -18,11 +19,12 @@ const db = await SqlDatabase.fromDataSourceParams({
 
 console.log(db.allTables.map((t) => t.tableName));
 
+
+
 const sqlQueryChain = await createSqlQueryChain({
     llm,
     db,
     dialect: "postgres",
 });
 
-// console.log("db run result", await db.run(response));
 export { sqlQueryChain };
