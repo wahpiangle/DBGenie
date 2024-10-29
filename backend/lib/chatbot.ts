@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { llm } from "./llm";
 import { createSqlQueryChain } from "langchain/chains/sql_db";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { prisma } from "../prisma";
 
 const dataSource = new DataSource({
     type: "postgres",
@@ -26,5 +27,32 @@ const sqlQueryChain = await createSqlQueryChain({
     db,
     dialect: "postgres",
 });
-
+const ids = await prisma.user.findUnique({
+    where: {
+        id: 'cm2hejqr000009o2m2snq4l86'
+    },
+    select: {
+        Booking: {
+            select: {
+                id: true
+            }
+        },
+        maintenanceRequest: {
+            select: {
+                id: true
+            }
+        },
+        maintenanceRequestUpdate: {
+            select: {
+                id: true
+            }
+        },
+        Property: {
+            select: {
+                id: true
+            }
+        },
+    }
+})
+console.log(await prisma.$executeRawUnsafe("SELECT * FROM User"));
 export { sqlQueryChain };

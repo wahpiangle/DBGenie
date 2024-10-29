@@ -14,8 +14,4 @@ const userQueryCheckerPrompt = ChatPromptTemplate.fromTemplate(
 
 const userQueryChecker = userQueryCheckerPrompt.pipe(llm).pipe(new StringOutputParser());
 
-// console.log(await userQueryChecker.invoke({
-//     sql_statement: "INSERT INTO users where id = 1"
-// }));
-
 export { userQueryChecker }

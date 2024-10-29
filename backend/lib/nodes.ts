@@ -4,6 +4,7 @@ import { questionEvaluation } from "./tools/questionEvaluator"
 import { prisma } from "../prisma"
 import { type User } from "@prisma/client"
 import { userQueryChecker } from "./tools/userQueryChecker"
+import { determineExecuteOrQuery } from "./tools/determineExecuteOrQuery"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
@@ -28,16 +29,32 @@ const checkUserQuery = async (state: typeof GraphState.State): Promise<Partial<t
         where: {
             id: user.id
         },
-        include: {
-            Booking: true,
-            maintenanceRequest: true,
-            Property: true,
-            Payment: true
+        select: {
+            Booking: {
+                select: {
+                    id: true
+                }
+            },
+            maintenanceRequest: {
+                select: {
+                    id: true
+                }
+            },
+            maintenanceRequestUpdate: {
+                select: {
+                    id: true
+                }
+            },
+            Property: {
+                select: {
+                    id: true
+                }
+            },
         }
     })
     // check if the user is updating or deleting a record that does not belong to them
-
     const sqlQuery = state.generation
+
     return {}
 }
 
@@ -67,5 +84,14 @@ const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
 
 const runQueryToDb = async (state: typeof GraphState.State) => {
     console.log("Running query to database")
-    prisma.$executeRawUnsafe(state.generation)
+    const isQuery = await determineExecuteOrQuery.invoke({
+        sql_statement: state.generation
+    })
+    if (isQuery.split(' ')[0].toLowerCase() === 'yes') {
+        prisma.$queryRawUnsafe(state.generation)
+    } else {
+        prisma.$executeRawUnsafe(state.generation)
+    }
 }
+
+export { GraphState, generateSqlQuery, checkUserQuery, blockUsersTable, evaluateSufficientInfo, runQueryToDb }
