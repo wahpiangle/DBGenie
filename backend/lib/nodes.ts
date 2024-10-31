@@ -52,14 +52,15 @@ const checkUserQuery = async (state: typeof GraphState.State): Promise<Partial<t
             },
         }
     })
+
     // check if the user is updating or deleting a record that does not belong to them
     const sqlQuery = state.generation
 
     return {}
 }
 
-const blockUsersTable = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
-    console.log("Blocking users from updating the users table")
+const blockTables = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
+    console.log("Blocking users from manipulating tables")
     const sqlQuery = state.generation
     const userQuery = await userQueryChecker.invoke({
         sql_statement: sqlQuery
@@ -94,4 +95,4 @@ const runQueryToDb = async (state: typeof GraphState.State) => {
     }
 }
 
-export { GraphState, generateSqlQuery, checkUserQuery, blockUsersTable, evaluateSufficientInfo, runQueryToDb }
+export { GraphState, generateSqlQuery, checkUserQuery, blockTables, evaluateSufficientInfo, runQueryToDb }

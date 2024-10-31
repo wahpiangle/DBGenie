@@ -1,8 +1,10 @@
 package com.example.propdash.data.repository
 
+import com.example.propdash.data.model.LoginRequest
 import com.example.propdash.data.model.RegisterRequest
 import com.example.propdash.data.model.User
 import com.example.propdash.data.service.ApiClient
+import retrofit2.Response
 
 class UserRepository {
     private val apiService = ApiClient.apiService
@@ -13,5 +15,9 @@ class UserRepository {
 
     suspend fun register(user: RegisterRequest): User {
         return apiService.register(user)
+    }
+
+    suspend fun login(user: LoginRequest): Response<User> {
+        return apiService.login(user)
     }
 }

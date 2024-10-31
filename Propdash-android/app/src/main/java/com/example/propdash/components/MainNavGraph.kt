@@ -2,8 +2,6 @@ package com.example.propdash.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -44,7 +42,9 @@ fun MainNavGraph(userViewModel: UserViewModel) {
                         }
                     )
                 },
-                userSession = userSession
+                login = { email, password -> userViewModel.login(email, password) },
+                userSession = userSession,
+                errorMessage = userViewModel.errorMessage.value
             )
         }
 

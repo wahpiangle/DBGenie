@@ -1,17 +1,29 @@
 package com.example.propdash.data.model
 
+import okhttp3.ResponseBody
+
 data class User(
     val id: String,
     val name: String,
     val email: String,
     val role: Role,
     val verified: Boolean,
-    val cookie: String
-)
+    val cookie: String,
+) {
+}
 
 data class RegisterRequest(
     val name: String,
     val email: String,
     val password: String,
     val role: Role
+)
+
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
+
+data class ErrorResponse(
+    val error: String
 )

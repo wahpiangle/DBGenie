@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.propdash.components.MainNavGraph
 import com.example.propdash.data.SessionManager
@@ -17,7 +16,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val sessionManager = SessionManager(applicationContext)
         val factory = UserViewModelFactory(sessionManager)
-        val userViewModel = ViewModelProvider(this, factory).get(UserViewModel::class.java)
+        val userViewModel = ViewModelProvider(this, factory)[UserViewModel::class.java]
         enableEdgeToEdge()
         setContent {
             PropdashTheme {

@@ -1,7 +1,11 @@
 package com.example.propdash.data.service
 
+import com.example.propdash.data.model.LoginRequest
 import com.example.propdash.data.model.RegisterRequest
 import com.example.propdash.data.model.User
+import okhttp3.ResponseBody
+import retrofit2.Converter
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -12,19 +16,16 @@ interface ApiService {
     @GET("/users")
     suspend fun getUsers(): List<User>
 
-    @GET("/")
-    suspend fun test(): Any
-
     @POST("/register")
     suspend fun register(@Body user: RegisterRequest): User
 
-    @POST("/login")
-    suspend fun login(@Body user: RegisterRequest): User
+    @POST("/auth/login")
+    suspend fun login(@Body user: LoginRequest): Response<User>
 }
 
 // Singleton object for Retrofit
 object ApiClient {
-    private const val BASE_URL = "http://192.168.1.110:8080/"
+    private const val BASE_URL = "http://192.168.1.108:8080/"
     val apiService: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
