@@ -1,5 +1,6 @@
 package com.example.propdash.components
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
@@ -10,8 +11,9 @@ import com.example.propdash.viewModel.UserViewModel
 
 sealed class Screen(val route: String) {
     object TenantScreen : Screen("tenant_screen")
-    object ManagerScreen: Screen("manager_screen")
+    object ManagerScreen : Screen("manager_screen")
     object LoginScreen : Screen("login_screen")
+    object RegisterScreen : Screen("register_screen")
 }
 
 @Composable
@@ -20,10 +22,10 @@ fun MainNavGraph(userViewModel: UserViewModel) {
     val userSession = userViewModel.userSession.collectAsState().value
     NavHost(
         navController = navController,
-        startDestination = if(userSession != null){
-            if(userSession.role == Role.MANAGER) {
+        startDestination = if (userSession != null) {
+            if (userSession.role == Role.MANAGER) {
                 Screen.ManagerScreen.route
-            } else{
+            } else {
                 Screen.TenantScreen.route
             }
         } else {
@@ -32,22 +34,48 @@ fun MainNavGraph(userViewModel: UserViewModel) {
     ) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(
-                onLoginSuccess = { id, name, email, role, verified, cookie ->
-                    userViewModel.saveUserSession(id, name, email, role, verified, cookie)
-                    navController.navigate(
-                        if(role == Role.MANAGER) {
-                            Screen.ManagerScreen.route
-                        } else {
-                            Screen.TenantScreen.route
-                        }
-                    )
+                login = { email, password ->
+                    userViewModel.login(email, password)
+                    if (userSession != null) {
+                        navController.navigate(
+                            if (userSession.role == Role.MANAGER) {
+                                Screen.ManagerScreen.route
+                            } else {
+                                Screen.TenantScreen.route
+                            }
+                        )
+                    }
                 },
-                login = { email, password -> userViewModel.login(email, password) },
-                userSession = userSession,
-                errorMessage = userViewModel.errorMessage.value
+                errorMessage = userViewModel.errorMessage.value,
+                navigateToRegister = {
+                    navController.navigate(Screen.RegisterScreen.route)
+                    userViewModel.clearErrorMessage()
+
+                }
             )
         }
-
+        composable(Screen.RegisterScreen.route) {
+            RegisterScreen(
+                register = { name, email, phoneNumber, password, role ->
+                    userViewModel.clearErrorMessage()
+                    userViewModel.register(name, email, phoneNumber, password, role)
+                    if(userSession != null){
+                        navController.navigate(
+                            if (userSession.role == Role.MANAGER) {
+                                Screen.ManagerScreen.route
+                            } else {
+                                Screen.TenantScreen.route
+                            }
+                        )
+                    }
+                },
+                errorMessage = userViewModel.errorMessage.value,
+                navigateToLogin = {
+                    navController.navigate(Screen.LoginScreen.route)
+                    userViewModel.clearErrorMessage()
+                },
+            )
+        }
         composable(Screen.TenantScreen.route) {
             TenantScreen(userSession) {
                 userViewModel.clearSession()
@@ -56,6 +84,8 @@ fun MainNavGraph(userViewModel: UserViewModel) {
                 }
             }
         }
+
+
 
 //        composable("home") {
 //            val userSession by userViewModel.userSession.collectAsState()

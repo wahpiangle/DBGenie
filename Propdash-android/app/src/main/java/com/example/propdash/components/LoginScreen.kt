@@ -1,10 +1,11 @@
 package com.example.propdash.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,10 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.propdash.R
-import com.example.propdash.data.model.Role
-import com.example.propdash.data.model.User
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.grayText
 import com.example.propdash.ui.theme.light
@@ -36,9 +36,9 @@ import com.example.propdash.ui.theme.primary
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String, String, String, Role, Boolean, String) -> Unit, userSession: User?,
     login: (String, String) -> Unit,
-    errorMessage: String
+    errorMessage: String,
+    navigateToRegister: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -98,6 +98,7 @@ fun LoginScreen(
             modifier = Modifier
                 .padding(top = 16.dp)
                 .fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = primary,
                 unfocusedBorderColor = primary,
@@ -125,6 +126,25 @@ fun LoginScreen(
                 .padding(top = 16.dp)
         ) {
             Text("Log In")
+        }
+        Row(
+            modifier = Modifier.padding(top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                "Don't have an account?",
+                style = MaterialTheme.typography.bodySmall,
+                color = light
+            )
+            Text(
+                "Sign Up",
+                modifier = Modifier.clickable {
+                    navigateToRegister()
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = primary,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

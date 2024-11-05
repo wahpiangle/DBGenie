@@ -5,6 +5,7 @@ import { prisma } from "../prisma"
 import { type User } from "@prisma/client"
 import { userQueryChecker } from "./tools/userQueryChecker"
 import { determineExecuteOrQuery } from "./tools/determineExecuteOrQuery"
+import { injectionPreventionChecker } from "./tools/injectionPrevention"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
@@ -68,6 +69,18 @@ const blockTables = async (state: typeof GraphState.State): Promise<Partial<type
     // get the first word of the sql query
     const firstWord = userQuery.split(' ')[0].toLowerCase()
     if (firstWord === 'yes') {
+        return { rejected: true }
+    }
+    return { rejected: false }
+}
+
+const injectionPrevention = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
+    console.log("Checking for SQL injection attacks")
+    const sqlQuery = state.generation
+    const isMalicious = await injectionPreventionChecker.invoke({
+        sql_statement: sqlQuery
+    })
+    if (isMalicious.split(' ')[0].toLowerCase() === 'yes') {
         return { rejected: true }
     }
     return { rejected: false }

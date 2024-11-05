@@ -20,8 +20,6 @@ const db = await SqlDatabase.fromDataSourceParams({
 
 console.log(db.allTables.map((t) => t.tableName));
 
-
-
 const sqlQueryChain = await createSqlQueryChain({
     llm,
     db,

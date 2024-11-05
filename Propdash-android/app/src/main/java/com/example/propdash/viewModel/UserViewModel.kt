@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.propdash.data.SessionManager
 import com.example.propdash.data.model.ErrorResponse
 import com.example.propdash.data.model.LoginRequest
+import com.example.propdash.data.model.RegisterRequest
 import com.example.propdash.data.model.Role
 import com.example.propdash.data.model.User
 import com.example.propdash.data.repository.UserRepository
@@ -30,7 +31,22 @@ class UserViewModel(private val sessionManager: SessionManager) : ViewModel() {
         viewModelScope.launch {
                 val user = userRepository.login(LoginRequest(email, password))
                 if(user.isSuccessful){
-//                    TODO
+                    val userResponse = user.body()
+                    //get the cookie from the response headers
+                    val cookie = user.headers().get("Set-Cookie")
+                    if (userResponse != null) {
+                        userResponse.cookie = cookie!!
+                    }
+                    userResponse?.let {
+                        saveUserSession(
+                            it.id,
+                            it.name,
+                            it.email,
+                            it.role,
+                            it.verified,
+                            it.cookie
+                        )
+                    }
                 }else{
                     val errorResponse =
                         Gson().fromJson(user.errorBody()?.string(), ErrorResponse::class.java)
@@ -39,8 +55,37 @@ class UserViewModel(private val sessionManager: SessionManager) : ViewModel() {
         }
     }
 
+    fun register(name: String, email: String, phoneNumber: String, password: String, role: Role){
+        viewModelScope.launch {
+            val userResponse = userRepository.register(RegisterRequest(
+                name,
+                email,
+                password,
+                phoneNumber,
+                role
+            ))
+            if(userResponse.isSuccessful){
+                val user = userResponse.body()
+                val cookie = userResponse.headers().get("Set-Cookie")
+                user?.let {
+                    saveUserSession(
+                        it.id,
+                        it.name,
+                        it.email,
+                        it.role,
+                        it.verified,
+                        cookie!!
+                    )
+                }
+            }else{
+                val errorResponse = Gson().fromJson(userResponse.errorBody()?.string(), ErrorResponse::class.java)
+                _errorMessage.value = errorResponse.error
+            }
+        }
+    }
+
     // Save user session when login is successful
-    fun saveUserSession(
+    private fun saveUserSession(
         id: String,
         name: String,
         email: String,
@@ -59,5 +104,9 @@ class UserViewModel(private val sessionManager: SessionManager) : ViewModel() {
         viewModelScope.launch {
             sessionManager.clearUserSession()
         }
+    }
+
+    fun clearErrorMessage(){
+        _errorMessage.value = ""
     }
 }

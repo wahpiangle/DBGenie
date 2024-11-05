@@ -8,7 +8,7 @@ data class User(
     val email: String,
     val role: Role,
     val verified: Boolean,
-    val cookie: String,
+    var cookie: String,
 ) {
 }
 
@@ -16,6 +16,7 @@ data class RegisterRequest(
     val name: String,
     val email: String,
     val password: String,
+    val phoneNumber: String,
     val role: Role
 )
 

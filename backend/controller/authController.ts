@@ -8,12 +8,7 @@ export class AuthController {
     public static async register(req: Request, res: Response) {
         const { name, email, password, role } = req.body;
         try {
-            RegisterSchema.parse({
-                name,
-                email,
-                password,
-                role
-            });
+            RegisterSchema.parse(req.body);
             const existingUser = await prisma.user.findUnique({
                 where: {
                     email
@@ -24,7 +19,6 @@ export class AuthController {
                 return;
             }
             const hashedPassword = await bcrypt.hash(password, 12);
-
             const user = await prisma.user.create({
                 data: {
                     name,
@@ -46,7 +40,7 @@ export class AuthController {
             return;
         } catch (error) {
             if (error instanceof ZodError) {
-                res.status(400).json({ error: error.errors });
+                res.status(400).json({ error: error.errors[0].message });
             }
             else {
                 res.status(500).json({ error: 'Internal server error' });

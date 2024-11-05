@@ -13,7 +13,7 @@ class UserRepository {
         return apiService.getUsers()
     }
 
-    suspend fun register(user: RegisterRequest): User {
+    suspend fun register(user: RegisterRequest): Response<User> {
         return apiService.register(user)
     }
 

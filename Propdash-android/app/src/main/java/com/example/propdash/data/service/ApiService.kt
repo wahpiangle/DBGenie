@@ -16,8 +16,8 @@ interface ApiService {
     @GET("/users")
     suspend fun getUsers(): List<User>
 
-    @POST("/register")
-    suspend fun register(@Body user: RegisterRequest): User
+    @POST("/auth/register")
+    suspend fun register(@Body user: RegisterRequest): Response<User>
 
     @POST("/auth/login")
     suspend fun login(@Body user: LoginRequest): Response<User>
@@ -25,7 +25,7 @@ interface ApiService {
 
 // Singleton object for Retrofit
 object ApiClient {
-    private const val BASE_URL = "http://192.168.1.108:8080/"
+    private const val BASE_URL = "http://10.163.14.100:8080/"
     val apiService: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
