@@ -14,6 +14,7 @@ sealed class Screen(val route: String) {
     object ManagerScreen : Screen("manager_screen")
     object LoginScreen : Screen("login_screen")
     object RegisterScreen : Screen("register_screen")
+    object VerificationScreen : Screen("verification_screen")
 }
 
 @Composable
@@ -22,11 +23,12 @@ fun MainNavGraph(userViewModel: UserViewModel) {
     val userSession = userViewModel.userSession.collectAsState().value
     NavHost(
         navController = navController,
-        startDestination = if (userSession != null) {
-            if (userSession.role == Role.MANAGER) {
-                Screen.ManagerScreen.route
-            } else {
-                Screen.TenantScreen.route
+        startDestination =
+        if (userSession != null) {
+            when {
+                !userSession.verified -> Screen.VerificationScreen.route
+                userSession.role == Role.MANAGER -> Screen.ManagerScreen.route
+                else -> Screen.TenantScreen.route
             }
         } else {
             Screen.LoginScreen.route
@@ -59,7 +61,10 @@ fun MainNavGraph(userViewModel: UserViewModel) {
                 register = { name, email, phoneNumber, password, role ->
                     userViewModel.clearErrorMessage()
                     userViewModel.register(name, email, phoneNumber, password, role)
-                    if(userSession != null){
+                    if (userSession != null) {
+                        if (!userSession.verified) {
+                            navController.navigate(Screen.VerificationScreen.route)
+                        }
                         navController.navigate(
                             if (userSession.role == Role.MANAGER) {
                                 Screen.ManagerScreen.route
@@ -84,7 +89,23 @@ fun MainNavGraph(userViewModel: UserViewModel) {
                 }
             }
         }
-
+        composable(Screen.VerificationScreen.route) {
+            VerificationScreen(
+                verify = { code ->
+                    userViewModel.verifyAccount(code)
+                    if (userSession != null && userSession.verified) {
+                        navController.navigate(
+                            if (userSession.role == Role.MANAGER) {
+                                Screen.ManagerScreen.route
+                            } else {
+                                Screen.TenantScreen.route
+                            }
+                        )
+                    }
+                },
+                errorMessage = userViewModel.errorMessage.value
+            )
+        }
 
 
 //        composable("home") {

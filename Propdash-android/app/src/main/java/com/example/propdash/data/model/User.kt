@@ -24,7 +24,3 @@ data class LoginRequest(
     val email: String,
     val password: String
 )
-
-data class ErrorResponse(
-    val error: String
-)

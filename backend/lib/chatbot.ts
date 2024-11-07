@@ -25,32 +25,6 @@ const sqlQueryChain = await createSqlQueryChain({
     db,
     dialect: "postgres",
 });
-const ids = await prisma.user.findUnique({
-    where: {
-        id: 'cm2hejqr000009o2m2snq4l86'
-    },
-    select: {
-        Booking: {
-            select: {
-                id: true
-            }
-        },
-        maintenanceRequest: {
-            select: {
-                id: true
-            }
-        },
-        maintenanceRequestUpdate: {
-            select: {
-                id: true
-            }
-        },
-        Property: {
-            select: {
-                id: true
-            }
-        },
-    }
-})
+
 console.log(await prisma.$executeRawUnsafe("SELECT * FROM User"));
 export { sqlQueryChain };

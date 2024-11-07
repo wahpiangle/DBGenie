@@ -1,25 +1,24 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { llm } from "../llm";
-import { StringOutputParser } from "@langchain/core/output_parsers";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { prisma } from "../../prisma";
 
 const OWN_DATA_CHECKER_TEMPLATE = `
-"You are given an SQL query and a list of IDs from different tables. Your task is to determine if the query affects only the specified IDs.
+"Given an SQL query, identify the table affected by the query and the IDs affected, if applicable. Respond only with a JSON output that includes the following fields:
 
-To do this, check if the query targets the relevant tables and includes conditions (e.g., WHERE clauses) that restrict its actions to the provided IDs. Ensure no other records are affected outside of the specified IDs.
+table: the name of the table impacted by the query.
+id_affected: a list of IDs affected (or an empty list if no IDs are specified).
 
-Return True if the query exclusively affects the given IDs; otherwise, return False.
+If the query does not affect any specific IDs, return an empty array for id_affected. If the query affects multiple tables, return a JSON array, where each entry has the table and id_affected fields.
 
-Input:
 SQL Query: {sql_statement}
-List of table names and corresponding IDs: {table_ids}
 `
 
 const ownDataCheckerPrompt = ChatPromptTemplate.fromTemplate(
     OWN_DATA_CHECKER_TEMPLATE
 );
 
-const ownDataChecker = ownDataCheckerPrompt.pipe(llm).pipe(new StringOutputParser());
+const ownDataChecker = ownDataCheckerPrompt.pipe(llm).pipe(new JsonOutputParser());
 
 
 const ids = await prisma.user.findUnique({
@@ -49,18 +48,9 @@ const ids = await prisma.user.findUnique({
         },
     }
 })
-// console.log(await ownDataChecker.invoke({
-//     sql_statement: "SELECT * FROM users WHERE username = 'admin' AND password = 'password' OR '1'='1';",
-//     table_ids: [
-//         {
-//             table: "users",
-//             ids: ["1", "2", "3"]
-//         },
-//         {
-//             table: "orders",
-//             ids: ["4", "5"]
-//         }
-//     ]
-// }))
+
+console.log(await ownDataChecker.invoke({
+    sql_statement: "INSERT INTO Booking (id, status) VALUES ('cm2hejqr000009o2m2snq4l86', 'pending'); UPDATE Property SET status = 'confirmed' WHERE id = 'cm2hejqr000009o2m2snq4l86';"
+}))
 
 export { ownDataChecker }

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
 import { RegisterSchema } from "../validation/authSchema";
+import { sendEmail } from "../helper/email";
 export class AuthController {
     public static async register(req: Request, res: Response) {
         const { name, email, password, role } = req.body;
@@ -28,12 +29,13 @@ export class AuthController {
                 }
             });
 
-            await prisma.verificationToken.create({
+            const token = await prisma.verificationToken.create({
                 data: {
                     userId: user.id,
                     token: Math.floor(100000 + Math.random() * 900000).toString()
                 }
             });
+            await sendEmail(user.email, 'Verify your account', `Your verification code is ${token.token}`);
 
             req.session.user = user;
             res.json(user);
@@ -49,7 +51,7 @@ export class AuthController {
         }
     }
 
-    public static async verifyNumber(req: Request, res: Response) {
+    public static async verifyAccount(req: Request, res: Response) {
         const { user } = req.session;
         const { code } = req.body;
         const userWithCode = await prisma.user.findUnique({
@@ -68,12 +70,14 @@ export class AuthController {
 
         if (!userWithCode?.verificationToken) {
             res.status(400).json({ error: 'No verification token found' });
-            await prisma.verificationToken.create({
+            const token = await prisma.verificationToken.create({
                 data: {
                     userId: user.id,
-                    token: Math.floor(100000 + Math.random() * 900000).toString()
+                    token: Math.floor(100000 + Math.random() * 900000).toString(),
+                    createdAt: new Date()
                 }
             });
+            await sendEmail(user.email, 'Verify your account', `Your verification code is ${token.token}`);
             return;
         }
 
@@ -85,7 +89,8 @@ export class AuthController {
                     id: userWithCode.verificationToken.id
                 },
                 data: {
-                    token: Math.floor(100000 + Math.random() * 900000).toString()
+                    token: Math.floor(100000 + Math.random() * 900000).toString(),
+                    createdAt: new Date()
                 }
             });
             return;
@@ -104,7 +109,7 @@ export class AuthController {
             }
         });
         req.session.user = { ...user, verified: true };
-        res.json({ message: 'Phone number verified' });
+        res.json({ message: 'Email verified' });
         return;
     }
 

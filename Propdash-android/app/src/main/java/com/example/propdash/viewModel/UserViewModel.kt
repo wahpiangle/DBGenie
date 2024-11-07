@@ -5,12 +5,14 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.propdash.components.VerificationScreen
 import com.example.propdash.data.SessionManager
 import com.example.propdash.data.model.ErrorResponse
 import com.example.propdash.data.model.LoginRequest
 import com.example.propdash.data.model.RegisterRequest
 import com.example.propdash.data.model.Role
 import com.example.propdash.data.model.User
+import com.example.propdash.data.model.VerificationRequest
 import com.example.propdash.data.repository.UserRepository
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.SharingStarted
@@ -80,6 +82,28 @@ class UserViewModel(private val sessionManager: SessionManager) : ViewModel() {
             }else{
                 val errorResponse = Gson().fromJson(userResponse.errorBody()?.string(), ErrorResponse::class.java)
                 _errorMessage.value = errorResponse.error
+            }
+        }
+    }
+
+    fun verifyAccount(token: String){
+        viewModelScope.launch {
+            val response = userRepository.verifyAccount(userSession.value!!.cookie, VerificationRequest(token))
+            if (!response.isSuccessful) {
+                val errorResponse = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                _errorMessage.value = errorResponse.error
+            }else{
+                val user = userSession.value
+                user?.let {
+                    saveUserSession(
+                        it.id,
+                        it.name,
+                        it.email,
+                        it.role,
+                        true,
+                        it.cookie
+                    )
+                }
             }
         }
     }
