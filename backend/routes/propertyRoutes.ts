@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(redirectLogin);
 
 router.route('/')
-    .get(PropertyController.getProperties)
+    .get(PropertyController.getPropertiesByUser)
     .post(checkManager, PropertyController.createProperty);
 
 router.route('/:id')

@@ -1,11 +1,9 @@
 package com.example.propdash.viewModel
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.propdash.components.VerificationScreen
 import com.example.propdash.data.SessionManager
 import com.example.propdash.data.model.ErrorResponse
 import com.example.propdash.data.model.LoginRequest
@@ -19,7 +17,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 class UserViewModel(private val sessionManager: SessionManager) : ViewModel() {
     private val userRepository = UserRepository()

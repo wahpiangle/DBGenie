@@ -1,6 +1,7 @@
 package com.example.propdash.data.service
 
 import com.example.propdash.data.model.LoginRequest
+import com.example.propdash.data.model.Property
 import com.example.propdash.data.model.RegisterRequest
 import com.example.propdash.data.model.User
 import com.example.propdash.data.model.VerificationRequest
@@ -11,8 +12,11 @@ import retrofit2.http.GET
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
     @GET("/users")
@@ -28,11 +32,41 @@ interface ApiService {
     suspend fun verifyAccount(
         @Header("Cookie") cookie: String,
         @Body token: VerificationRequest): Response<ResponseBody>
+
+    @GET("/properties")
+    suspend fun getPropertiesByUser(
+        @Header("Cookie") cookie: String,
+    ): Response<List<Property>>
+
+    @POST("/properties")
+    suspend fun createProperty(
+        @Header("Cookie") cookie: String,
+        @Body property: Property,
+    ): Response<Property>
+
+    @GET("/properties/{id}")
+    suspend fun getProperty(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+    ): Response<Property>
+
+    @DELETE("/properties/{id}")
+    suspend fun removeProperty(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+    ): Response<ResponseBody>
+
+    @PATCH("/properties/{id}")
+    suspend fun updateProperty(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+        @Body property: Property,
+    ): Response<Property>
 }
 
 // Singleton object for Retrofit
 object ApiClient {
-    private const val BASE_URL = "http://10.163.13.69:8080/"
+    private const val BASE_URL = "http://192.168.1.108:8080/"
     val apiService: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

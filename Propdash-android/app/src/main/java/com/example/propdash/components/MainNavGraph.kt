@@ -1,11 +1,13 @@
 package com.example.propdash.components
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.propdash.components.manager.ManagerNavGraph
+import com.example.propdash.components.manager.ManagerScreen
+import com.example.propdash.components.tenant.TenantScreen
 import com.example.propdash.data.model.Role
 import com.example.propdash.viewModel.UserViewModel
 
@@ -106,19 +108,9 @@ fun MainNavGraph(userViewModel: UserViewModel) {
                 errorMessage = userViewModel.errorMessage.value
             )
         }
+        composable(Screen.ManagerScreen.route) {
+            ManagerNavGraph(userSession)
+        }
 
-
-//        composable("home") {
-//            val userSession by userViewModel.userSession.collectAsState()
-//            userSession?.let {
-//                LoggedInScreen(it) {
-//                    // Log out and navigate back to login screen
-//                    userViewModel.clearSession()
-//                    navController.navigate("login") {
-//                        popUpTo("home") { inclusive = true }
-//                    }
-//                }
-//            }
-//        }
     }
 }

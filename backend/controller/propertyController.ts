@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { prisma } from "../prisma";
 import { CreatePropertySchema, updatePropertySchema } from "../validation/propertySchemas";
 import { ZodError } from "zod";
+import { Role } from "@prisma/client";
 
 export class PropertyController {
     public static async createProperty(req: Request, res: Response) {
@@ -58,8 +59,25 @@ export class PropertyController {
         }
     }
 
-    public static async getProperties(req: Request, res: Response) {
-        const properties = await prisma.property.findMany();
+    public static async getPropertiesByUser(req: Request, res: Response) {
+        const { user } = req.session;
+        const properties =
+            user.role === Role.MANAGER ?
+                await prisma.property.findMany({
+                    where: {
+                        userId: user.id
+                    }
+                })
+                :
+                await prisma.property.findMany({
+                    where: {
+                        bookings: {
+                            every: {
+                                userId: user.id
+                            }
+                        }
+                    }
+                })
         res.json(properties);
         return;
     }
