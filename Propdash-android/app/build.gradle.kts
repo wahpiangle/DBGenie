@@ -78,4 +78,5 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-storage")
+    implementation("io.coil-kt.coil3:coil-compose:3.0.2")
 }

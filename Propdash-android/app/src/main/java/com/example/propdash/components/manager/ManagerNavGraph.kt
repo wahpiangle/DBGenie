@@ -1,17 +1,16 @@
 package com.example.propdash.components.manager
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.propdash.data.model.User
-import com.example.propdash.viewModel.ManagerViewModel
+import com.example.propdash.viewModel.manager.ManagerViewModel
 
 sealed class ManagerScreen(val route: String) {
     object ManagerPropertyScreen : ManagerScreen("manager_property_screen")
     object ManagerMaintenanceScreen : ManagerScreen("manager_maintenance_screen")
+    object ManagerCreatePropertyScreen: ManagerScreen("manager_property_create_screen")
 }
 @Composable
 fun ManagerNavGraph(userSession: User?){
@@ -34,6 +33,15 @@ fun ManagerNavGraph(userSession: User?){
                 navigate = { route ->
                     navController.navigate(route)
                 }
+            )
+        }
+
+        composable(ManagerScreen.ManagerCreatePropertyScreen.route){
+            ManagerCreatePropertyScreen(
+                navigate = { route ->
+                    navController.navigate(route)
+                },
+                viewModel = managerViewModel
             )
         }
     }

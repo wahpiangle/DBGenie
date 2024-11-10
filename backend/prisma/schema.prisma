@@ -25,6 +25,7 @@ model Property {
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   userId             String //manager
+  imageUrl           String[]
   createdBy          User                 @relation(fields: [userId], references: [id])
   bookings           Booking[]
   MaintenanceRequest MaintenanceRequest[]

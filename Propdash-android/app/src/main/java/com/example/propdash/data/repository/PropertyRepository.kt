@@ -1,5 +1,6 @@
 package com.example.propdash.data.repository
 
+import com.example.propdash.data.model.CreateProperty
 import com.example.propdash.data.model.Property
 import com.example.propdash.data.service.ApiClient
 import okhttp3.ResponseBody
@@ -21,7 +22,7 @@ class PropertyRepository {
         )
     }
 
-    suspend fun createProperty(cookie :String, property: Property): Response<Property> {
+    suspend fun createProperty(cookie :String, property: CreateProperty): Response<Property> {
         return apiService.createProperty(
             cookie,
             property
