@@ -16,5 +16,5 @@ data class CreateProperty(
     val name: String,
     val description: String,
     val userId: String,
-    val imageUrl: List<File>
+    val imageUrl: List<String>
 )

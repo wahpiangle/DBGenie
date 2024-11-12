@@ -3,12 +3,15 @@ import { PropertyController } from '../controller/propertyController';
 import redirectLogin from '../middleware/redirectLogin';
 import checkManager from '../middleware/checkManager';
 const router = express.Router();
-
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 router.use(redirectLogin);
 
 router.route('/')
     .get(PropertyController.getPropertiesByUser)
-    .post(checkManager, PropertyController.createProperty);
+    .post(checkManager,
+        upload.array('files', 10),
+        PropertyController.createProperty);
 
 router.route('/:id')
     .get(PropertyController.getProperty)

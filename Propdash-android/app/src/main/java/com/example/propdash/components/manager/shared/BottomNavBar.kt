@@ -3,7 +3,6 @@ package com.example.propdash.components.manager.shared
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -13,6 +12,7 @@ import androidx.compose.runtime.Composable
 import com.example.propdash.components.manager.ManagerScreen
 import com.example.propdash.ui.theme.darkSecondary
 import com.example.propdash.ui.theme.primary
+
 @Composable
 fun BottomNavBar(currentRoute: String?, navigate: (String) -> Unit) {
     NavigationBar (

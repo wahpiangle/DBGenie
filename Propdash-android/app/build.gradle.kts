@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.propdash"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.propdash"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -79,4 +79,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-storage")
     implementation("io.coil-kt.coil3:coil-compose:3.0.2")
+    implementation("androidx.compose.material3:material3:1.4.0-alpha03")
+    implementation("androidx.compose.material:material-icons-extended:1.7.5")
 }

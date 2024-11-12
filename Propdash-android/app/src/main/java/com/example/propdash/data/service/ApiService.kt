@@ -6,6 +6,8 @@ import com.example.propdash.data.model.Property
 import com.example.propdash.data.model.RegisterRequest
 import com.example.propdash.data.model.User
 import com.example.propdash.data.model.VerificationRequest
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import retrofit2.Response
@@ -45,7 +47,10 @@ interface ApiService {
     @POST("/properties")
     suspend fun createProperty(
         @Header("Cookie") cookie: String,
-        @Part property: CreateProperty,
+        @Part("name") name: String,
+        @Part("description") description: String,
+        @Part("userId") userId: String,
+        @Part files: List<MultipartBody.Part>
     ): Response<Property>
 
     @GET("/properties/{id}")

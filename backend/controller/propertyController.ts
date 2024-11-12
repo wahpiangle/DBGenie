@@ -3,10 +3,15 @@ import { prisma } from "../prisma";
 import { CreatePropertySchema, updatePropertySchema } from "../validation/propertySchemas";
 import { ZodError } from "zod";
 import { Role } from "@prisma/client";
+import { firebaseApp } from "../lib/firebase";
+import { getStorage } from "firebase-admin/storage";
 
 export class PropertyController {
+
     public static async createProperty(req: Request, res: Response) {
         const { user } = req.session;
+        const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
+        const files = req.files as Express.Multer.File[];
         try {
             CreatePropertySchema.parse({
                 name: req.body.name,
@@ -23,9 +28,33 @@ export class PropertyController {
                     }
                 },
             });
+            const fileUrls = await Promise.all(
+                files.map(async (file: Express.Multer.File) => {
+                    const uploadResponse = await storage.upload(file.path, {
+                        destination: `properties/${property.id}/${file.originalname}`,
+                    });
+
+                    const fileUrl = await uploadResponse[0].getSignedUrl({
+                        expires: '03-09-2491',
+                        action: 'read',
+                    });
+
+                    return fileUrl[0];
+                })
+            );
+            await prisma.property.update({
+                where: {
+                    id: property.id
+                },
+                data: {
+                    imageUrl: fileUrls
+                }
+            });
+
             res.json(property);
             return;
         } catch (error) {
+            console.log(error);
             if (error instanceof ZodError) {
                 res.status(400).json({ error: error.errors });
             } else {
