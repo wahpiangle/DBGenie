@@ -50,5 +50,9 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
                 viewModel = managerViewModel
             )
         }
+
+        composable(ManagerScreen.ManagerPropertyDetailScreen.route) {
+            ManagerPropertyDetailScreen()
+        }
     }
 }

@@ -12,7 +12,12 @@ import com.example.propdash.data.repository.PropertyRepository
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -26,7 +31,6 @@ class ManagerViewModel(
     private val userSession: User,
     private val navigate: (String) -> Unit
 ) : ViewModel() {
-    var storageRef = Firebase.storage.reference.child("properties")
     private val _properties = MutableStateFlow<List<Property>>(emptyList())
     private val _fetchPropertyError = MutableStateFlow<String?>(null)
     private val _createPropertyError = MutableStateFlow<String?>(null)
@@ -114,4 +118,28 @@ class ManagerViewModel(
 
         return tempFile
     }
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val screenState: StateFlow<PropertyScreenState> = _properties
+        .combine(_isRefreshing) { items, isRefreshing ->
+            PropertyScreenState(items, isRefreshing)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = PropertyScreenState()
+        )
+
+    fun onPullToRefreshTrigger() {
+        _isRefreshing.update { true }
+        viewModelScope.launch {
+            fetchPropertyData()
+            _isRefreshing.update { false }
+        }
+    }
+
+    data class PropertyScreenState(
+        val items: List<Property> = listOf(),
+        val isRefreshing: Boolean = false
+    )
 }
