@@ -23,6 +23,9 @@ sealed class Screen(val route: String) {
 fun MainNavGraph(userViewModel: UserViewModel) {
     val navController = rememberNavController()
     val userSession = userViewModel.userSession.collectAsState().value
+    fun clearSession() {
+        userViewModel.clearSession()
+    }
     NavHost(
         navController = navController,
         startDestination =
@@ -109,7 +112,7 @@ fun MainNavGraph(userViewModel: UserViewModel) {
             )
         }
         composable(Screen.ManagerScreen.route) {
-            ManagerNavGraph(userSession)
+            ManagerNavGraph(userSession, clearSession = { clearSession() },)
         }
 
     }

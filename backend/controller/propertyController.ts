@@ -7,20 +7,22 @@ import { firebaseApp } from "../lib/firebase";
 import { getStorage } from "firebase-admin/storage";
 
 export class PropertyController {
-
     public static async createProperty(req: Request, res: Response) {
         const { user } = req.session;
         const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
         const files = req.files as Express.Multer.File[];
         try {
+            // remove the quotation marks from the body
             CreatePropertySchema.parse({
                 name: req.body.name,
                 description: req.body.description,
+                rentalPerMonth: req.body.rentalPerMonth
             });
             const property = await prisma.property.create({
                 data: {
                     name: req.body.name,
                     description: req.body.description,
+                    rentalPerMonth: req.body.rentalPerMonth,
                     createdBy: {
                         connect: {
                             id: user.id
@@ -105,6 +107,9 @@ export class PropertyController {
                                 userId: user.id
                             }
                         }
+                    },
+                    include: {
+                        bookings: true
                     }
                 })
         res.json(properties);
@@ -132,6 +137,10 @@ export class PropertyController {
             where: {
                 id
             }
+        });
+        const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
+        await storage.deleteFiles({
+            prefix: `properties/${id}`
         });
         res.json(property);
         return;

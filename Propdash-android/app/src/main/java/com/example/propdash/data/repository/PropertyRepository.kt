@@ -1,9 +1,11 @@
 package com.example.propdash.data.repository
 
+import android.util.Log
 import com.example.propdash.data.model.CreateProperty
 import com.example.propdash.data.model.Property
 import com.example.propdash.data.service.ApiClient
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Header
@@ -29,14 +31,20 @@ class PropertyRepository {
         cookie: String,
         name: String,
         description: String,
+        rentalPerMonth: String,
         userId: String,
         imageUrl: List<MultipartBody.Part>
     ): Response<Property> {
+        val nameBody = RequestBody.create(MultipartBody.FORM, name)
+        val descriptionBody = RequestBody.create(MultipartBody.FORM, description)
+        val rentalPerMonthBody = RequestBody.create(MultipartBody.FORM, rentalPerMonth)
+        val userIdBody = RequestBody.create(MultipartBody.FORM, userId)
         return apiService.createProperty(
             cookie,
-            name,
-            description,
-            userId,
+            nameBody,
+            descriptionBody,
+            rentalPerMonthBody,
+            userIdBody,
             imageUrl
         )
     }

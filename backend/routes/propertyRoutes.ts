@@ -2,8 +2,8 @@ import express from 'express';
 import { PropertyController } from '../controller/propertyController';
 import redirectLogin from '../middleware/redirectLogin';
 import checkManager from '../middleware/checkManager';
+import multer from 'multer';
 const router = express.Router();
-const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
 router.use(redirectLogin);
 

@@ -47,9 +47,10 @@ interface ApiService {
     @POST("/properties")
     suspend fun createProperty(
         @Header("Cookie") cookie: String,
-        @Part("name") name: String,
-        @Part("description") description: String,
-        @Part("userId") userId: String,
+        @Part("name") name: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("rentalPerMonth") rentalPerMonth: RequestBody,
+        @Part("userId") userId: RequestBody,
         @Part files: List<MultipartBody.Part>
     ): Response<Property>
 
