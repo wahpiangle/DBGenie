@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -26,13 +25,14 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.propdash.components.manager.ManagerScreen
 import com.example.propdash.data.model.BookingStatus
+import com.example.propdash.ui.theme.errorBadge
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
 import com.example.propdash.ui.theme.successBadge
-import com.example.propdash.ui.theme.errorBadge
 
 @Composable
 fun PropertyCard(
+    propertyId: String,
     imageUrl: String,
     propertyName: String,
     price: String,
@@ -46,7 +46,7 @@ fun PropertyCard(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         onClick = {
-            navigate(ManagerScreen.ManagerPropertyDetailScreen.route)
+            navigate(ManagerScreen.ManagerPropertyDetailScreen.createRoute(propertyId))
         }
     ) {
         Column(
@@ -85,6 +85,7 @@ fun PropertyCard(
                     Text(
                         text = status.name,
                         style = TextStyle(fontSize = 16.sp),
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .background(
                                 color = when(status) {

@@ -30,11 +30,11 @@ import com.example.propdash.components.manager.createProperty.InputField
 import com.example.propdash.components.manager.shared.BottomNavBar
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.light
-import com.example.propdash.viewModel.manager.ManagerViewModel
+import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerViewModel) {
+fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCreatePropertyViewModel) {
     var selectedImageUri by remember { mutableStateOf<List<Uri>>(emptyList()) }
     val error by viewModel.createPropertyError.collectAsState()
     val context = LocalContext.current

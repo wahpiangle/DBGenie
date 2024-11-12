@@ -1,26 +1,38 @@
 package com.example.propdash.components.manager
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.propdash.data.model.User
-import com.example.propdash.viewModel.manager.ManagerViewModel
+import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
+import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
+import com.example.propdash.viewModel.manager.ManagerPropertyViewModel
 
 sealed class ManagerScreen(val route: String) {
     object ManagerPropertyScreen : ManagerScreen("manager_property_screen")
     object ManagerMaintenanceScreen : ManagerScreen("manager_maintenance_screen")
     object ManagerCreatePropertyScreen : ManagerScreen("manager_property_create_screen")
-    object ManagerPropertyDetailScreen : ManagerScreen("manager_property_detail_screen")
+    object ManagerPropertyDetailScreen :
+        ManagerScreen("manager_property_detail_screen/{propertyId}") {
+        fun createRoute(propertyId: String) = "manager_property_detail_screen/$propertyId"
+    }
+    object ManagerPropertyEditScreen :
+        ManagerScreen("manager_property_edit_screen/{propertyId}") {
+        fun createRoute(propertyId: String) = "manager_property_edit_screen/$propertyId"
+    }
 }
 
 @Composable
 fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
     val navController = rememberNavController()
-    val managerViewModel = ManagerViewModel(userSession!!,
+    val managerCreatePropertyViewModel = ManagerCreatePropertyViewModel(userSession!!,
         navigate = { route ->
             navController.navigate(route)
         })
+    val managerPropertyViewModel = ManagerPropertyViewModel(userSession)
     NavHost(
         navController = navController,
         startDestination = ManagerScreen.ManagerPropertyScreen.route
@@ -31,7 +43,7 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
                     navController.navigate(route)
                 },
                 clearSession,
-                viewModel = managerViewModel
+                viewModel = managerPropertyViewModel
             )
         }
         composable(ManagerScreen.ManagerMaintenanceScreen.route) {
@@ -47,12 +59,27 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
                 navigate = { route ->
                     navController.navigate(route)
                 },
-                viewModel = managerViewModel
+                viewModel = managerCreatePropertyViewModel
             )
         }
-
-        composable(ManagerScreen.ManagerPropertyDetailScreen.route) {
-            ManagerPropertyDetailScreen()
+        composable(
+            route = ManagerScreen.ManagerPropertyDetailScreen.route,
+            arguments = listOf(navArgument("propertyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: return@composable
+            ManagerPropertyDetailScreen(
+                navigate = {
+                    route ->
+                    navController.navigate(route)
+                    },
+                viewModel = ManagerPropertyDetailViewModel(
+                    userSession,
+                    propertyId,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    }
+                )
+            )
         }
     }
 }

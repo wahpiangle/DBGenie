@@ -97,7 +97,7 @@ export class PropertyController {
                 await prisma.property.findMany({
                     where: {
                         userId: user.id
-                    }
+                    },
                 })
                 :
                 await prisma.property.findMany({

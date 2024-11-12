@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+    kotlin("plugin.serialization") version "2.0.20"
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -82,4 +84,5 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.2")
     implementation("androidx.compose.material3:material3:1.4.0-alpha03")
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }

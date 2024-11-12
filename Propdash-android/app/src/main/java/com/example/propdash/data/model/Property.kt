@@ -1,7 +1,5 @@
 package com.example.propdash.data.model
 
-import java.io.File
-
 data class Property(
     val id: String,
     val name: String,
@@ -11,7 +9,8 @@ data class Property(
     val createdAt: String,
     val updatedAt: String,
     val userId: String,
-    val booking: List<Booking>
+    val booking: List<Booking>,
+    val maintenanceRequest: List<MaintenanceRequest>
 )
 
 data class CreateProperty(

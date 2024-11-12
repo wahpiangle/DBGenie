@@ -9,15 +9,8 @@ import com.example.propdash.components.manager.ManagerScreen
 import com.example.propdash.data.model.Property
 import com.example.propdash.data.model.User
 import com.example.propdash.data.repository.PropertyRepository
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -27,31 +20,13 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 
-class ManagerViewModel(
+class ManagerCreatePropertyViewModel(
     private val userSession: User,
     private val navigate: (String) -> Unit
 ) : ViewModel() {
-    private val _properties = MutableStateFlow<List<Property>>(emptyList())
-    private val _fetchPropertyError = MutableStateFlow<String?>(null)
     private val _createPropertyError = MutableStateFlow<String?>(null)
     private val propertyRepository = PropertyRepository()
-    val properties = _properties.asStateFlow()
-    val fetchPropertyError = _fetchPropertyError.asStateFlow()
     val createPropertyError = _createPropertyError.asStateFlow()
-
-    fun fetchPropertyData() {
-        viewModelScope.launch {
-            try {
-                val result = propertyRepository.getPropertiesByUser(userSession.cookie)
-                _properties.value = result.body()!!
-                Log.d("ManagerViewModel", "fetchPropertyData: ${_properties.value}")
-
-            } catch (e: Exception) {
-                _fetchPropertyError.value = e.message
-                Log.e("ManagerViewModel", e.message!!)
-            }
-        }
-    }
 
     fun createProperty(
         name: String,
@@ -118,28 +93,4 @@ class ManagerViewModel(
 
         return tempFile
     }
-
-    private val _isRefreshing = MutableStateFlow(false)
-    val screenState: StateFlow<PropertyScreenState> = _properties
-        .combine(_isRefreshing) { items, isRefreshing ->
-            PropertyScreenState(items, isRefreshing)
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = PropertyScreenState()
-        )
-
-    fun onPullToRefreshTrigger() {
-        _isRefreshing.update { true }
-        viewModelScope.launch {
-            fetchPropertyData()
-            _isRefreshing.update { false }
-        }
-    }
-
-    data class PropertyScreenState(
-        val items: List<Property> = listOf(),
-        val isRefreshing: Boolean = false
-    )
 }

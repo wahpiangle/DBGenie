@@ -6,6 +6,7 @@ import com.example.propdash.data.model.Property
 import com.example.propdash.data.service.ApiClient
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Header
@@ -35,10 +36,10 @@ class PropertyRepository {
         userId: String,
         imageUrl: List<MultipartBody.Part>
     ): Response<Property> {
-        val nameBody = RequestBody.create(MultipartBody.FORM, name)
-        val descriptionBody = RequestBody.create(MultipartBody.FORM, description)
-        val rentalPerMonthBody = RequestBody.create(MultipartBody.FORM, rentalPerMonth)
-        val userIdBody = RequestBody.create(MultipartBody.FORM, userId)
+        val nameBody = name.toRequestBody(MultipartBody.FORM)
+        val descriptionBody = description.toRequestBody(MultipartBody.FORM)
+        val rentalPerMonthBody = rentalPerMonth.toRequestBody(MultipartBody.FORM)
+        val userIdBody = userId.toRequestBody(MultipartBody.FORM)
         return apiService.createProperty(
             cookie,
             nameBody,
