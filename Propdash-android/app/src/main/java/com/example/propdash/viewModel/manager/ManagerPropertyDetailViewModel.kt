@@ -27,8 +27,13 @@ class ManagerPropertyDetailViewModel(
     private val _error = MutableStateFlow<String?>(null)
     private val _isRefreshing = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
+    val isRefreshing = _isRefreshing.asStateFlow()
     val property = _property.asStateFlow()
     val error = _error.asStateFlow()
+
+    init{
+        fetchPropertyData()
+    }
 
     fun fetchPropertyData() {
         viewModelScope.launch {

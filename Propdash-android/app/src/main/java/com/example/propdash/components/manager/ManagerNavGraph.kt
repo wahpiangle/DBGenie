@@ -12,17 +12,22 @@ import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyViewModel
 
 sealed class ManagerScreen(val route: String) {
-    object ManagerPropertyScreen : ManagerScreen("manager_property_screen")
-    object ManagerMaintenanceScreen : ManagerScreen("manager_maintenance_screen")
-    object ManagerCreatePropertyScreen : ManagerScreen("manager_property_create_screen")
-    object ManagerPropertyDetailScreen :
+    data object ManagerPropertyScreen : ManagerScreen("manager_property_screen")
+    data object ManagerMaintenanceScreen : ManagerScreen("manager_maintenance_screen")
+    data object ManagerCreatePropertyScreen : ManagerScreen("manager_property_create_screen")
+    data object ManagerPropertyDetailScreen :
         ManagerScreen("manager_property_detail_screen/{propertyId}") {
         fun createRoute(propertyId: String) = "manager_property_detail_screen/$propertyId"
     }
-    object ManagerPropertyEditScreen :
+    data object ManagerPropertyEditScreen :
         ManagerScreen("manager_property_edit_screen/{propertyId}") {
         fun createRoute(propertyId: String) = "manager_property_edit_screen/$propertyId"
     }
+    data object CreateBookingScreen:
+        ManagerScreen("create_booking_screen/{propertyId}") {
+        fun createRoute(propertyId: String) = "create_booking_screen/$propertyId"
+    }
+
 }
 
 @Composable
