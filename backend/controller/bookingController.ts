@@ -5,17 +5,29 @@ import { ZodError } from "zod";
 
 export class BookingController {
     public static async createBooking(req: Request, res: Response) {
-        const { propertyId, checkIn, checkOut, rentalPrice, remarks, rentCollectionDay } = req.body;
+        const { propertyId, checkIn, checkOut, userEmail, rentalPrice, remarks, rentCollectionDay } = req.body;
         const user = req.session.user;
         try {
             CreateBookingSchema.parse({
                 propertyId,
                 checkIn,
                 checkOut,
+                userEmail,
                 rentalPrice,
                 rentCollectionDay,
                 remarks
             });
+
+            const user = await prisma.user.findFirst({
+                where: {
+                    email: userEmail
+                }
+            });
+            if (!user) {
+                res.status(400).json({ error: 'Tenant not found' });
+                return;
+            }
+
             const property = await prisma.property.findUnique({
                 where: {
                     id: propertyId
@@ -37,6 +49,11 @@ export class BookingController {
                     }
                 }
             });
+
+            if (bookings.length > 0) {
+                res.status(400).json({ error: 'Property is already booked for the selected dates' });
+                return;
+            }
 
             const booking = await prisma.booking.create({
                 data: {

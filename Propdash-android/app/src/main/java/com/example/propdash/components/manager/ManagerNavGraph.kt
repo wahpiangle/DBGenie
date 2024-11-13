@@ -6,7 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.propdash.components.manager.propertyDetails.CreateBookingScreen
 import com.example.propdash.data.model.User
+import com.example.propdash.viewModel.manager.ManagerCreateBookingViewModel
 import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyViewModel
@@ -80,6 +82,45 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
                 viewModel = ManagerPropertyDetailViewModel(
                     userSession,
                     propertyId,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    }
+                )
+            )
+        }
+
+        composable(
+            route = ManagerScreen.ManagerPropertyEditScreen.route,
+            arguments = listOf(navArgument("propertyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: return@composable
+//            ManagerPropertyEditScreen(
+//                navigate = {
+//                    route ->
+//                    navController.navigate(route)
+//                    },
+//                viewModel = ManagerPropertyDetailViewModel(
+//                    userSession,
+//                    propertyId,
+//                    navigate = { route ->
+//                        navController.navigate(route)
+//                    }
+//                )
+//            )
+        }
+
+        composable(
+            route = ManagerScreen.CreateBookingScreen.route,
+            arguments = listOf(navArgument("propertyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: return@composable
+            CreateBookingScreen(
+                propertyId = propertyId,
+                navigate = { route ->
+                    navController.navigate(route)
+                },
+                viewModel = ManagerCreateBookingViewModel(
+                    userSession,
                     navigate = { route ->
                         navController.navigate(route)
                     }

@@ -6,13 +6,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -41,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.example.propdash.components.manager.propertyDetails.DetailsScreen
 import com.example.propdash.components.manager.propertyDetails.ManagerBookingsScreen
 import com.example.propdash.components.manager.propertyDetails.RentalScreen
+import com.example.propdash.components.manager.shared.BottomNavBar
 import com.example.propdash.components.shared.PullToRefreshBox
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.errorBadge
@@ -147,11 +151,19 @@ fun ManagerPropertyDetailScreen(
                     },
                 )
             },
+            bottomBar = {
+                BottomNavBar(
+                    ManagerScreen.ManagerPropertyScreen.route,
+                    navigate
+                )
+            },
             floatingActionButton = {
                 Button(
                     onClick = {
-                        navigate(ManagerScreen.ManagerCreatePropertyScreen.route)
+                        navigate(ManagerScreen.CreateBookingScreen.createRoute(property.value!!.id))
                     },
+                    modifier = Modifier.size(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = primary),
                 ) {
                     Text(text = "+")
                 }

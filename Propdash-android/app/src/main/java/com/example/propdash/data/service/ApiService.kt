@@ -1,5 +1,7 @@
 package com.example.propdash.data.service
 
+import com.example.propdash.data.model.Booking
+import com.example.propdash.data.model.CreateBooking
 import com.example.propdash.data.model.CreateProperty
 import com.example.propdash.data.model.LoginRequest
 import com.example.propdash.data.model.Property
@@ -72,6 +74,12 @@ interface ApiService {
         @Path("id") id: String,
         @Body property: Property,
     ): Response<Property>
+
+    @POST("/bookings")
+    suspend fun createBooking(
+        @Header("Cookie") cookie: String,
+        @Body booking: CreateBooking,
+    ): Response<Booking>
 }
 
 // Singleton object for Retrofit

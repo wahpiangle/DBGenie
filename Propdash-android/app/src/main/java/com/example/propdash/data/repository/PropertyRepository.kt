@@ -1,16 +1,11 @@
 package com.example.propdash.data.repository
 
-import android.util.Log
-import com.example.propdash.data.model.CreateProperty
 import com.example.propdash.data.model.Property
 import com.example.propdash.data.service.ApiClient
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Header
-import retrofit2.http.Part
 
 class PropertyRepository {
     private val apiService = ApiClient.apiService

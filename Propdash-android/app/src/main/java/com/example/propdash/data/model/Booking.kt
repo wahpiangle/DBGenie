@@ -15,6 +15,16 @@ data class Booking(
     val user: User,
 )
 
+data class CreateBooking(
+    val tenantEmail: String,
+    val remarks: String,
+    val checkIn: String,
+    val checkOut: String,
+    val rentalPrice: String,
+    val rentCollectionDay: Int,
+    val propertyId: String
+)
+
 enum class BookingStatus {
     VACANT,
     OCCUPIED
