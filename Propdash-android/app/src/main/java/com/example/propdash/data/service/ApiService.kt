@@ -3,6 +3,7 @@ package com.example.propdash.data.service
 import com.example.propdash.data.model.Booking
 import com.example.propdash.data.model.CreateBooking
 import com.example.propdash.data.model.CreateProperty
+import com.example.propdash.data.model.GeneralResponse
 import com.example.propdash.data.model.LoginRequest
 import com.example.propdash.data.model.Property
 import com.example.propdash.data.model.RegisterRequest
@@ -80,11 +81,17 @@ interface ApiService {
         @Header("Cookie") cookie: String,
         @Body booking: CreateBooking,
     ): Response<Booking>
+
+    @DELETE("/bookings/{id}")
+    suspend fun deleteBooking(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+    ): Response<GeneralResponse>
 }
 
 // Singleton object for Retrofit
 object ApiClient {
-    private const val BASE_URL = "http://192.168.0.131:8080/"
+    private const val BASE_URL = "http:///"
     val apiService: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

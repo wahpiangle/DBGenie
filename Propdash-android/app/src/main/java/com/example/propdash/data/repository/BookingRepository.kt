@@ -2,6 +2,7 @@ package com.example.propdash.data.repository
 
 import com.example.propdash.data.model.Booking
 import com.example.propdash.data.model.CreateBooking
+import com.example.propdash.data.model.GeneralResponse
 import com.example.propdash.data.service.ApiClient
 import retrofit2.Response
 
@@ -12,8 +13,8 @@ class BookingRepository {
         cookie: String,
         tenantEmail: String,
         remarks: String,
-        checkIn: String,
-        checkOut: String,
+        checkIn: Long,
+        checkOut: Long,
         rentalPrice: String,
         rentCollectionDay: Int,
         propertyId: String
@@ -30,6 +31,17 @@ class BookingRepository {
                 rentCollectionDay,
                 propertyId
             )
+        )
+    }
+
+    suspend fun deleteBooking(
+        cookie: String,
+        bookingId: String
+    ): Response<GeneralResponse>
+    {
+        return apiService.deleteBooking(
+            cookie,
+            bookingId
         )
     }
 }

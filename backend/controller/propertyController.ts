@@ -124,8 +124,12 @@ export class PropertyController {
             },
             include: {
                 MaintenanceRequest: true,
-                bookings: true,
-            }
+                bookings: {
+                    include: {
+                        user: true
+                    }
+                },
+            },
         });
         res.json(property);
         return;

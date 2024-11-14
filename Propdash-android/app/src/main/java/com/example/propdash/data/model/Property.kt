@@ -9,7 +9,7 @@ data class Property(
     val createdAt: String,
     val updatedAt: String,
     val userId: String,
-    val booking: List<Booking>,
+    val bookings: List<Booking>,
     val maintenanceRequest: List<MaintenanceRequest>
 )
 

@@ -97,7 +97,7 @@ fun PropertyCard(
                     )
                 }
                 Text(
-                    text = price,
+                    text = "\$ $price",
                     style = TextStyle(fontSize = 20.sp,
                         color = light,
                         fontWeight = FontWeight.Bold

@@ -18,8 +18,8 @@ data class Booking(
 data class CreateBooking(
     val tenantEmail: String,
     val remarks: String,
-    val checkIn: String,
-    val checkOut: String,
+    val checkIn: Long,
+    val checkOut: Long,
     val rentalPrice: String,
     val rentCollectionDay: Int,
     val propertyId: String

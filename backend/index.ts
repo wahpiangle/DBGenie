@@ -31,7 +31,7 @@ app.use(
 
 app.use('/auth', authRoute)
 app.use('/properties', propertyRoute)
-app.use('/booking', bookingRoute)
+app.use('/bookings', bookingRoute)
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}...`);

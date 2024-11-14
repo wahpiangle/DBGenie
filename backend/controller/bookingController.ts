@@ -5,22 +5,29 @@ import { ZodError } from "zod";
 
 export class BookingController {
     public static async createBooking(req: Request, res: Response) {
-        const { propertyId, checkIn, checkOut, userEmail, rentalPrice, remarks, rentCollectionDay } = req.body;
+        let { propertyId, checkIn, checkOut, tenantEmail, rentalPrice, remarks, rentCollectionDay } = req.body;
         const user = req.session.user;
         try {
             CreateBookingSchema.parse({
                 propertyId,
                 checkIn,
                 checkOut,
-                userEmail,
+                tenantEmail,
                 rentalPrice,
                 rentCollectionDay,
                 remarks
             });
 
+            if (checkIn >= checkOut) {
+                res.status(400).json({ error: 'Check-out date must be greater than check-in date' });
+            }
+
+            checkIn = new Date(checkIn);
+            checkOut = new Date(checkOut);
+
             const user = await prisma.user.findFirst({
                 where: {
-                    email: userEmail
+                    email: tenantEmail
                 }
             });
             if (!user) {
@@ -37,7 +44,7 @@ export class BookingController {
                 res.status(400).json({ error: 'Property not found' });
                 return;
             }
-            // check if the property is available
+            // convert checkOut and checkIn from milliseconds to Date
             const bookings = await prisma.booking.findMany({
                 where: {
                     propertyId: propertyId,
@@ -69,6 +76,7 @@ export class BookingController {
             res.json(booking);
             return;
         } catch (error) {
+            console.log(error);
             if (error instanceof ZodError) {
                 res.status(400).json({ error: error.errors });
             }

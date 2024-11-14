@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ManagerPropertyDetailViewModel(
-    private val userSession: User,
+    val userSession: User,
     private val propertyId: String,
     private val navigate: (String) -> Unit
 ): ViewModel() {
@@ -35,12 +35,13 @@ class ManagerPropertyDetailViewModel(
         fetchPropertyData()
     }
 
-    fun fetchPropertyData() {
+    private fun fetchPropertyData() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val result = propertyRepository.getProperty(userSession.cookie, propertyId)
                 _property.value = result.body()!!
+                Log.d("ManagerViewModel", result.body().toString())
 
             } catch (e: Exception) {
                 _error.value = e.message

@@ -2,6 +2,7 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DatePicker
@@ -21,7 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import com.example.propdash.ui.theme.grayText
+import androidx.compose.ui.unit.dp
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
 import java.text.SimpleDateFormat
@@ -30,15 +31,18 @@ import java.util.Locale
 
 @Composable
 fun DatePickerFieldToModal(
-    selectedDate: Long,
-    onDateSelected: (Long) -> Unit
+    selectedDate: Long?,
+    onDateSelected: (Long) -> Unit,
+    label: String,
+    isError: Boolean,
+    errorMessage: String
 ) {
     var showModal by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = convertMillisToDate(selectedDate),
+        value = convertMillisToDate(selectedDate) ?: "",
         onValueChange = { },
-        label = { Text("Check-In Date") },
+        label = { Text(label) },
         placeholder = { Text("DD/MM/YYYY") },
         trailingIcon = {
             Icon(Icons.Default.DateRange, contentDescription = "Select date",
@@ -52,10 +56,12 @@ fun DatePickerFieldToModal(
             unfocusedLabelColor = light,
             focusedLabelColor = primary,
             focusedTextColor = light,
-            unfocusedTextColor = light
+            unfocusedTextColor = light,
+            errorTextColor = light,
         ),
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = 8.dp)
             .pointerInput(selectedDate) {
                 awaitEachGesture {
                     awaitFirstDown(pass = PointerEventPass.Initial)
@@ -64,7 +70,11 @@ fun DatePickerFieldToModal(
                         showModal = true
                     }
                 }
-            }
+            },
+        isError = isError,
+        supportingText = { if (isError) Text(
+            text = errorMessage,
+        ) }
     )
 
     if (showModal) {
@@ -107,7 +117,8 @@ fun DatePickerModal(
     }
 }
 
-fun convertMillisToDate(millis: Long): String {
+fun convertMillisToDate(millis: Long?): String? {
+    if(millis == null) return null
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return formatter.format(Date(millis))
 }

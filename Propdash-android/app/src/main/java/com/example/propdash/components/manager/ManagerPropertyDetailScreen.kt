@@ -1,6 +1,7 @@
 package com.example.propdash.components.manager
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,7 @@ import com.example.propdash.ui.theme.errorBadge
 import com.example.propdash.ui.theme.grayText
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
+import com.example.propdash.viewModel.manager.ManagerCreateBookingViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,7 +67,7 @@ fun ManagerPropertyDetailScreen(
     var expanded by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var tabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Home", "About", "Settings")
+    val tabs = listOf("Bookings", "Property Details")
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     if (property.value == null) {
         Box(
@@ -207,11 +209,19 @@ fun ManagerPropertyDetailScreen(
                 ){
                     LazyColumn (
                         modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = property.value?.bookings?.let {
+                            if (it.isEmpty()) Arrangement.Center else Arrangement.Top
+                        } ?: Arrangement.Center
                     ){
                         item {
                             when (tabIndex) {
                                 0 -> ManagerBookingsScreen(
-                                    property.value!!.booking ?: emptyList(),
+                                    property.value?.bookings ?: emptyList(),
+                                    viewModel= ManagerCreateBookingViewModel(
+                                        userSession = viewModel.userSession,
+                                        navigate = navigate
+                                    ),
                                 )
                                 1 -> DetailsScreen()
                                 2 -> RentalScreen()
