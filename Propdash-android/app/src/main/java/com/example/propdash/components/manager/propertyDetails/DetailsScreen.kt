@@ -1,9 +1,71 @@
 package com.example.propdash.components.manager.propertyDetails
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import com.example.propdash.ui.theme.grayText
+import com.example.propdash.ui.theme.light
+import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsScreen() {
-    Text("Details Screen")
+fun DetailsScreen(
+    viewModel: ManagerPropertyDetailViewModel,
+) {
+    val property = viewModel.property.collectAsState()
+    val carouselState = rememberCarouselState { property.value?.imageUrl?.size ?: 0 }
+    Column (
+        modifier = Modifier
+            .padding(16.dp)
+    ){
+        HorizontalMultiBrowseCarousel(
+            state = carouselState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(bottom = 16.dp),
+            preferredItemWidth = 500.dp,
+            itemSpacing = 8.dp
+        ) { index ->
+            val image = property.value?.imageUrl?.get(index)
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        ImageRequest.Builder(LocalContext.current).data(image).build()
+                    ),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize().clip(
+                        shape = RoundedCornerShape(8.dp)
+                    ),
+                )
+            }
+        }
+        Text(
+            "Description",
+            color = light,
+        )
+        Text(
+            property.value?.description ?: "",
+            color = grayText,
+        )
+    }
 }

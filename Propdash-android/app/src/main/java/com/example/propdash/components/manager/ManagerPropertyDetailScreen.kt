@@ -160,14 +160,16 @@ fun ManagerPropertyDetailScreen(
                 )
             },
             floatingActionButton = {
-                Button(
-                    onClick = {
-                        navigate(ManagerScreen.CreateBookingScreen.createRoute(property.value!!.id))
-                    },
-                    modifier = Modifier.size(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primary),
-                ) {
-                    Text(text = "+")
+                if (tabIndex == 0) {
+                    Button(
+                        onClick = {
+                            navigate(ManagerScreen.CreateBookingScreen.createRoute(property.value!!.id))
+                        },
+                        modifier = Modifier.size(56.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = primary),
+                    ) {
+                        Text(text = "+")
+                    }
                 }
             },
         ) { padding ->
@@ -178,7 +180,8 @@ fun ManagerPropertyDetailScreen(
             ) {
                 Row {
                     tabs.forEachIndexed { index, title ->
-                        Column(modifier = Modifier.weight(1f),
+                        Column(
+                            modifier = Modifier.weight(1f),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Tab(
@@ -206,24 +209,27 @@ fun ManagerPropertyDetailScreen(
                     isRefreshing = isRefreshing,
                     onRefresh = viewModel::onPullToRefreshTrigger,
                     modifier = Modifier.fillMaxSize()
-                ){
-                    LazyColumn (
+                ) {
+                    LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = property.value?.bookings?.let {
                             if (it.isEmpty()) Arrangement.Center else Arrangement.Top
                         } ?: Arrangement.Center
-                    ){
+                    ) {
                         item {
                             when (tabIndex) {
                                 0 -> ManagerBookingsScreen(
                                     property.value?.bookings ?: emptyList(),
-                                    viewModel= ManagerCreateBookingViewModel(
+                                    viewModel = ManagerCreateBookingViewModel(
                                         userSession = viewModel.userSession,
                                         navigate = navigate
                                     ),
                                 )
-                                1 -> DetailsScreen()
+                                1 -> DetailsScreen(
+                                    viewModel = viewModel,
+                                )
+
                                 2 -> RentalScreen()
                             }
                         }

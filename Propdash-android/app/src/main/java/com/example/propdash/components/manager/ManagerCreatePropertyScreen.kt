@@ -9,10 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,8 +51,7 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
     var nameError by remember { mutableStateOf(false) }
     var descriptionError by remember { mutableStateOf(false) }
     var rentalPerMonthError by remember { mutableStateOf(false) }
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
             selectedImageUri = it
         }
     val carouselState = rememberCarouselState { selectedImageUri.size }
@@ -73,11 +78,23 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
             )
         },
         topBar = {
-            Text(
-                text = "Create Property", color = light, textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Create Property",
+                        color = light,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navigate(
+                            ManagerScreen.ManagerPropertyScreen.route
+                        )
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = light)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = dark)
             )
         },
         containerColor = dark
@@ -87,7 +104,7 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
                 .padding(padding)
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(32.dp)
+                .padding(12.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             InputField(

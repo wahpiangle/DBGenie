@@ -158,14 +158,12 @@ fun CreateBookingScreen(
                 label = "Tenant Email",
                 isError = tenantEmailError != null,
             )
-
             InputField(
                 value = remarks.value,
                 onValueChange = { remarks.value = it },
                 label = "Remarks",
                 isError = false,
             )
-
             DatePickerFieldToModal(
                 selectedDate = checkIn.value,
                 onDateSelected = {
@@ -176,7 +174,6 @@ fun CreateBookingScreen(
                 isError = checkInError != null,
                 errorMessage = checkInError ?: ""
             )
-
             DatePickerFieldToModal(
                 selectedDate = checkOut.value,
                 onDateSelected = {
@@ -187,7 +184,6 @@ fun CreateBookingScreen(
                 isError = checkOutError != null,
                 errorMessage = checkOutError ?: ""
             )
-
             InputField(
                 value = rentalPrice.value,
                 onValueChange = {
