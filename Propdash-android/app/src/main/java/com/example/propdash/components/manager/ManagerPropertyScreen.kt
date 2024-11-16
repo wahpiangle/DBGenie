@@ -1,5 +1,6 @@
 package com.example.propdash.components.manager
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,15 +23,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.propdash.components.manager.createProperty.PropertyCard
 import com.example.propdash.components.manager.shared.BottomNavBar
 import com.example.propdash.components.shared.PullToRefreshBox
+import com.example.propdash.data.model.Booking
 import com.example.propdash.data.model.BookingStatus
 import com.example.propdash.data.model.Property
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.light
 import com.example.propdash.viewModel.manager.ManagerPropertyViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +46,22 @@ fun ManagerPropertyScreen(
     val error = viewModel.fetchPropertyError.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val properties by viewModel.properties.collectAsState()
-
+    fun getBookingStatus(bookings: List<Booking>?): BookingStatus {
+        if (bookings.isNullOrEmpty()) {
+            return BookingStatus.VACANT
+        }
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        for (booking in bookings) {
+            val checkIn = simpleDateFormat.parse(booking.checkIn)?.time
+            val checkOut = simpleDateFormat.parse(booking.checkOut)?.time
+            Log.d("ManagerPropertyScreen", "checkIn: $checkIn, checkOut: $checkOut")
+            val currentTime = System.currentTimeMillis()
+            if (currentTime in checkIn!!..checkOut!!) {
+                return BookingStatus.OCCUPIED
+            }
+        }
+        return BookingStatus.VACANT
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -125,7 +143,7 @@ fun ManagerPropertyScreen(
                             propertyId = item.id,
                             propertyName = item.name,
                             price = item.rentalPerMonth,
-                            status = BookingStatus.VACANT,
+                            status = getBookingStatus(item.bookings),
                             imageUrl = item.imageUrl[0],
                             navigate = navigate
                         )

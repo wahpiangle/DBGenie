@@ -115,6 +115,7 @@ export class PropertyController {
             res.json(property);
             return;
         } catch (error) {
+            console.log(error);
             if (error instanceof ZodError) {
                 res.status(400).json({ error: error.errors });
             } else {
@@ -132,6 +133,9 @@ export class PropertyController {
                     where: {
                         userId: user.id
                     },
+                    include: {
+                        bookings: true
+                    }
                 })
                 :
                 await prisma.property.findMany({

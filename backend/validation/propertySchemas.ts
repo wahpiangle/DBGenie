@@ -14,7 +14,7 @@ const updatePropertySchema = z.object({
     rentalPerMonth: z.string().refine((val) => {
         return !isNaN(parseFloat(val));
     }),
-    updateImage: z.boolean(),
+    updateImage: z.string(),
 });
 
 export { CreatePropertySchema, updatePropertySchema };
