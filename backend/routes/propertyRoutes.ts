@@ -16,5 +16,7 @@ router.route('/')
 router.route('/:id')
     .get(PropertyController.getProperty)
     .delete(checkManager, PropertyController.removeProperty)
-    .patch(checkManager, PropertyController.updateProperty);
+    .patch(checkManager,
+        upload.array('files', 10),
+        PropertyController.updateProperty);
 export default router;

@@ -1,5 +1,6 @@
 package com.example.propdash.components.manager.propertyDetails
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,20 +40,21 @@ fun DetailsScreen(
         HorizontalMultiBrowseCarousel(
             state = carouselState,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
                 .padding(bottom = 16.dp),
-            preferredItemWidth = 500.dp,
+            preferredItemWidth = 300.dp,
             itemSpacing = 8.dp
         ) { index ->
             val image = property.value?.imageUrl?.get(index)
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
                     painter = rememberAsyncImagePainter(
-                        ImageRequest.Builder(LocalContext.current).data(image).build()
+                        ImageRequest.Builder(LocalContext.current).data(image).build(),
+                        onError = { error ->
+                            Log.e("DetailsScreen", "Error loading image: $error")
+                        }
                     ),
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillWidth,
                     modifier = Modifier.fillMaxSize().clip(
                         shape = RoundedCornerShape(8.dp)
                     ),

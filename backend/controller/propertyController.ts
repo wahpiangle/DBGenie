@@ -68,15 +68,49 @@ export class PropertyController {
 
     public static async updateProperty(req: Request, res: Response) {
         try {
-            updatePropertySchema.parse(req.body);
-            const { id } = req.params;
-            const property = await prisma.property.update({
-                where: {
-                    id
-                },
-                data: {
-                    ...req.body
+            const { updateImage, name, description, rentalPerMonth } = req.body;
+            updatePropertySchema.parse(
+                {
+                    updateImage,
+                    name,
+                    description,
+                    rentalPerMonth
                 }
+            );
+            const { id } = req.params;
+            let data: {
+                name?: string,
+                description?: string,
+                rentalPerMonth?: number,
+                imageUrl?: string[]
+            } = { name, description, rentalPerMonth };
+            const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
+            const files = req.files as Express.Multer.File[];
+            if (updateImage) {
+                await storage.deleteFiles({
+                    prefix: `properties/${id}`
+                });
+
+                const fileUrls = await Promise.all(
+                    files.map(async (file: Express.Multer.File) => {
+                        const [uploadResponse] = await storage.upload(file.path, {
+                            destination: `properties/${id}/${file.originalname}`,
+                        });
+
+                        const [fileUrl] = await uploadResponse.getSignedUrl({
+                            expires: '03-09-2491',
+                            action: 'read',
+                        });
+
+                        return fileUrl;
+                    })
+                );
+
+                data.imageUrl = fileUrls;
+            }
+            const property = await prisma.property.update({
+                where: { id },
+                data,
             });
             res.json(property);
             return;

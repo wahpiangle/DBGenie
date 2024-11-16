@@ -1,5 +1,6 @@
 package com.example.propdash.data.repository
 
+import com.example.propdash.data.model.CreateProperty
 import com.example.propdash.data.model.Property
 import com.example.propdash.data.service.ApiClient
 import okhttp3.MultipartBody
@@ -45,8 +46,17 @@ class PropertyRepository {
         )
     }
 
-    suspend fun updateProperty(id: String, cookie: String, property: Property): Response<Property> {
-        return apiService.updateProperty(cookie, id, property)
+    suspend fun updateProperty(id: String, cookie: String, property: CreateProperty): Response<Property> {
+        return apiService.updateProperty(
+            cookie=cookie,
+            id=id,
+            name=property.name.toRequestBody(MultipartBody.FORM),
+            description=property.description.toRequestBody(MultipartBody.FORM),
+            rentalPerMonth=property.rentalPerMonth.toRequestBody(MultipartBody.FORM),
+            userId=property.userId.toRequestBody(MultipartBody.FORM),
+            updateImage = property.updateImage.toString().toRequestBody(MultipartBody.FORM),
+            files=property.imageUrl
+        )
     }
 
     suspend fun removeProperty(cookie: String, id: String): Response<ResponseBody> {

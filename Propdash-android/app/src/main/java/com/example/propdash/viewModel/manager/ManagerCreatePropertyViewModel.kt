@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.propdash.components.manager.ManagerScreen
+import com.example.propdash.components.manager.createProperty.ImageItem
 import com.example.propdash.data.model.Property
 import com.example.propdash.data.model.User
 import com.example.propdash.data.repository.PropertyRepository
@@ -32,7 +33,7 @@ class ManagerCreatePropertyViewModel(
         name: String,
         description: String,
         rentalPerMonth: String,
-        imageUrl: List<Uri>,
+        imageUrl: List<ImageItem>,
         context: Context
     ) {
         viewModelScope.launch {
@@ -56,7 +57,13 @@ class ManagerCreatePropertyViewModel(
         }
     }
 
-    private fun prepareFileParts(filePaths: List<Uri>, context: Context): List<MultipartBody.Part> {
+    private fun prepareFileParts(imageItemList: List<ImageItem>, context: Context): List<MultipartBody.Part> {
+        val filePaths = imageItemList.mapNotNull {
+            when (it) {
+                is ImageItem.FromUri -> it.uri
+                else -> null
+            }
+        }
         val parts = mutableListOf<MultipartBody.Part>()
         for (filePath in filePaths) {
             val file = convertUriToFile(context, filePath)

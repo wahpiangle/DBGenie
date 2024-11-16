@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,24 +35,14 @@ import coil3.request.ImageRequest
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
 
-sealed class ImageItem {
-    data class FromUri(val uri: Uri) : ImageItem()
-    data class FromString(val string: String) : ImageItem()
-
-    fun asUriOrString(): Any = when (this) {
-        is FromUri -> uri
-        is FromString -> string
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImagePickerSection(
+fun EditPropertyImagePickerSection(
     selectedImages: List<ImageItem>,
     launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>,
-    carouselState: CarouselState,
     onImageRemove: (Int) -> Unit
 ) {
+    val carouselState = rememberCarouselState{ selectedImages.size }
     if (selectedImages.isEmpty()) {
         IconButton(
             onClick = { launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },

@@ -12,7 +12,6 @@ import com.example.propdash.data.model.VerificationRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import retrofit2.Converter
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.Retrofit
@@ -57,6 +56,19 @@ interface ApiService {
         @Part files: List<MultipartBody.Part>
     ): Response<Property>
 
+    @Multipart
+    @PATCH("/properties/{id}")
+    suspend fun updateProperty(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+        @Part("name") name: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("rentalPerMonth") rentalPerMonth: RequestBody,
+        @Part("userId") userId: RequestBody,
+        @Part("updateImage") updateImage: RequestBody,
+        @Part files: List<MultipartBody.Part>
+    ): Response<Property>
+
     @GET("/properties/{id}")
     suspend fun getProperty(
         @Header("Cookie") cookie: String,
@@ -68,13 +80,6 @@ interface ApiService {
         @Header("Cookie") cookie: String,
         @Path("id") id: String,
     ): Response<ResponseBody>
-
-    @PATCH("/properties/{id}")
-    suspend fun updateProperty(
-        @Header("Cookie") cookie: String,
-        @Path("id") id: String,
-        @Body property: Property,
-    ): Response<Property>
 
     @POST("/bookings")
     suspend fun createBooking(
@@ -91,7 +96,7 @@ interface ApiService {
 
 // Singleton object for Retrofit
 object ApiClient {
-    private const val BASE_URL = "http:///"
+    private const val BASE_URL = "http://:8080/"
     val apiService: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

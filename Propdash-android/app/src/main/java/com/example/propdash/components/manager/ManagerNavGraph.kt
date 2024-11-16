@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.propdash.components.manager.propertyDetails.CreateBookingScreen
+import com.example.propdash.components.manager.propertyDetails.ManagerPropertyEditScreen
 import com.example.propdash.data.model.User
 import com.example.propdash.viewModel.manager.ManagerCreateBookingViewModel
 import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
@@ -94,19 +95,19 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
             arguments = listOf(navArgument("propertyId") { type = NavType.StringType })
         ) { backStackEntry ->
             val propertyId = backStackEntry.arguments?.getString("propertyId") ?: return@composable
-//            ManagerPropertyEditScreen(
-//                navigate = {
-//                    route ->
-//                    navController.navigate(route)
-//                    },
-//                viewModel = ManagerPropertyDetailViewModel(
-//                    userSession,
-//                    propertyId,
-//                    navigate = { route ->
-//                        navController.navigate(route)
-//                    }
-//                )
-//            )
+            ManagerPropertyEditScreen(
+                navigate = {
+                    route ->
+                    navController.navigate(route)
+                    },
+                viewModel = ManagerPropertyDetailViewModel(
+                    userSession,
+                    propertyId,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    }
+                )
+            )
         }
 
         composable(

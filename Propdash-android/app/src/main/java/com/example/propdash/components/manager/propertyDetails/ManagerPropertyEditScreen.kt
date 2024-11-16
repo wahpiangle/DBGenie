@@ -1,6 +1,7 @@
-package com.example.propdash.components.manager
+package com.example.propdash.components.manager.propertyDetails
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,44 +32,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.propdash.components.manager.ManagerScreen
+import com.example.propdash.components.manager.createProperty.EditPropertyImagePickerSection
 import com.example.propdash.components.manager.createProperty.ImageItem
 import com.example.propdash.components.manager.createProperty.ImagePickerSection
 import com.example.propdash.components.manager.createProperty.InputField
 import com.example.propdash.components.manager.shared.BottomNavBar
+import com.example.propdash.data.model.CreateProperty
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.light
-import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
+import com.example.propdash.ui.theme.primary
+import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCreatePropertyViewModel) {
-    var selectedImageUri by remember { mutableStateOf<List<ImageItem>>(emptyList()) }
-    val error by viewModel.createPropertyError.collectAsState()
+fun ManagerPropertyEditScreen(
+    navigate: (String) -> Unit,
+    viewModel: ManagerPropertyDetailViewModel,
+) {
+    val property = viewModel.property.collectAsState()
+    var propertyImages by remember(property.value) {
+        mutableStateOf<List<ImageItem>>(
+            property.value?.imageUrl?.map { ImageItem.FromString(it) } ?: emptyList()
+        )
+    }
     val context = LocalContext.current
-
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var rentalPerMonth by remember { mutableStateOf("") }
+    val name = remember(property.value) { mutableStateOf(property.value?.name ?: "") }
+    val description = remember(property.value) { mutableStateOf(property.value?.description ?: "") }
+    val rentalPerMonth =
+        remember(property.value) { mutableStateOf(property.value?.rentalPerMonth ?: "") }
     var nameError by remember { mutableStateOf(false) }
     var descriptionError by remember { mutableStateOf(false) }
     var rentalPerMonthError by remember { mutableStateOf(false) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
-            selectedImageUri = it.map { uri -> ImageItem.FromUri(uri) }
-        }
-    val carouselState = rememberCarouselState { selectedImageUri.size }
-
-    fun validate(): Boolean =
-        if (name.isEmpty() || description.isEmpty() || rentalPerMonth.isEmpty() || selectedImageUri.isEmpty()) {
-            nameError = name.isEmpty()
-            descriptionError = description.isEmpty()
-            rentalPerMonthError =
-                rentalPerMonth.isEmpty() || rentalPerMonth.toDoubleOrNull() == null
-            false
-        } else {
-            nameError = false
-            descriptionError = false
-            rentalPerMonthError = false
-            true
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { it ->
+            propertyImages = it.map { ImageItem.FromUri(it) }
         }
 
     Scaffold(
@@ -81,7 +80,7 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
             TopAppBar(
                 title = {
                     Text(
-                        text = "Create Property",
+                        text = "Edit Property",
                         color = light,
                     )
                 },
@@ -91,7 +90,11 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
                             ManagerScreen.ManagerPropertyScreen.route
                         )
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = light)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = light
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = dark)
@@ -99,6 +102,12 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
         },
         containerColor = dark
     ) { padding ->
+        if(property.value == null) {
+            CircularProgressIndicator(
+                color = primary,
+            )
+            return@Scaffold
+        }
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -109,47 +118,50 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
         ) {
             InputField(
                 "Name",
-                name,
+                name.value,
                 {
-                    name = it;
-                    nameError = name.isEmpty()
+                    name.value = it;
+                    nameError = name.value.isEmpty()
                 },
                 nameError
             )
             InputField(
                 "Description",
-                description, {
-                    description = it;
-                    descriptionError = description.isEmpty()
+                description.value, {
+                    description.value = it;
+                    descriptionError = description.value.isEmpty()
                 },
                 descriptionError
             )
             InputField(
                 "Rental per Month",
-                rentalPerMonth,
+                rentalPerMonth.value,
                 {
-                    rentalPerMonth = it;
-                    rentalPerMonthError = rentalPerMonth.isEmpty() || rentalPerMonth.toDoubleOrNull() == null
+                    rentalPerMonth.value = it;
+                    rentalPerMonthError =
+                        rentalPerMonth.value.isEmpty() || rentalPerMonth.value.toDoubleOrNull() == null
                 },
                 rentalPerMonthError,
                 true
             )
             Text("Images", color = light, modifier = Modifier.padding(vertical = 16.dp))
-            ImagePickerSection(selectedImageUri, launcher, carouselState, onImageRemove = { index ->
-                selectedImageUri = selectedImageUri.toMutableList().apply { removeAt(index) }
-            })
-            Text(error ?: "", color = Color.Red)
+            EditPropertyImagePickerSection (
+                selectedImages = propertyImages,
+                launcher = launcher,
+                onImageRemove = { index ->
+                    propertyImages = propertyImages.filterIndexed { i, _ -> i == index }
+                }
+            )
             Button(
                 onClick = {
-                    if (validate()) {
-                        viewModel.createProperty(
-                            name,
-                            description,
-                            rentalPerMonth,
-                            selectedImageUri,
-                            context
-                        )
-                    }
+                    viewModel.updateProperty(
+                        name = name.value,
+                        description = description.value,
+                        rentalPerMonth = rentalPerMonth.value,
+                        imageItemList = propertyImages,
+                        updateImage = propertyImages != property.value?.imageUrl?.map { ImageItem.FromString(it) },
+                        context = context
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -160,4 +172,5 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
         }
 
     }
+
 }

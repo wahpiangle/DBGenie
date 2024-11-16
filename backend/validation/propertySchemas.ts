@@ -9,8 +9,12 @@ const CreatePropertySchema = z.object({
 });
 
 const updatePropertySchema = z.object({
-    name: z.string().min(3).max(255).optional(),
-    description: z.string().min(3).max(255).optional(),
+    name: z.string().min(3).max(255),
+    description: z.string().min(3).max(255),
+    rentalPerMonth: z.string().refine((val) => {
+        return !isNaN(parseFloat(val));
+    }),
+    updateImage: z.boolean(),
 });
 
 export { CreatePropertySchema, updatePropertySchema };

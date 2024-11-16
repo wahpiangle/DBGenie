@@ -1,5 +1,7 @@
 package com.example.propdash.data.model
 
+import okhttp3.MultipartBody
+
 data class Property(
     val id: String,
     val name: String,
@@ -16,6 +18,8 @@ data class Property(
 data class CreateProperty(
     val name: String,
     val description: String,
+    val rentalPerMonth: String,
     val userId: String,
-    val imageUrl: List<String>
+    val imageUrl: List<MultipartBody.Part>,
+    val updateImage: Boolean
 )
