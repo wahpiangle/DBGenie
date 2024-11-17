@@ -1,6 +1,5 @@
 package com.example.propdash.components.manager
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +33,6 @@ import com.example.propdash.ui.theme.light
 import com.example.propdash.viewModel.manager.ManagerPropertyViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +52,6 @@ fun ManagerPropertyScreen(
         for (booking in bookings) {
             val checkIn = simpleDateFormat.parse(booking.checkIn)?.time
             val checkOut = simpleDateFormat.parse(booking.checkOut)?.time
-            Log.d("ManagerPropertyScreen", "checkIn: $checkIn, checkOut: $checkOut")
             val currentTime = System.currentTimeMillis()
             if (currentTime in checkIn!!..checkOut!!) {
                 return BookingStatus.OCCUPIED

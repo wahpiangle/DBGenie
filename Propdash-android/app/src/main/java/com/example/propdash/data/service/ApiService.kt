@@ -3,6 +3,7 @@ package com.example.propdash.data.service
 import com.example.propdash.data.model.Booking
 import com.example.propdash.data.model.CreateBooking
 import com.example.propdash.data.model.CreateProperty
+import com.example.propdash.data.model.EditBooking
 import com.example.propdash.data.model.GeneralResponse
 import com.example.propdash.data.model.LoginRequest
 import com.example.propdash.data.model.Property
@@ -87,10 +88,23 @@ interface ApiService {
         @Body booking: CreateBooking,
     ): Response<Booking>
 
+    @GET("/bookings/{id}")
+    suspend fun getBooking(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+    ): Response<Booking>
+
     @DELETE("/bookings/{id}")
     suspend fun deleteBooking(
         @Header("Cookie") cookie: String,
         @Path("id") id: String,
+    ): Response<GeneralResponse>
+
+    @PATCH("/bookings/{id}")
+    suspend fun editBooking(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+        @Body booking: EditBooking,
     ): Response<GeneralResponse>
 }
 

@@ -87,6 +87,43 @@ export class BookingController {
         }
     }
 
+    public static async getBooking(req: Request, res: Response) {
+        const bookingId = req.params.id;
+        const user = req.session.user;
+        try {
+            const booking = await prisma.booking.findUnique({
+                where: {
+                    id: bookingId
+                },
+                include: {
+                    property: {
+                        include: {
+                            createdBy: {
+                                select: {
+                                    id: true,
+                                }
+                            }
+                        }
+                    },
+                }
+            });
+            if (!booking) {
+                res.status(400).json({ error: 'Booking not found' });
+                return;
+            }
+            if (booking.userId !== user.id && booking.property.createdBy.id !== user.id) {
+                res.status(403).json({ error: 'You are not authorized to view this booking' });
+                return;
+            }
+            res.json(booking);
+            return;
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+        }
+    }
+
     public static async checkBookingsByProperty(req: Request, res: Response) {
         const propertyId = req.params.propertyId;
         const { checkIn, checkOut } = req.body;

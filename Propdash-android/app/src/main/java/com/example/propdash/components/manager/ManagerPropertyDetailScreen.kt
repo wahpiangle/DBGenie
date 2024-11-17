@@ -51,7 +51,7 @@ import com.example.propdash.ui.theme.errorBadge
 import com.example.propdash.ui.theme.grayText
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
-import com.example.propdash.viewModel.manager.ManagerCreateBookingViewModel
+import com.example.propdash.viewModel.manager.ManagerBookingViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -162,7 +162,9 @@ fun ManagerPropertyDetailScreen(
                 if (tabIndex == 0) {
                     Button(
                         onClick = {
-                            navigate(ManagerScreen.CreateBookingScreen.createRoute(property.value!!.id))
+                            navigate(
+                                ManagerScreen.CreateBookingScreen.createRoute(property.value!!.id)
+                            )
                         },
                         modifier = Modifier.size(56.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = primary),
@@ -219,11 +221,13 @@ fun ManagerPropertyDetailScreen(
                         item {
                             when (tabIndex) {
                                 0 -> ManagerBookingsScreen(
-                                    property.value?.bookings ?: emptyList(),
-                                    viewModel = ManagerCreateBookingViewModel(
+                                    booking = property.value?.bookings ?: emptyList(),
+                                    viewModel = ManagerBookingViewModel(
                                         userSession = viewModel.userSession,
-                                        navigate = navigate
+                                        navigate = navigate,
+                                        bookingId = null
                                     ),
+                                    propertyId = property.value!!.id
                                 )
                                 1 -> DetailsScreen(
                                     viewModel = viewModel,

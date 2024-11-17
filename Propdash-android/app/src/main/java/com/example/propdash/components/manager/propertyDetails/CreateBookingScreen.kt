@@ -3,11 +3,8 @@ package com.example.propdash.components.manager.propertyDetails
 import DatePickerFieldToModal
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -35,14 +32,14 @@ import com.example.propdash.components.manager.createProperty.InputField
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
-import com.example.propdash.viewModel.manager.ManagerCreateBookingViewModel
+import com.example.propdash.viewModel.manager.ManagerBookingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateBookingScreen(
     propertyId: String,
     navigate: (String) -> Unit,
-    viewModel: ManagerCreateBookingViewModel
+    viewModel: ManagerBookingViewModel
 ) {
     val createBookingError = viewModel.createBookingError.collectAsState()
     var tenantEmail by remember { mutableStateOf("") }

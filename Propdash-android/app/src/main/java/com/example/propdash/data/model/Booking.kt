@@ -25,6 +25,14 @@ data class CreateBooking(
     val propertyId: String
 )
 
+data class EditBooking(
+    val remarks: String,
+    val checkIn: Long,
+    val checkOut: Long,
+    val rentalPrice: String,
+    val rentCollectionDay: Int,
+)
+
 enum class BookingStatus {
     VACANT,
     OCCUPIED

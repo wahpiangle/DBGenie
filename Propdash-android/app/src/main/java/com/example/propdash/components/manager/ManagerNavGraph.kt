@@ -10,7 +10,7 @@ import com.example.propdash.components.manager.propertyDetails.CreateBookingScre
 import com.example.propdash.components.manager.propertyDetails.EditBookingScreen
 import com.example.propdash.components.manager.propertyDetails.ManagerPropertyEditScreen
 import com.example.propdash.data.model.User
-import com.example.propdash.viewModel.manager.ManagerCreateBookingViewModel
+import com.example.propdash.viewModel.manager.ManagerBookingViewModel
 import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyViewModel
@@ -32,8 +32,8 @@ sealed class ManagerScreen(val route: String) {
         fun createRoute(propertyId: String) = "create_booking_screen/$propertyId"
     }
     data object ManagerEditBookingScreen:
-        ManagerScreen("manager_edit_booking_screen/{bookingId}") {
-        fun createRoute(bookingId: String) = "manager_edit_booking_screen/$bookingId"
+        ManagerScreen("manager_edit_booking_screen/{bookingId}?propertyId={propertyId}") {
+        fun createRoute(bookingId: String, propertyId: String) = "manager_edit_booking_screen/$bookingId?propertyId=$propertyId"
     }
 
 }
@@ -125,22 +125,36 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
                 navigate = { route ->
                     navController.navigate(route)
                 },
-                viewModel = ManagerCreateBookingViewModel(
+                viewModel = ManagerBookingViewModel(
                     userSession,
                     navigate = { route ->
                         navController.navigate(route)
-                    }
+                    },
                 )
             )
         }
 
         composable(
             route = ManagerScreen.ManagerEditBookingScreen.route,
-            arguments = listOf(navArgument("bookingId") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("bookingId") { type = NavType.StringType },
+                navArgument("propertyId") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val bookingId = backStackEntry.arguments?.getString("bookingId") ?: return@composable
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: return@composable
             EditBookingScreen(
-
+                navigate = { route ->
+                    navController.navigate(route)
+                },
+                propertyId = propertyId,
+                viewModel = ManagerBookingViewModel(
+                    userSession,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    },
+                    bookingId = bookingId
+                )
             )
         }
     }
