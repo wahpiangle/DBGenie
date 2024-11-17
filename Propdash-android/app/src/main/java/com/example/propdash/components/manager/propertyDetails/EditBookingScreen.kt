@@ -120,7 +120,7 @@ fun EditBookingScreen(
                 isError = false,
             )
             DatePickerFieldToModal(
-                selectedDate = checkIn.value,
+                selectedDate = checkIn.longValue,
                 onDateSelected = {
                     updateCheckInDate(it)
                     checkInError = null
@@ -130,7 +130,7 @@ fun EditBookingScreen(
                 errorMessage = checkInError ?: ""
             )
             DatePickerFieldToModal(
-                selectedDate = checkOut.value,
+                selectedDate = checkOut.longValue,
                 onDateSelected = {
                     updateCheckOutDate(it)
                     checkOutError = null
