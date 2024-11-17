@@ -10,7 +10,7 @@ router.route('/')
 router.route('/:id')
     .get(BookingController.getBooking)
     .delete(BookingController.deleteBooking)
-    .put(BookingController.editBooking);
+    .patch(BookingController.editBooking);
 
 router.route('/:propertyId')
     .post(BookingController.checkBookingsByProperty);

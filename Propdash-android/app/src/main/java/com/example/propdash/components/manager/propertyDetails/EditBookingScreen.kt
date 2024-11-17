@@ -69,16 +69,34 @@ fun EditBookingScreen(
     val rentCollectionDay = remember(booking) { mutableStateOf(booking?.rentCollectionDay) }
     var rentCollectionDayError by remember { mutableStateOf<String?>(null) }
 
-
-
     fun updateCheckInDate(date: Long) {
-        checkIn.value = date
+        checkIn.longValue = date
     }
 
     fun updateCheckOutDate(date: Long) {
-        checkOut.value = date
+        checkOut.longValue = date
     }
-    Log.d("EditBookingScreen", "booking: $booking")
+
+    fun validate(): Boolean {
+        var isValid = true
+        if (checkIn.longValue >= checkOut.longValue) {
+            checkInError = "Check-in date cannot be after check-out date"
+            isValid = false
+        } else {
+            checkInError = null
+        }
+
+        if (rentalPrice.value.isEmpty()) {
+            rentalPriceError = "Rental Price is required"
+            isValid = false
+        }
+        if (rentCollectionDay.value == null) {
+            rentCollectionDayError = "Rent Collection Day is required"
+            isValid = false
+        }
+        return isValid
+    }
+
     Scaffold(
         containerColor = dark,
         contentColor = dark,
@@ -167,9 +185,17 @@ fun EditBookingScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = primary),
                 onClick = {
-//                    if (validate()) {
-
-//                    }
+                    if (validate()) {
+                        viewModel.editBooking(
+                            bookingId = booking.id,
+                            remarks = remarks.value,
+                            checkIn = checkIn.longValue,
+                            checkOut = checkOut.longValue,
+                            rentalPrice = rentalPrice.value,
+                            rentCollectionDay = rentCollectionDay.value!!,
+                            propertyId = propertyId
+                        )
+                    }
                 }
             ) {
                 Text(

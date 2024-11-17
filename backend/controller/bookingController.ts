@@ -173,8 +173,16 @@ export class BookingController {
 
     public static async editBooking(req: Request, res: Response) {
         const bookingId = req.params.id;
-        const { checkIn, checkOut } = req.body;
+        let { checkIn, checkOut, rentalPrice, remarks, rentCollectionDay } = req.body;
         const user = req.session.user;
+
+        if (checkIn >= checkOut) {
+            res.status(400).json({ error: 'Check-out date must be greater than check-in date' });
+            return;
+        }
+        checkIn = new Date(checkIn);
+        checkOut = new Date(checkOut);
+
         try {
             const booking = await prisma.booking.findUnique({
                 where: {
@@ -192,17 +200,20 @@ export class BookingController {
                 res.status(400).json({ error: 'Booking not found' });
                 return;
             }
-            if (booking.userId !== user.id || booking.property.createdBy.id !== user.id) {
+            if (booking.property.createdBy.id !== user.id) {
                 res.status(403).json({ error: 'You are not authorized to edit this booking' });
                 return;
             }
-            await prisma.booking.update({
+            const updatedBooking = await prisma.booking.update({
                 where: {
                     id: bookingId
                 },
                 data: {
                     checkIn,
-                    checkOut
+                    checkOut,
+                    rentalPrice,
+                    remarks,
+                    rentCollectionDay
                 }
             });
             res.json({ message: 'Booking updated successfully' });
