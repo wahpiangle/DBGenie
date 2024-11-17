@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.propdash.components.manager.propertyDetails.CreateBookingScreen
+import com.example.propdash.components.manager.propertyDetails.EditBookingScreen
 import com.example.propdash.components.manager.propertyDetails.ManagerPropertyEditScreen
 import com.example.propdash.data.model.User
 import com.example.propdash.viewModel.manager.ManagerCreateBookingViewModel
@@ -29,6 +30,10 @@ sealed class ManagerScreen(val route: String) {
     data object CreateBookingScreen:
         ManagerScreen("create_booking_screen/{propertyId}") {
         fun createRoute(propertyId: String) = "create_booking_screen/$propertyId"
+    }
+    data object ManagerEditBookingScreen:
+        ManagerScreen("manager_edit_booking_screen/{bookingId}") {
+        fun createRoute(bookingId: String) = "manager_edit_booking_screen/$bookingId"
     }
 
 }
@@ -126,6 +131,16 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
                         navController.navigate(route)
                     }
                 )
+            )
+        }
+
+        composable(
+            route = ManagerScreen.ManagerEditBookingScreen.route,
+            arguments = listOf(navArgument("bookingId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val bookingId = backStackEntry.arguments?.getString("bookingId") ?: return@composable
+            EditBookingScreen(
+
             )
         }
     }

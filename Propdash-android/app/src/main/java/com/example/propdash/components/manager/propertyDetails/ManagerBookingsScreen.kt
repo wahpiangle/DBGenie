@@ -47,7 +47,7 @@ import java.util.Locale
 @Composable
 fun ManagerBookingsScreen(
     booking: List<Booking>,
-    viewModel: ManagerCreateBookingViewModel
+    viewModel: ManagerCreateBookingViewModel,
 ) {
     val deleteBookingError by viewModel.deleteBookingError.collectAsState()
 
@@ -122,7 +122,7 @@ fun ManagerBookingsScreen(
                     trailingContent = {
                         EditDeleteMenu(
                             onEdit = {
-                                // navigate(ManagerScreen.ManagerCreateBookingScreen.createRoute(it.id))
+                                 viewModel.navigate(ManagerScreen.ManagerEditBookingScreen.createRoute(it.id))
                             },
                             onDelete = {
                                 viewModel.deleteBooking(it.id)

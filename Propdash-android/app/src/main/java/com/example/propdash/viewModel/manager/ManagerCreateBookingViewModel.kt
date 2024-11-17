@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class ManagerCreateBookingViewModel (
     private val userSession: User,
-    private val navigate: (String) -> Unit
+    val navigate: (String) -> Unit
 ):ViewModel(){
     private val bookingRepository = BookingRepository()
     private val _createBookingError = MutableStateFlow<String?>(null)
