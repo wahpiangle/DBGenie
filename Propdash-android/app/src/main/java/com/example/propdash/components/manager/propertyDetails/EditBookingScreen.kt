@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,6 +21,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,6 +36,7 @@ import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
 import com.example.propdash.viewModel.manager.ManagerBookingViewModel
+import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,19 +47,29 @@ fun EditBookingScreen(
 ) {
     val booking = viewModel.booking.collectAsState().value
     val editBookingError = viewModel.editBookingError.collectAsState().value
-    val remarks = remember { mutableStateOf("") }
-
-    val checkIn = remember { mutableStateOf<Long?>(null) }
+    val remarks = remember(booking) {
+        mutableStateOf(booking?.remarks ?: "")
+    }
+    fun convertISOToMillis(date: String?): Long {
+        return date?.let { SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(it)?.time } ?: 0
+    }
+    val checkIn = remember(booking) { mutableLongStateOf(
+        convertISOToMillis(booking?.checkIn)
+    ) }
     var checkInError by remember { mutableStateOf<String?>(null) }
 
-    val checkOut = remember { mutableStateOf<Long?>(null) }
+    val checkOut = remember(booking) { mutableLongStateOf(
+        convertISOToMillis(booking?.checkOut)
+    ) }
     var checkOutError by remember { mutableStateOf<String?>(null) }
 
-    val rentalPrice = remember { mutableStateOf("") }
+    val rentalPrice = remember(booking) { mutableStateOf(booking?.rentalPrice ?: "") }
     var rentalPriceError by remember { mutableStateOf<String?>(null) }
 
-    val rentCollectionDay = remember { mutableStateOf<Int?>(null) }
+    val rentCollectionDay = remember(booking) { mutableStateOf(booking?.rentCollectionDay) }
     var rentCollectionDayError by remember { mutableStateOf<String?>(null) }
+
+
 
     fun updateCheckInDate(date: Long) {
         checkIn.value = date
@@ -96,6 +109,10 @@ fun EditBookingScreen(
         Column(
             modifier = Modifier.padding(padding).padding(16.dp)
         ){
+            if(booking == null){
+                CircularProgressIndicator()
+                return@Column
+            }
             InputField(
                 label = "Remarks",
                 value = remarks.value,
@@ -106,7 +123,7 @@ fun EditBookingScreen(
                 selectedDate = checkIn.value,
                 onDateSelected = {
                     updateCheckInDate(it)
-                    checkOutError = null
+                    checkInError = null
                 },
                 label = "Check In Date",
                 isError = checkInError != null,
