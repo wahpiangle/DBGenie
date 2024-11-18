@@ -6,6 +6,7 @@ import com.example.propdash.data.model.CreateProperty
 import com.example.propdash.data.model.EditBooking
 import com.example.propdash.data.model.GeneralResponse
 import com.example.propdash.data.model.LoginRequest
+import com.example.propdash.data.model.MaintenanceRequest
 import com.example.propdash.data.model.Property
 import com.example.propdash.data.model.RegisterRequest
 import com.example.propdash.data.model.User
@@ -109,6 +110,20 @@ interface ApiService {
         @Path("id") id: String,
         @Body booking: EditBooking,
     ): Response<GeneralResponse>
+
+    @GET("/maintenance-request")
+    suspend fun getMaintenanceRequests(
+        @Header("Cookie") cookie: String,
+    ): Response<List<MaintenanceRequest>>
+
+    @Multipart
+    @POST("/maintenance-request")
+    suspend fun createMaintenanceRequest(
+        @Header("Cookie") cookie: String,
+        @Part("description") description: RequestBody,
+        @Part("propertyId") propertyId: RequestBody,
+        @Part files: List<MultipartBody.Part>
+    ): Response<MaintenanceRequest>
 }
 
 // Singleton object for Retrofit

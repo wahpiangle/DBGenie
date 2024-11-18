@@ -1,6 +1,7 @@
 package com.example.propdash.components.tenant
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,6 +10,7 @@ import androidx.navigation.navArgument
 import com.example.propdash.data.model.User
 import com.example.propdash.viewModel.tenant.TenantBookingDetailViewModel
 import com.example.propdash.viewModel.tenant.TenantBookingViewModel
+import com.example.propdash.viewModel.tenant.TenantMaintenanceViewModel
 
 sealed class TenantGraph(val route: String) {
     data object TenantBookingsScreen : TenantGraph("tenant_bookings_screen")
@@ -66,7 +68,10 @@ fun TenantNavGraph(userSession: User?, clearSession: () -> Unit) {
             TenantMaintenanceScreen(
                 navigate = { route ->
                     navController.navigate(route)
-                }
+                },
+                viewModel = TenantMaintenanceViewModel(
+                    userSession = userSession!!
+                )
             )
         }
 

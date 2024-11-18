@@ -118,7 +118,7 @@ fun ManagerPropertyScreen(
             modifier = Modifier.padding(padding)
         ) {
             if (error.value != null) {
-                Text(text = error.value!!)
+                Text(text = error.value!!, color = light)
             }
 
             if (properties.isEmpty()) {
