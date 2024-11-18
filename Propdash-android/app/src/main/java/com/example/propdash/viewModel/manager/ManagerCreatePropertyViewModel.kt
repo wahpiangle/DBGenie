@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.propdash.components.manager.ManagerScreen
 import com.example.propdash.components.manager.createProperty.ImageItem
-import com.example.propdash.data.model.Property
 import com.example.propdash.data.model.User
 import com.example.propdash.data.repository.PropertyRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +41,6 @@ class ManagerCreatePropertyViewModel(
                     userSession.cookie,
                     name,
                     description,
-                    rentalPerMonth,
                     userSession.id,
                     prepareFileParts(imageUrl, context)
                 )

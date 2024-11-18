@@ -69,4 +69,13 @@ class BookingRepository {
             editBooking
         )
     }
+
+    suspend fun getBookings(
+        cookie: String,
+    ) : Response<List<Booking>>
+    {
+        return apiService.getBookings(
+            cookie
+        )
+    }
 }

@@ -42,10 +42,10 @@ fun DetailsScreen(
             modifier = Modifier
                 .padding(bottom = 16.dp),
             preferredItemWidth = 300.dp,
-            itemSpacing = 8.dp
+            itemSpacing = 8.dp,
         ) { index ->
             val image = property.value?.imageUrl?.get(index)
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box {
                 Image(
                     painter = rememberAsyncImagePainter(
                         ImageRequest.Builder(LocalContext.current).data(image).build(),
@@ -55,7 +55,7 @@ fun DetailsScreen(
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.FillWidth,
-                    modifier = Modifier.fillMaxSize().clip(
+                    modifier = Modifier.clip(
                         shape = RoundedCornerShape(8.dp)
                     ),
                 )

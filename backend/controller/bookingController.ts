@@ -260,4 +260,24 @@ export class BookingController {
             return;
         }
     }
+
+    // Tenant use
+    public static async getBookingsByUser(req: Request, res: Response) {
+        const user = req.session.user;
+        try {
+            const bookings = await prisma.booking.findMany({
+                where: {
+                    userId: user.id
+                },
+                include: {
+                    property: true
+                }
+            });
+            res.json(bookings);
+            return;
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+        }
+    }
 }

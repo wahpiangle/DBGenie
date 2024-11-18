@@ -52,7 +52,6 @@ interface ApiService {
         @Header("Cookie") cookie: String,
         @Part("name") name: RequestBody,
         @Part("description") description: RequestBody,
-        @Part("rentalPerMonth") rentalPerMonth: RequestBody,
         @Part("userId") userId: RequestBody,
         @Part files: List<MultipartBody.Part>
     ): Response<Property>
@@ -64,7 +63,6 @@ interface ApiService {
         @Path("id") id: String,
         @Part("name") name: RequestBody,
         @Part("description") description: RequestBody,
-        @Part("rentalPerMonth") rentalPerMonth: RequestBody,
         @Part("userId") userId: RequestBody,
         @Part("updateImage") updateImage: RequestBody,
         @Part files: List<MultipartBody.Part>
@@ -87,6 +85,11 @@ interface ApiService {
         @Header("Cookie") cookie: String,
         @Body booking: CreateBooking,
     ): Response<Booking>
+
+    @GET("/bookings")
+    suspend fun getBookings(
+        @Header("Cookie") cookie: String,
+    ): Response<List<Booking>>
 
     @GET("/bookings/{id}")
     suspend fun getBooking(

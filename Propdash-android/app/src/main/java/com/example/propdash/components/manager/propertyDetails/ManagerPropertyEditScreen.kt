@@ -1,6 +1,5 @@
 package com.example.propdash.components.manager.propertyDetails
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -71,11 +70,8 @@ fun ManagerPropertyEditScreen(
     val context = LocalContext.current
     val name = remember(property.value) { mutableStateOf(property.value?.name ?: "") }
     val description = remember(property.value) { mutableStateOf(property.value?.description ?: "") }
-    val rentalPerMonth =
-        remember(property.value) { mutableStateOf(property.value?.rentalPerMonth ?: "") }
     var nameError by remember { mutableStateOf(false) }
     var descriptionError by remember { mutableStateOf(false) }
-    var rentalPerMonthError by remember { mutableStateOf(false) }
     val recomposeToggleState = remember { mutableStateOf(false) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { it ->
@@ -148,17 +144,6 @@ fun ManagerPropertyEditScreen(
                 },
                 descriptionError
             )
-            InputField(
-                "Rental per Month",
-                rentalPerMonth.value,
-                {
-                    rentalPerMonth.value = it;
-                    rentalPerMonthError =
-                        rentalPerMonth.value.isEmpty() || rentalPerMonth.value.toDoubleOrNull() == null
-                },
-                rentalPerMonthError,
-                true
-            )
             Text("Images", color = light, modifier = Modifier.padding(vertical = 16.dp))
             if (propertyImages.size == 0) {
                 IconButton(
@@ -214,7 +199,6 @@ fun ManagerPropertyEditScreen(
                     viewModel.updateProperty(
                         name = name.value,
                         description = description.value,
-                        rentalPerMonth = rentalPerMonth.value,
                         imageItemList = propertyImages,
                         updateImage = propertyImages.size > 0,
                         context = context

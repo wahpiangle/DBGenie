@@ -5,7 +5,8 @@ const router = express.Router();
 
 router.use(redirectLogin);
 router.route('/')
-    .post(BookingController.createBooking);
+    .post(BookingController.createBooking)
+    .get(BookingController.getBookingsByUser);
 
 router.route('/:id')
     .get(BookingController.getBooking)

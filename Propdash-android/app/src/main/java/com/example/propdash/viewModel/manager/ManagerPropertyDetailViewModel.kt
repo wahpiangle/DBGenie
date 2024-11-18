@@ -83,7 +83,6 @@ class ManagerPropertyDetailViewModel(
     fun updateProperty(
         name: String,
         description: String,
-        rentalPerMonth: String,
         imageItemList: List<ImageItem>,
         updateImage: Boolean,
         context: Context
@@ -93,7 +92,6 @@ class ManagerPropertyDetailViewModel(
                 propertyRepository.updateProperty(propertyId, userSession.cookie, CreateProperty(
                     name = name,
                     description = description,
-                    rentalPerMonth = rentalPerMonth,
                     userId = userSession.id,
                     imageUrl = prepareFileParts(imageItemList, context),
                     updateImage

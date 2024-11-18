@@ -1,12 +1,15 @@
-package com.example.propdash.components.manager
+package com.example.propdash.components.tenant
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,57 +19,42 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.propdash.components.manager.createProperty.PropertyCard
-import com.example.propdash.components.manager.shared.BottomNavBar
 import com.example.propdash.components.shared.PullToRefreshBox
-import com.example.propdash.data.model.Booking
-import com.example.propdash.data.model.BookingStatus
-import com.example.propdash.data.model.Property
+import com.example.propdash.components.tenant.shared.TenantBottomNavBar
+import com.example.propdash.components.tenant.shared.TenantPropertyCard
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
-import com.example.propdash.viewModel.manager.ManagerPropertyViewModel
+import com.example.propdash.ui.theme.successBadge
+import com.example.propdash.viewModel.tenant.TenantBookingViewModel
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManagerPropertyScreen(
-    navigate: (String) -> Unit,
+fun TenantBookingsScreen(
+    viewModel: TenantBookingViewModel,
     clearSession: () -> Unit,
-    viewModel: ManagerPropertyViewModel
-) {
-    val error = viewModel.fetchPropertyError.collectAsState()
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
-    val properties by viewModel.properties.collectAsState()
-    fun getBookingStatus(bookings: List<Booking>?): BookingStatus {
-        if (bookings.isNullOrEmpty()) {
-            return BookingStatus.VACANT
-        }
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        for (booking in bookings) {
-            val checkIn = simpleDateFormat.parse(booking.checkIn)?.time
-            val checkOut = simpleDateFormat.parse(booking.checkOut)?.time
-            val currentTime = System.currentTimeMillis()
-            if (currentTime in checkIn!!..checkOut!!) {
-                return BookingStatus.OCCUPIED
-            }
-        }
-        return BookingStatus.VACANT
-    }
+    navigate: (String) -> Unit
+){
+    val bookings = viewModel.bookings.collectAsState()
+    val bookingError = viewModel.bookingError.collectAsState()
+    val isRefreshing = viewModel.isRefreshing.collectAsState().value
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Manage Properties",
+                        text = "Manage Bookings",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
@@ -92,36 +80,23 @@ fun ManagerPropertyScreen(
             )
         },
         bottomBar = {
-            BottomNavBar(
-                ManagerScreen.ManagerPropertyScreen.route,
-                navigate
+            TenantBottomNavBar (
+                currentRoute = TenantGraph.TenantBookingsScreen.route,
+                navigate = navigate
             )
         },
-        floatingActionButton = {
-            Button(
-                onClick = {
-                    navigate(ManagerScreen.ManagerCreatePropertyScreen.route)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primary,
-                ),
-                modifier = Modifier.size(56.dp)
-            ) {
-                Text(text = "+")
-            }
-        },
         containerColor = dark
-    ) { padding ->
+    ) {padding ->
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = viewModel::onPullToRefreshTrigger,
             modifier = Modifier.padding(padding)
         ) {
-            if (error.value != null) {
-                Text(text = error.value!!)
+            if (bookingError.value != null) {
+                Text(text = bookingError.value!!)
             }
 
-            if (properties.isEmpty()) {
+            if (bookings.value.isEmpty()) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,7 +106,7 @@ fun ManagerPropertyScreen(
                 ) {
                     item {
                         Text(
-                            text = "No properties found",
+                            text = "No bookings found",
                             color = light
                         )
                     }
@@ -143,13 +118,29 @@ fun ManagerPropertyScreen(
                         .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    items(properties){ item: Property ->
-                        PropertyCard(
-                            propertyId = item.id,
-                            propertyName = item.name,
-                            status = getBookingStatus(item.bookings),
-                            imageUrl = item.imageUrl[0],
-                            navigate = navigate
+                    items(bookings.value) { booking ->
+                        TenantPropertyCard (
+                            title = booking.property.name,
+                            imageUrl = booking.property.imageUrl[0],
+                            detailsText = "$ ${booking.rentalPrice} per month",
+                            Badge = {
+                                Text(
+                                    text = "Status",
+                                    style = TextStyle(fontSize = 16.sp),
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .background(
+                                            color = successBadge,
+                                            shape = RoundedCornerShape(16.dp)
+                                        )
+                                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                                )
+                            },
+                            navigate = {
+                                navigate(
+                                    TenantGraph.TenantBookingDetailScreen.createRoute(booking.id)
+                                )
+                            }
                         )
                     }
                 }

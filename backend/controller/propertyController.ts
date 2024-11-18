@@ -16,13 +16,11 @@ export class PropertyController {
             CreatePropertySchema.parse({
                 name: req.body.name,
                 description: req.body.description,
-                rentalPerMonth: req.body.rentalPerMonth
             });
             const property = await prisma.property.create({
                 data: {
                     name: req.body.name,
                     description: req.body.description,
-                    rentalPerMonth: req.body.rentalPerMonth,
                     createdBy: {
                         connect: {
                             id: user.id
@@ -68,22 +66,20 @@ export class PropertyController {
 
     public static async updateProperty(req: Request, res: Response) {
         try {
-            const { updateImage, name, description, rentalPerMonth } = req.body;
+            const { updateImage, name, description } = req.body;
             updatePropertySchema.parse(
                 {
                     updateImage,
                     name,
                     description,
-                    rentalPerMonth
                 }
             );
             const { id } = req.params;
             let data: {
                 name?: string,
                 description?: string,
-                rentalPerMonth?: number,
                 imageUrl?: string[]
-            } = { name, description, rentalPerMonth };
+            } = { name, description };
             const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
             const files = req.files as Express.Multer.File[];
             if (updateImage) {

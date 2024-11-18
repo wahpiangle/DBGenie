@@ -6,7 +6,6 @@ data class Property(
     val id: String,
     val name: String,
     val description: String,
-    val rentalPerMonth: String,
     val imageUrl: List<String>,
     val createdAt: String,
     val updatedAt: String,
@@ -18,7 +17,6 @@ data class Property(
 data class CreateProperty(
     val name: String,
     val description: String,
-    val rentalPerMonth: String,
     val userId: String,
     val imageUrl: List<MultipartBody.Part>,
     val updateImage: Boolean

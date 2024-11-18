@@ -28,19 +28,16 @@ class PropertyRepository {
         cookie: String,
         name: String,
         description: String,
-        rentalPerMonth: String,
         userId: String,
         imageUrl: List<MultipartBody.Part>
     ): Response<Property> {
         val nameBody = name.toRequestBody(MultipartBody.FORM)
         val descriptionBody = description.toRequestBody(MultipartBody.FORM)
-        val rentalPerMonthBody = rentalPerMonth.toRequestBody(MultipartBody.FORM)
         val userIdBody = userId.toRequestBody(MultipartBody.FORM)
         return apiService.createProperty(
             cookie,
             nameBody,
             descriptionBody,
-            rentalPerMonthBody,
             userIdBody,
             imageUrl
         )
@@ -52,7 +49,6 @@ class PropertyRepository {
             id=id,
             name=property.name.toRequestBody(MultipartBody.FORM),
             description=property.description.toRequestBody(MultipartBody.FORM),
-            rentalPerMonth=property.rentalPerMonth.toRequestBody(MultipartBody.FORM),
             userId=property.userId.toRequestBody(MultipartBody.FORM),
             updateImage = property.updateImage.toString().toRequestBody(MultipartBody.FORM),
             files=property.imageUrl

@@ -1,4 +1,4 @@
-package com.example.propdash.components.manager.createProperty
+package com.example.propdash.components.tenant.shared
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -23,20 +23,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.example.propdash.components.manager.ManagerScreen
-import com.example.propdash.data.model.BookingStatus
-import com.example.propdash.ui.theme.errorBadge
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
-import com.example.propdash.ui.theme.successBadge
 
 @Composable
-fun PropertyCard(
-    propertyId: String,
+fun TenantPropertyCard(
+    title: String,
+    Badge: @Composable() () -> Unit,
     imageUrl: String,
-    propertyName: String,
-    status: BookingStatus,
-    navigate: (String) -> Unit
+    detailsText: String,
+    navigate: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -45,7 +41,7 @@ fun PropertyCard(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         onClick = {
-            navigate(ManagerScreen.ManagerPropertyDetailScreen.createRoute(propertyId))
+            navigate()
         }
     ) {
         Column(
@@ -59,7 +55,7 @@ fun PropertyCard(
                 model = imageUrl,
                 contentScale = ContentScale.Fit,
                 contentDescription = null,
-                onError = { error->
+                onError = { error ->
                     Log.e("PropertyCard", "Error loading image: $error")
                 },
             )
@@ -71,30 +67,30 @@ fun PropertyCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    modifier = Modifier.weight(1f).padding(8.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
                 ) {
                     Text(
-                        text = propertyName,
-                        style = TextStyle(fontSize = 20.sp,
-                            color = light),
+                        text = title,
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            color = light
+                        ),
                         fontWeight = FontWeight.Bold,
                         maxLines = 1
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = status.name,
-                        style = TextStyle(fontSize = 16.sp),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .background(
-                                color = when(status) {
-                                    BookingStatus.VACANT -> successBadge
-                                    BookingStatus.OCCUPIED -> errorBadge
-                                },
-                                shape = RoundedCornerShape(16.dp))
-                            .padding(horizontal = 16.dp, vertical = 6.dp)
-                    )
+                    Badge()
                 }
+                Text(
+                    text = detailsText,
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = light,
+                        fontWeight = FontWeight.Bold
+                    ),
+                )
             }
         }
     }

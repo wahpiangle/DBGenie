@@ -22,7 +22,6 @@ model Property {
   id                 String               @id @default(cuid())
   name               String
   description        String
-  rentalPerMonth     Decimal
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   userId             String //manager

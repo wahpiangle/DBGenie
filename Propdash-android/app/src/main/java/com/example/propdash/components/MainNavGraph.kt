@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.propdash.components.manager.ManagerNavGraph
 import com.example.propdash.components.manager.ManagerScreen
-import com.example.propdash.components.tenant.TenantScreen
+import com.example.propdash.components.tenant.TenantNavGraph
 import com.example.propdash.data.model.Role
 import com.example.propdash.viewModel.UserViewModel
 
@@ -87,7 +87,7 @@ fun MainNavGraph(userViewModel: UserViewModel) {
             )
         }
         composable(Screen.TenantScreen.route) {
-            TenantScreen(userSession) {
+            TenantNavGraph(userSession) {
                 userViewModel.clearSession()
                 navController.navigate(Screen.LoginScreen.route) {
                     popUpTo(Screen.TenantScreen.route) { inclusive = true }
