@@ -70,7 +70,10 @@ fun TenantNavGraph(userSession: User?, clearSession: () -> Unit) {
                     navController.navigate(route)
                 },
                 viewModel = TenantMaintenanceViewModel(
-                    userSession = userSession!!
+                    userSession = userSession!!,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    }
                 )
             )
         }
@@ -90,7 +93,13 @@ fun TenantNavGraph(userSession: User?, clearSession: () -> Unit) {
             TenantCreateMaintenanceScreen(
                 navigate = { route ->
                     navController.navigate(route)
-                }
+                },
+                viewModel = TenantMaintenanceViewModel(
+                    userSession = userSession!!,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    }
+                )
             )
         }
 

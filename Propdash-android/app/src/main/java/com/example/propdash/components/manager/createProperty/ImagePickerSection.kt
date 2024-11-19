@@ -58,7 +58,7 @@ fun ImagePickerSection(
             modifier = Modifier
                 .width(420.dp)
                 .height(250.dp)
-                .border(1.dp, primary, RoundedCornerShape(8.dp))
+                .border(1.dp, primary, RoundedCornerShape(4.dp))
         ) {
             Icon(Icons.Filled.AddCircleOutline, "Add Image", tint = light)
         }

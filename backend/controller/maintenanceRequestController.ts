@@ -44,6 +44,7 @@ export class MaintenanceRequestController {
                 res.status(400).json({ error: 'User is not tenant of property' });
                 return;
             }
+
             let maintenanceRequest = await prisma.maintenanceRequest.create({
                 data: {
                     propertyId,
@@ -77,6 +78,7 @@ export class MaintenanceRequestController {
             res.json(maintenanceRequest);
             return;
         } catch (error) {
+            console.log(error);
             if (error instanceof ZodError) {
                 res.status(400).json({ error: error.errors });
             }
@@ -110,26 +112,15 @@ export class MaintenanceRequestController {
     public static async getMaintenanceRequestByUser(req: Request, res: Response) {
         const user = req.session.user;
         try {
-            if (user.role === Role.MANAGER) {
-                const maintenanceRequests = await prisma.maintenanceRequest.findMany({
-                    where: {
-                        property: {
-                            userId: user.id
-                        }
-                    }
-                });
-
-                res.json(maintenanceRequests);
-                return;
-            } else if (user.role === Role.TENANT) {
-                const maintenanceRequests = await prisma.maintenanceRequest.findMany({
-                    where: {
-                        userId: user.id
-                    }
-                });
-                res.json(maintenanceRequests);
-                return;
-            }
+            const maintenanceRequests = await prisma.maintenanceRequest.findMany({
+                where: user.role === Role.MANAGER
+                    ? { property: { userId: user.id } }
+                    : { userId: user.id },
+                include: {
+                    property: true
+                }
+            });
+            res.json(maintenanceRequests);
             return;
         } catch (error) {
             console.log(error);

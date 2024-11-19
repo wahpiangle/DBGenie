@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.propdash.components.shared.MaintenanceCard
 import com.example.propdash.components.shared.PullToRefreshBox
 import com.example.propdash.components.tenant.shared.TenantBottomNavBar
 import com.example.propdash.ui.theme.dark
@@ -38,6 +40,7 @@ fun TenantMaintenanceScreen(
     val maintenanceRequests = viewModel.maintenanceRequests.collectAsState()
     val maintenanceError = viewModel.maintenanceError.collectAsState()
     val isRefreshing = viewModel.isRefreshing.collectAsState()
+    val isLoading = viewModel.isLoading.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,6 +80,10 @@ fun TenantMaintenanceScreen(
         },
         containerColor = dark
     ) { padding ->
+        if(isLoading.value){
+            CircularProgressIndicator()
+            return@Scaffold
+        }
         PullToRefreshBox(
             isRefreshing = isRefreshing.value,
             onRefresh = viewModel::onPullToRefreshTrigger,
@@ -84,6 +91,7 @@ fun TenantMaintenanceScreen(
         ) {
             if (maintenanceError.value != null) {
                 Text(text = maintenanceError.value!!, color = light)
+                return@PullToRefreshBox
             }
 
             if (maintenanceRequests.value.isEmpty()) {
@@ -108,10 +116,13 @@ fun TenantMaintenanceScreen(
                         .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    items(5) { maintenanceRequest ->
-                        Text(
-                            text = "maintenanceRequest.description",
-                            color = light
+                    items(maintenanceRequests.value) { maintenanceRequest ->
+                        MaintenanceCard(
+                            title = maintenanceRequest.description,
+                            propertyName = maintenanceRequest.property.name,
+                            status = if(maintenanceRequest.resolved) "Resolved" else "Unresolved",
+                            imageUrl = maintenanceRequest.imageUrl[0],
+                            navigate = { navigate(TenantGraph.TenantMaintenanceDetailScreen.route) }
                         )
                     }
                 }

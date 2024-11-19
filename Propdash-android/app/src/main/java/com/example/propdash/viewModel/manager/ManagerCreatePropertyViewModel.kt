@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.propdash.components.manager.ManagerScreen
 import com.example.propdash.components.manager.createProperty.ImageItem
+import com.example.propdash.data.model.ErrorResponse
 import com.example.propdash.data.model.User
 import com.example.propdash.data.repository.PropertyRepository
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -31,7 +33,6 @@ class ManagerCreatePropertyViewModel(
     fun createProperty(
         name: String,
         description: String,
-        rentalPerMonth: String,
         imageUrl: List<ImageItem>,
         context: Context
     ) {
@@ -46,6 +47,9 @@ class ManagerCreatePropertyViewModel(
                 )
                 if (result.isSuccessful) {
                     navigate(ManagerScreen.ManagerPropertyScreen.route)
+                }else{
+                    val errorResponse = Gson().fromJson(result.errorBody()?.string(), ErrorResponse::class.java)
+                    _createPropertyError.value = errorResponse.error
                 }
             } catch (e: Exception) {
                 _createPropertyError.value =

@@ -137,7 +137,7 @@ export class PropertyController {
                 await prisma.property.findMany({
                     where: {
                         bookings: {
-                            every: {
+                            some: {
                                 userId: user.id
                             }
                         }

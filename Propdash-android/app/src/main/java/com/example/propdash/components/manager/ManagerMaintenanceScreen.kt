@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.propdash.components.manager.shared.BottomNavBar
 import com.example.propdash.ui.theme.dark
-import com.example.propdash.ui.theme.primary
 
 @Composable
 fun ManagerMaintenanceScreen(

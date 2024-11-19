@@ -1,6 +1,5 @@
 package com.example.propdash.components.manager
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -47,26 +46,21 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
 
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var rentalPerMonth by remember { mutableStateOf("") }
     var nameError by remember { mutableStateOf(false) }
     var descriptionError by remember { mutableStateOf(false) }
-    var rentalPerMonthError by remember { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
             selectedImageUri = it.map { uri -> ImageItem.FromUri(uri) }
         }
     val carouselState = rememberCarouselState { selectedImageUri.size }
 
     fun validate(): Boolean =
-        if (name.isEmpty() || description.isEmpty() || rentalPerMonth.isEmpty() || selectedImageUri.isEmpty()) {
+        if (name.isEmpty() || description.isEmpty() || selectedImageUri.isEmpty()) {
             nameError = name.isEmpty()
             descriptionError = description.isEmpty()
-            rentalPerMonthError =
-                rentalPerMonth.isEmpty() || rentalPerMonth.toDoubleOrNull() == null
             false
         } else {
             nameError = false
             descriptionError = false
-            rentalPerMonthError = false
             true
         }
 
@@ -111,7 +105,7 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
                 "Name",
                 name,
                 {
-                    name = it;
+                    name = it
                     nameError = name.isEmpty()
                 },
                 nameError
@@ -119,20 +113,10 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
             InputField(
                 "Description",
                 description, {
-                    description = it;
+                    description = it
                     descriptionError = description.isEmpty()
                 },
                 descriptionError
-            )
-            InputField(
-                "Rental per Month",
-                rentalPerMonth,
-                {
-                    rentalPerMonth = it;
-                    rentalPerMonthError = rentalPerMonth.isEmpty() || rentalPerMonth.toDoubleOrNull() == null
-                },
-                rentalPerMonthError,
-                true
             )
             Text("Images", color = light, modifier = Modifier.padding(vertical = 16.dp))
             ImagePickerSection(selectedImageUri, launcher, carouselState, onImageRemove = { index ->
@@ -145,7 +129,6 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
                         viewModel.createProperty(
                             name,
                             description,
-                            rentalPerMonth,
                             selectedImageUri,
                             context
                         )
