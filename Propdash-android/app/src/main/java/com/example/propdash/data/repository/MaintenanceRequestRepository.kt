@@ -1,5 +1,6 @@
 package com.example.propdash.data.repository
 
+import android.icu.text.CaseMap.Title
 import com.example.propdash.data.model.MaintenanceRequest
 import com.example.propdash.data.service.ApiClient
 import okhttp3.MultipartBody
@@ -16,14 +17,20 @@ class MaintenanceRequestRepository {
     suspend fun createMaintenanceRequest(
         cookie: String,
         propertyId: String,
-        description: String,
+        title: String,
+        description: String = "",
         files: List<MultipartBody.Part>
     ): Response<MaintenanceRequest> {
         return apiService.createMaintenanceRequest(
             cookie = cookie,
+            title = title.toRequestBody(MultipartBody.FORM),
             propertyId = propertyId.toRequestBody(MultipartBody.FORM),
             description = description.toRequestBody(MultipartBody.FORM),
             files = files
         )
+    }
+
+    suspend fun getMaintenanceRequest(cookie: String, maintenanceId: String): Response<MaintenanceRequest> {
+        return apiService.getMaintenanceRequest(cookie, maintenanceId)
     }
 }

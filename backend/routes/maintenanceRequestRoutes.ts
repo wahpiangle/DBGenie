@@ -12,6 +12,8 @@ router.route('/')
         MaintenanceRequestController.createMaintenanceRequest)
     .get(MaintenanceRequestController.getMaintenanceRequestByUser);
 
+router.route('/:id')
+    .get(MaintenanceRequestController.getMaintenanceRequest)
 
 router.route('/:propertyId')
     .get(MaintenanceRequestController.getMaintenanceRequestByProperty);

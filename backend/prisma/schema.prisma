@@ -52,6 +52,7 @@ model MaintenanceRequest {
   id                        String                     @id @default(cuid())
   propertyId                String
   userId                    String //tenant
+  title                     String
   description               String
   imageUrl                  String[]
   resolved                  Boolean                    @default(false)

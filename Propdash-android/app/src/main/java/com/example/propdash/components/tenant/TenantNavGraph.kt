@@ -1,7 +1,6 @@
 package com.example.propdash.components.tenant
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,6 +9,7 @@ import androidx.navigation.navArgument
 import com.example.propdash.data.model.User
 import com.example.propdash.viewModel.tenant.TenantBookingDetailViewModel
 import com.example.propdash.viewModel.tenant.TenantBookingViewModel
+import com.example.propdash.viewModel.tenant.TenantMaintenanceDetailViewModel
 import com.example.propdash.viewModel.tenant.TenantMaintenanceViewModel
 
 sealed class TenantGraph(val route: String) {
@@ -85,7 +85,14 @@ fun TenantNavGraph(userSession: User?, clearSession: () -> Unit) {
             val maintenanceId =
                 navBackStackEntry.arguments?.getString("maintenanceId") ?: return@composable
             TenantMaintenanceDetailScreen(
-                maintenanceId = maintenanceId
+                maintenanceId = maintenanceId,
+                viewModel = TenantMaintenanceDetailViewModel(
+                    maintenanceId = maintenanceId,
+                    userSession = userSession!!
+                ),
+                navigate = { route ->
+                    navController.navigate(route)
+                }
             )
         }
 

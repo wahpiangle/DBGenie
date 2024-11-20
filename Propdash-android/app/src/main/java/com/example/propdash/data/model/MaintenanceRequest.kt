@@ -2,7 +2,8 @@ package com.example.propdash.data.model
 
 data class MaintenanceRequest(
     val id: String,
-    val description: String,
+    val title: String,
+    val description: String?,
     val imageUrl: List<String>,
     val resolved: Boolean,
     val createdAt: String,

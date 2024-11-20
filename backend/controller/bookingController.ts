@@ -267,7 +267,7 @@ export class BookingController {
         try {
             const bookings = await prisma.booking.findMany({
                 where: {
-                    userId: user.id
+                    userId: user.id,
                 },
                 include: {
                     property: true

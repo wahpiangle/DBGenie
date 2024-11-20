@@ -53,22 +53,23 @@ fun TenantCreateMaintenanceScreen(
     navigate: (String) -> Unit,
     viewModel: TenantMaintenanceViewModel
 ){
+    var title by remember { mutableStateOf("") }
+    var titleError by remember { mutableStateOf(false) }
     var description by remember { mutableStateOf("") }
-    var descriptionError by remember { mutableStateOf(false) }
     var selectedImageUri by remember { mutableStateOf<List<ImageItem>>(emptyList()) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
         selectedImageUri = it.map { uri -> ImageItem.FromUri(uri) }
     }
-    var properties = viewModel.propertiesOfTenant.collectAsState()
-    var carouselState = rememberCarouselState { selectedImageUri.size }
+    val properties = viewModel.propertiesOfTenant.collectAsState()
+    val carouselState = rememberCarouselState { selectedImageUri.size }
     var selectedPropertyId by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     var imageError by remember { mutableStateOf(false) }
     var propertySelectionError by remember { mutableStateOf(false) }
     val context = LocalContext.current
     fun validate(): Boolean =
-        if (description.isEmpty() || selectedImageUri.isEmpty()) {
-            descriptionError = description.isEmpty()
+        if (title.isEmpty() || selectedImageUri.isEmpty()) {
+            titleError = title.isEmpty()
             imageError = selectedImageUri.isEmpty()
             propertySelectionError = selectedPropertyId.isEmpty()
             false
@@ -106,14 +107,23 @@ fun TenantCreateMaintenanceScreen(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding(12.dp)
-        ){ InputField(
+        ){
+            InputField(
+                "Title",
+                title,
+                {
+                    title = it
+                    titleError = title.isEmpty()
+                },
+                titleError
+            )
+            InputField(
             "Description",
             description,
             {
                 description = it;
-                descriptionError = description.isEmpty()
             },
-            descriptionError
+            false
         )
             Text(
                 text = "Property",
@@ -138,7 +148,6 @@ fun TenantCreateMaintenanceScreen(
                     },
                     color = light,
                 )
-                // Dropdown menu
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
@@ -166,7 +175,7 @@ fun TenantCreateMaintenanceScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = primary),
                 onClick = {
                     if (validate()) {
-                        viewModel.createMaintenanceRequest(description, selectedImageUri, selectedPropertyId, context)
+                        viewModel.createMaintenanceRequest(description, title, selectedImageUri, selectedPropertyId, context)
                     }
                 }
             ) {

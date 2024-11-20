@@ -8,13 +8,14 @@ import { Role } from "@prisma/client";
 
 export class MaintenanceRequestController {
     public static async createMaintenanceRequest(req: Request, res: Response) {
-        const { propertyId, description } = req.body;
+        const { propertyId, title, description } = req.body;
         const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
         const files = req.files as Express.Multer.File[];
         const user = req.session.user;
         try {
             CreateMaintenanceRequestSchema.parse({
                 propertyId,
+                title,
                 description
             });
             const property = await prisma.property.findUnique({
@@ -47,6 +48,7 @@ export class MaintenanceRequestController {
 
             let maintenanceRequest = await prisma.maintenanceRequest.create({
                 data: {
+                    title,
                     propertyId,
                     description,
                     userId: user.id
@@ -158,6 +160,28 @@ export class MaintenanceRequestController {
             });
 
             res.json(maintenanceRequestUpdate);
+            return;
+        } catch (error) {
+            if (error instanceof ZodError) {
+                res.status(400).json({ error: error.errors });
+            } else {
+                res.status(500).json({ error: 'Internal server error' });
+            }
+            return;
+        }
+    }
+
+    public static async getMaintenanceRequest(req: Request, res: Response) {
+        const { id } = req.params;
+        const user = req.session.user;
+        try {
+            const maintenanceRequest = await prisma.maintenanceRequest.findUnique({
+                where: {
+                    id,
+                    userId: user.id
+                }
+            });
+            res.json(maintenanceRequest);
             return;
         } catch (error) {
             if (error instanceof ZodError) {

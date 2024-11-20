@@ -118,7 +118,7 @@ fun TenantMaintenanceScreen(
                 ) {
                     items(maintenanceRequests.value) { maintenanceRequest ->
                         MaintenanceCard(
-                            title = maintenanceRequest.description,
+                            title = maintenanceRequest.title,
                             propertyName = maintenanceRequest.property.name,
                             status = if(maintenanceRequest.resolved) "Resolved" else "Unresolved",
                             imageUrl = maintenanceRequest.imageUrl[0],

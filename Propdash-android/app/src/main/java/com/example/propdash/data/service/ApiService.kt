@@ -116,10 +116,17 @@ interface ApiService {
         @Header("Cookie") cookie: String,
     ): Response<List<MaintenanceRequest>>
 
+    @GET("/maintenance-request/{id}")
+    suspend fun getMaintenanceRequest(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+    ): Response<MaintenanceRequest>
+
     @Multipart
     @POST("/maintenance-request")
     suspend fun createMaintenanceRequest(
         @Header("Cookie") cookie: String,
+        @Part("title") title: RequestBody,
         @Part("description") description: RequestBody,
         @Part("propertyId") propertyId: RequestBody,
         @Part files: List<MultipartBody.Part>

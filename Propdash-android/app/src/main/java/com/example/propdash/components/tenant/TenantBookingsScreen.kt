@@ -29,7 +29,10 @@ import androidx.compose.ui.unit.sp
 import com.example.propdash.components.shared.PullToRefreshBox
 import com.example.propdash.components.tenant.shared.TenantBottomNavBar
 import com.example.propdash.components.tenant.shared.TenantPropertyCard
+import com.example.propdash.data.model.Booking
+import com.example.propdash.data.model.BookingStatus
 import com.example.propdash.ui.theme.dark
+import com.example.propdash.ui.theme.errorBadge
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
 import com.example.propdash.ui.theme.successBadge
@@ -38,16 +41,33 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+enum class TenantBookingStatus {
+    PAST,
+    CURRENT,
+    UPCOMING
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TenantBookingsScreen(
     viewModel: TenantBookingViewModel,
     clearSession: () -> Unit,
     navigate: (String) -> Unit
-){
+) {
     val bookings = viewModel.bookings.collectAsState()
     val bookingError = viewModel.bookingError.collectAsState()
     val isRefreshing = viewModel.isRefreshing.collectAsState().value
+    fun getBookingStatus(checkInDate: String, checkOutDate: String): TenantBookingStatus {
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        val checkIn = simpleDateFormat.parse(checkInDate)?.time
+        val checkOut = simpleDateFormat.parse(checkOutDate)?.time
+        val currentTime = System.currentTimeMillis()
+        return when {
+            currentTime > checkOut!! -> TenantBookingStatus.PAST
+            currentTime in checkIn!!..checkOut -> TenantBookingStatus.CURRENT
+            else -> TenantBookingStatus.UPCOMING
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -80,13 +100,13 @@ fun TenantBookingsScreen(
             )
         },
         bottomBar = {
-            TenantBottomNavBar (
+            TenantBottomNavBar(
                 currentRoute = TenantGraph.TenantBookingsScreen.route,
                 navigate = navigate
             )
         },
         containerColor = dark
-    ) {padding ->
+    ) { padding ->
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = viewModel::onPullToRefreshTrigger,
@@ -119,18 +139,26 @@ fun TenantBookingsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     items(bookings.value) { booking ->
-                        TenantPropertyCard (
+                        TenantPropertyCard(
                             title = booking.property.name,
                             imageUrl = booking.property.imageUrl[0],
                             detailsText = "$ ${booking.rentalPrice} per month",
                             Badge = {
                                 Text(
-                                    text = "Status",
+                                    text = when (getBookingStatus(booking.checkIn, booking.checkOut)) {
+                                        TenantBookingStatus.PAST -> "Past"
+                                        TenantBookingStatus.CURRENT -> "Current"
+                                        TenantBookingStatus.UPCOMING -> "Upcoming"
+                                    },
                                     style = TextStyle(fontSize = 16.sp),
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier
                                         .background(
-                                            color = successBadge,
+                                            color = when (getBookingStatus(booking.checkIn, booking.checkOut)) {
+                                                TenantBookingStatus.PAST -> errorBadge
+                                                TenantBookingStatus.CURRENT -> successBadge
+                                                TenantBookingStatus.UPCOMING -> light
+                                            },
                                             shape = RoundedCornerShape(16.dp)
                                         )
                                         .padding(horizontal = 16.dp, vertical = 6.dp)

@@ -89,14 +89,15 @@ class TenantMaintenanceViewModel(
         }
     }
 
-    fun createMaintenanceRequest(description: String, images: List<ImageItem>, propertyId:String, context: Context) {
+    fun createMaintenanceRequest(description: String?, title: String, images: List<ImageItem>, propertyId:String, context: Context) {
         viewModelScope.launch {
             try {
                 val result = maintenanceRequestRepository.createMaintenanceRequest(
                     userSession.cookie,
                     propertyId = propertyId,
-                    description = description,
-                    prepareFileParts(images, context)
+                    description = description ?: "",
+                    title = title,
+                    files = prepareFileParts(images, context)
                 )
                 if (result.isSuccessful) {
                     getMaintenanceRequests()

@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +36,7 @@ import com.example.propdash.components.manager.createProperty.InputField
 import com.example.propdash.components.manager.shared.BottomNavBar
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.light
+import com.example.propdash.ui.theme.primary
 import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -136,7 +138,8 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = primary)
             ) {
                 Text("Create Property")
             }
