@@ -67,6 +67,7 @@ model MaintenanceRequestUpdate {
   id                   String             @id @default(cuid())
   maintenanceRequestId String
   description          String
+  imageUrl             String
   userId               String //tenant or manager
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt

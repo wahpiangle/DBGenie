@@ -15,7 +15,16 @@ router.route('/')
 router.route('/:id')
     .get(MaintenanceRequestController.getMaintenanceRequest)
 
+router.route("/resolve/:id")
+    .get(MaintenanceRequestController.resolveMaintenanceRequest);
+
 router.route('/:propertyId')
     .get(MaintenanceRequestController.getMaintenanceRequestByProperty);
+
+router.route("/:maintenanceRequestId/update")
+    .post(
+        upload.single('file'),
+        MaintenanceRequestController.createMaintenanceRequestUpdate
+    )
 
 export default router;

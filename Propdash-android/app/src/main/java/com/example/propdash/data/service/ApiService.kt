@@ -131,6 +131,21 @@ interface ApiService {
         @Part("propertyId") propertyId: RequestBody,
         @Part files: List<MultipartBody.Part>
     ): Response<MaintenanceRequest>
+
+    @GET("maintenance-request/resolve/{id}")
+    suspend fun resolveMaintenanceRequest(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+    ): Response<GeneralResponse>
+
+    @Multipart
+    @POST("/maintenance-request/{id}/update")
+    suspend fun createMaintenanceUpdate(
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+        @Part("description") description: RequestBody,
+        @Part file: MultipartBody.Part
+    ): Response<GeneralResponse>
 }
 
 // Singleton object for Retrofit

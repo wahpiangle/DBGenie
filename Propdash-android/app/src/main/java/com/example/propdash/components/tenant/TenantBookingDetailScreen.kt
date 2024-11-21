@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -97,16 +98,16 @@ fun TenantBookingDetailScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(8.dp)
-                .fillMaxSize(),
+                .padding(8.dp),
             verticalArrangement = Arrangement.Top,
         ) {
             HorizontalMultiBrowseCarousel(
                 state = carouselState,
                 modifier = Modifier
-                    .padding(bottom = 16.dp),
-                preferredItemWidth = 400.dp,
-                itemSpacing = 8.dp
+                    .padding(bottom = 16.dp)
+                    .height(400.dp),
+                preferredItemWidth = 300.dp,
+                itemSpacing = 8.dp,
             ) { index ->
                 val image = booking.value?.property?.imageUrl?.get(index)
                 Box {

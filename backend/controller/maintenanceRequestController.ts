@@ -136,13 +136,18 @@ export class MaintenanceRequestController {
     }
 
     public static async createMaintenanceRequestUpdate(req: Request, res: Response) {
-        const { maintenanceRequestId, description } = req.body;
+        const { description } = req.body;
+        const { maintenanceRequestId } = req.params;
         const user = req.session.user;
-
+        const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
+        const file = req.file as Express.Multer.File;
         try {
             const maintenanceRequest = await prisma.maintenanceRequest.findUnique({
                 where: {
                     id: maintenanceRequestId
+                },
+                include: {
+                    property: true
                 }
             });
 
@@ -151,15 +156,42 @@ export class MaintenanceRequestController {
                 return;
             }
 
+            if (
+                (user.role === Role.TENANT && maintenanceRequest.userId !== user.id) ||
+                (user.role === Role.MANAGER && maintenanceRequest.property.userId !== user.id)
+            ) {
+                res.status(403).json({ error: 'You are not authorized to update this maintenance request' });
+                return;
+            }
             const maintenanceRequestUpdate = await prisma.maintenanceRequestUpdate.create({
                 data: {
                     maintenanceRequestId,
                     description,
-                    userId: user.id
+                    userId: user.id,
+                    imageUrl: ""
                 }
             });
+            if (file) {
+                const [uploadResponse] = await storage.upload(file.path, {
+                    destination: `maintenanceRequests/${maintenanceRequest.id}/${file.originalname}`,
+                })
 
-            res.json(maintenanceRequestUpdate);
+                const [fileUrl] = await uploadResponse.getSignedUrl({
+                    expires: '03-09-2491',
+                    action: 'read',
+                });
+
+                await prisma.maintenanceRequestUpdate.update({
+                    where: {
+                        id: maintenanceRequestUpdate.id
+                    },
+                    data: {
+                        imageUrl: fileUrl
+                    }
+                });
+            }
+
+            res.json({ message: 'Maintenance request update created' });
             return;
         } catch (error) {
             if (error instanceof ZodError) {
@@ -179,9 +211,61 @@ export class MaintenanceRequestController {
                 where: {
                     id,
                     userId: user.id
-                }
+                },
+                include: {
+                    maintenanceRequestUpdates: {
+                        orderBy: {
+                            createdAt: 'desc'
+                        }
+                    }
+                },
             });
             res.json(maintenanceRequest);
+            return;
+        } catch (error) {
+            if (error instanceof ZodError) {
+                res.status(400).json({ error: error.errors });
+            } else {
+                res.status(500).json({ error: 'Internal server error' });
+            }
+            return;
+        }
+    }
+
+    public static async resolveMaintenanceRequest(req: Request, res: Response) {
+        const { id } = req.params;
+        const user = req.session.user;
+        try {
+            const maintenanceRequest = await prisma.maintenanceRequest.findUnique({
+                where: {
+                    id
+                },
+                include: {
+                    property: true
+                }
+            });
+            if (!maintenanceRequest) {
+                res.status(400).json({ error: 'Maintenance request not found' });
+                return;
+            }
+
+            if (
+                (user.role === Role.TENANT && maintenanceRequest.userId !== user.id) ||
+                (user.role === Role.MANAGER && maintenanceRequest.property.userId !== user.id)
+            ) {
+                res.status(403).json({ error: 'You are not authorized to resolve this maintenance request' });
+                return;
+            }
+
+            const resolvedMaintenanceRequest = await prisma.maintenanceRequest.update({
+                where: {
+                    id
+                },
+                data: {
+                    resolved: true
+                }
+            });
+            res.json(resolvedMaintenanceRequest);
             return;
         } catch (error) {
             if (error instanceof ZodError) {

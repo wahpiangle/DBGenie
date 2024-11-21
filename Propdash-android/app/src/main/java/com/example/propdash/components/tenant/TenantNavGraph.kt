@@ -85,10 +85,12 @@ fun TenantNavGraph(userSession: User?, clearSession: () -> Unit) {
             val maintenanceId =
                 navBackStackEntry.arguments?.getString("maintenanceId") ?: return@composable
             TenantMaintenanceDetailScreen(
-                maintenanceId = maintenanceId,
                 viewModel = TenantMaintenanceDetailViewModel(
                     maintenanceId = maintenanceId,
-                    userSession = userSession!!
+                    userSession = userSession!!,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    }
                 ),
                 navigate = { route ->
                     navController.navigate(route)

@@ -122,7 +122,9 @@ fun TenantMaintenanceScreen(
                             propertyName = maintenanceRequest.property.name,
                             status = if(maintenanceRequest.resolved) "Resolved" else "Unresolved",
                             imageUrl = maintenanceRequest.imageUrl[0],
-                            navigate = { navigate(TenantGraph.TenantMaintenanceDetailScreen.route) }
+                            navigate = { navigate(TenantGraph.TenantMaintenanceDetailScreen.createRoute(
+                                maintenanceRequest.id
+                            )) }
                         )
                     }
                 }
