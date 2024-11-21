@@ -1,4 +1,8 @@
-Important dependency notes:
-- Uses coqui-tts instead of TTS, as it doesn't support 3.12
+COMP3040 Coursework for Tan Quan Ming (20475320)
 
-uvicorn app.main:app --reload
+The folder structure is as follows:
+- Propdash-android (Android app)
+- backend (Node.js backend)
+
+To run the api, navigate to the backend folder and run the following commands:
+`docker-compose up --build`
