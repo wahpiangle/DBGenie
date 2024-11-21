@@ -1,4 +1,4 @@
-FROM pgvector/pgvector:0.6.0-pg14
+FROM postgres:16.4-alpine
 
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=admin
