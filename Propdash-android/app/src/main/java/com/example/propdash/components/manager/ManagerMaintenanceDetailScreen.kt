@@ -1,4 +1,4 @@
-package com.example.propdash.components.tenant
+package com.example.propdash.components.manager
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,20 +30,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.propdash.components.manager.maintenanceDetail.ManagerMaintenanceRequestOverviewScreen
+import com.example.propdash.components.manager.maintenanceDetail.ManagerMaintenanceRequestUpdatesScreen
+import com.example.propdash.components.manager.shared.BottomNavBar
 import com.example.propdash.components.shared.PullToRefreshBox
-import com.example.propdash.components.tenant.maintenanceRequest.TenantMaintenanceRequestOverviewScreen
-import com.example.propdash.components.tenant.maintenanceRequest.TenantMaintenanceRequestUpdatesScreen
+import com.example.propdash.components.tenant.TenantGraph
 import com.example.propdash.components.tenant.shared.TenantBottomNavBar
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.grayText
 import com.example.propdash.ui.theme.light
 import com.example.propdash.ui.theme.primary
-import com.example.propdash.viewModel.tenant.TenantMaintenanceDetailViewModel
+import com.example.propdash.viewModel.manager.ManagerMaintenanceRequestDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TenantMaintenanceDetailScreen(
-    viewModel: TenantMaintenanceDetailViewModel,
+fun ManagerMaintenanceDetailScreen(
+    viewModel: ManagerMaintenanceRequestDetailViewModel,
     navigate: (String) -> Unit
 ) {
     val tabs = listOf("Overview", "Updates")
@@ -52,7 +53,6 @@ fun TenantMaintenanceDetailScreen(
     val maintenanceRequest = viewModel.maintenanceRequest.collectAsState()
     val maintenanceRequestError = viewModel.maintenanceRequestError.collectAsState()
     val isRefreshing = viewModel.isRefreshing.collectAsState()
-
     if (maintenanceRequestError.value != null) {
         Text(text = maintenanceRequestError.value!!)
         return
@@ -79,7 +79,7 @@ fun TenantMaintenanceDetailScreen(
                         Text(maintenanceRequest.value!!.title)
                     },
                     navigationIcon = {
-                        IconButton(onClick = { navigate(TenantGraph.TenantMaintenanceScreen.route) }) {
+                        IconButton(onClick = { navigate(ManagerScreen.ManagerMaintenanceScreen.route) }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     },
@@ -91,8 +91,8 @@ fun TenantMaintenanceDetailScreen(
                 )
             },
             bottomBar = {
-                TenantBottomNavBar(
-                    currentRoute = TenantGraph.TenantMaintenanceScreen.route,
+                BottomNavBar (
+                    currentRoute = ManagerScreen.ManagerMaintenanceScreen.route,
                     navigate = navigate
                 )
             },
@@ -135,13 +135,16 @@ fun TenantMaintenanceDetailScreen(
                     modifier = Modifier.fillMaxHeight()
                 ) {
                     when (tabIndex) {
-                        0 -> TenantMaintenanceRequestOverviewScreen(
-                                maintenanceRequest = maintenanceRequest.value!!,
-                                viewModel = viewModel
-                            )
-                        1 -> TenantMaintenanceRequestUpdatesScreen(
+                        0 -> ManagerMaintenanceRequestOverviewScreen(
                             maintenanceRequest = maintenanceRequest.value!!,
-                            viewModel = viewModel
+                        )
+                        1 -> ManagerMaintenanceRequestUpdatesScreen(
+                            maintenanceRequest = maintenanceRequest.value!!,
+                            viewModel = ManagerMaintenanceRequestDetailViewModel(
+                                navigate = navigate,
+                                maintenanceRequestId = maintenanceRequest.value!!.id,
+                                userSession = viewModel.userSession
+                            )
                         )
                     }
                 }

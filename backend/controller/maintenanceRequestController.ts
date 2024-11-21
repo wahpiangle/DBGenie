@@ -205,17 +205,15 @@ export class MaintenanceRequestController {
 
     public static async getMaintenanceRequest(req: Request, res: Response) {
         const { id } = req.params;
-        const user = req.session.user;
         try {
             const maintenanceRequest = await prisma.maintenanceRequest.findUnique({
                 where: {
                     id,
-                    userId: user.id
                 },
                 include: {
                     maintenanceRequestUpdates: {
                         orderBy: {
-                            createdAt: 'desc'
+                            createdAt: 'asc'
                         }
                     }
                 },

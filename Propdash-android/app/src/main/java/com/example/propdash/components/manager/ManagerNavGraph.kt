@@ -12,6 +12,8 @@ import com.example.propdash.components.manager.propertyDetails.ManagerPropertyEd
 import com.example.propdash.data.model.User
 import com.example.propdash.viewModel.manager.ManagerBookingViewModel
 import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
+import com.example.propdash.viewModel.manager.ManagerMaintenanceRequestDetailViewModel
+import com.example.propdash.viewModel.manager.ManagerMaintenanceRequestViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyDetailViewModel
 import com.example.propdash.viewModel.manager.ManagerPropertyViewModel
 
@@ -34,6 +36,11 @@ sealed class ManagerScreen(val route: String) {
     data object ManagerEditBookingScreen:
         ManagerScreen("manager_edit_booking_screen/{bookingId}?propertyId={propertyId}") {
         fun createRoute(bookingId: String, propertyId: String) = "manager_edit_booking_screen/$bookingId?propertyId=$propertyId"
+    }
+
+    data object ManagerMaintenanceDetailScreen:
+        ManagerScreen("manager_maintenance_detail_screen/{maintenanceId}") {
+        fun createRoute(maintenanceId: String) = "manager_maintenance_detail_screen/$maintenanceId"
     }
 
 }
@@ -63,7 +70,13 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
             ManagerMaintenanceScreen(
                 navigate = { route ->
                     navController.navigate(route)
-                }
+                },
+                viewModel = ManagerMaintenanceRequestViewModel(
+                    userSession,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    }
+                )
             )
         }
 
@@ -155,6 +168,25 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
                     },
                     bookingId = bookingId
                 )
+            )
+        }
+
+        composable(
+            route = ManagerScreen.ManagerMaintenanceDetailScreen.route,
+            arguments = listOf(navArgument("maintenanceId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val maintenanceId = backStackEntry.arguments?.getString("maintenanceId") ?: return@composable
+            ManagerMaintenanceDetailScreen(
+                navigate = { route ->
+                    navController.navigate(route)
+                },
+                viewModel = ManagerMaintenanceRequestDetailViewModel(
+                    userSession,
+                    navigate = { route ->
+                        navController.navigate(route)
+                    },
+                    maintenanceId
+                ),
             )
         }
     }

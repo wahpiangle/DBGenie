@@ -1,6 +1,5 @@
-package com.example.propdash.components.tenant.maintenanceRequest
+package com.example.propdash.components.manager.maintenanceDetail
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,12 +44,13 @@ import coil3.request.ImageRequest
 import com.example.propdash.components.manager.createProperty.ImageItem
 import com.example.propdash.data.model.MaintenanceRequest
 import com.example.propdash.ui.theme.light
-import com.example.propdash.viewModel.tenant.TenantMaintenanceDetailViewModel
+import com.example.propdash.ui.theme.primary
+import com.example.propdash.viewModel.manager.ManagerMaintenanceRequestDetailViewModel
 
 @Composable
-fun MaintenanceRequestUpdatesScreen(
+fun ManagerMaintenanceRequestUpdatesScreen(
     maintenanceRequest: MaintenanceRequest,
-    viewModel: TenantMaintenanceDetailViewModel
+    viewModel: ManagerMaintenanceRequestDetailViewModel
 ) {
     var input by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<ImageItem?>(null) }
@@ -65,12 +65,14 @@ fun MaintenanceRequestUpdatesScreen(
             .fillMaxHeight()
     ) {
         if (maintenanceRequest.maintenanceRequestUpdates.isNotEmpty()) {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
                 items(maintenanceRequest.maintenanceRequestUpdates) { maintenanceRequestUpdate ->
                     Row(
                         modifier = Modifier.fillMaxSize(),
                         horizontalArrangement = maintenanceRequestUpdate.userId.let {
-                            Log.d("MaintenanceRequestUpdatesScreen", "it: $it")
                             if (it == userSession.id) {
                                 Arrangement.End
                             } else {
@@ -78,11 +80,17 @@ fun MaintenanceRequestUpdatesScreen(
                             }
                         }
                     ) {
-                        if (maintenanceRequestUpdate.userId == userSession.id) {
-                            Text(
-                                text = maintenanceRequestUpdate.description,
-                                color = light
-                            )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(
+                                    if (maintenanceRequestUpdate.userId == userSession.id) {
+                                        primary
+                                    } else {
+                                        light
+                                    }
+                                )
+                        ) {
                             if (maintenanceRequestUpdate.imageUrl.isNotEmpty()) {
                                 Image(
                                     painter = rememberAsyncImagePainter(
@@ -92,28 +100,31 @@ fun MaintenanceRequestUpdatesScreen(
                                     ),
                                     contentDescription = null,
                                     contentScale = ContentScale.Fit,
-                                    modifier = Modifier.height(200.dp),
+                                    modifier = Modifier
+                                        .height(250.dp)
+                                        .padding(8.dp)
+                                        .background(
+                                            if (maintenanceRequestUpdate.userId == userSession.id) {
+                                                primary
+                                            } else {
+                                                light
+                                            }
+                                        )
+                                )
+                            } else {
+                                Text(
+                                    text = maintenanceRequestUpdate.description,
+                                    color = if (maintenanceRequestUpdate.userId == userSession.id) {
+                                        light
+                                    } else {
+                                        Color.Black
+                                    },
+                                    modifier = Modifier.padding(8.dp)
                                 )
                             }
-                        } else {
-                            if (maintenanceRequestUpdate.imageUrl.isNotEmpty()) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(
-                                        ImageRequest.Builder(LocalContext.current)
-                                            .data(maintenanceRequestUpdate.imageUrl)
-                                            .build(),
-                                    ),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier.height(200.dp),
-                                )
-                            }
-                            Text(
-                                text = maintenanceRequestUpdate.description,
-                                color = light
-                            )
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }

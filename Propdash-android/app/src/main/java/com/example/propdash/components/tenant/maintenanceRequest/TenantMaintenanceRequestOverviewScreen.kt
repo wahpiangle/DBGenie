@@ -33,7 +33,7 @@ import com.example.propdash.viewModel.tenant.TenantMaintenanceDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MaintenanceRequestOverviewScreen(
+fun TenantMaintenanceRequestOverviewScreen(
     maintenanceRequest: MaintenanceRequest,
     viewModel: TenantMaintenanceDetailViewModel
 ) {
