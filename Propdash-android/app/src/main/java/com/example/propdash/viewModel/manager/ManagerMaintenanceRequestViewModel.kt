@@ -24,35 +24,55 @@ class ManagerMaintenanceRequestViewModel(
     val isLoading = _isLoading
 
     init {
-        getMaintenanceRequests()
+        loadMaintenanceRequests()
     }
 
-    private fun getMaintenanceRequests() {
+    private fun loadMaintenanceRequests() {
         viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                val result = maintenanceRequestRepository.getMaintenanceRequests(
-                    userSession.cookie
-                )
-                if (result.isSuccessful) {
-                    _maintenanceRequests.value = result.body()!!
-                } else {
-                    _maintenanceError.value = result.errorBody()?.string()
-                }
-            } catch (e: Exception) {
-                _maintenanceError.value = e.message
-                e.printStackTrace()
-            } finally {
-                _isLoading.value = false
-            }
+            fetchAndSetMaintenanceRequests()
         }
     }
+
+    private suspend fun fetchAndSetMaintenanceRequests(): List<MaintenanceRequest> {
+        return try {
+            _isLoading.value = true
+            val result = maintenanceRequestRepository.getMaintenanceRequests(userSession.cookie)
+            if (result.isSuccessful) {
+                val requests = result.body()!!
+                _maintenanceRequests.value = requests
+                requests
+            } else {
+                _maintenanceError.value = result.errorBody()?.string()
+                emptyList()
+            }
+        } catch (e: Exception) {
+            _maintenanceError.value = e.message
+            e.printStackTrace()
+            emptyList()
+        } finally {
+            _isLoading.value = false
+        }
+    }
+
+    fun applyResolvedFilter(resolved: Boolean?) {
+        viewModelScope.launch {
+            val requests = fetchAndSetMaintenanceRequests()
+            val filteredRequests = when (resolved) {
+                null -> requests
+                false -> requests.filter { !it.resolved }
+                true -> requests.filter { it.resolved }
+            }
+            _maintenanceRequests.value = filteredRequests
+        }
+    }
+
+
 
     fun onPullToRefreshTrigger() {
         _isRefreshing.update { true }
         viewModelScope.launch {
             _maintenanceError.value = null
-            getMaintenanceRequests()
+            loadMaintenanceRequests()
             _isRefreshing.update { false }
         }
     }
