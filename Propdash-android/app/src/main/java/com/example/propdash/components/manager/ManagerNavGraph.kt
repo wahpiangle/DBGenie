@@ -73,9 +73,6 @@ fun ManagerNavGraph(userSession: User?, clearSession: () -> Unit) {
                 },
                 viewModel = ManagerMaintenanceRequestViewModel(
                     userSession,
-                    navigate = { route ->
-                        navController.navigate(route)
-                    }
                 )
             )
         }

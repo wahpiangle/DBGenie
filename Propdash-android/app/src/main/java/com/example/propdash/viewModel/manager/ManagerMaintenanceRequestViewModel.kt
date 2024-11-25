@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 
 class ManagerMaintenanceRequestViewModel(
     private val userSession: User,
-    private val navigate: (String) -> Unit
 ) : ViewModel() {
     private val maintenanceRequestRepository = MaintenanceRequestRepository()
     private val _maintenanceRequests = MutableStateFlow<List<MaintenanceRequest>>(emptyList())
