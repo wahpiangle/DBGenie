@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.propdash.data.SessionManager
+import com.example.propdash.data.service.SessionManager
 import com.example.propdash.data.model.ErrorResponse
 import com.example.propdash.data.model.LoginRequest
 import com.example.propdash.data.model.RegisterRequest

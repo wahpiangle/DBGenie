@@ -6,6 +6,7 @@ const checkManager = (req: Request, res: Response, next: NextFunction) => {
         res.status(403).json({ error: 'Unauthorized' });
         return;
     }
+    req.session.resetMaxAge();
     next();
 }
 

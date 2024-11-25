@@ -2,7 +2,7 @@ package com.example.propdash.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.propdash.data.SessionManager
+import com.example.propdash.data.service.SessionManager
 
 class UserViewModelFactory(private val sessionManager: SessionManager) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

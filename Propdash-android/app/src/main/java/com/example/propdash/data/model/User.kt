@@ -1,7 +1,5 @@
 package com.example.propdash.data.model
 
-import okhttp3.ResponseBody
-
 data class User(
     val id: String,
     val name: String,
@@ -9,8 +7,7 @@ data class User(
     val role: Role,
     val verified: Boolean,
     var cookie: String,
-) {
-}
+)
 
 data class RegisterRequest(
     val name: String,
@@ -24,3 +21,8 @@ data class LoginRequest(
     val email: String,
     val password: String
 )
+
+enum class Role {
+    TENANT,
+    MANAGER
+}

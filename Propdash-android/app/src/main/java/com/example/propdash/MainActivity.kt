@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.ViewModelProvider
 import com.example.propdash.components.MainNavGraph
-import com.example.propdash.data.SessionManager
+import com.example.propdash.data.service.SessionManager
 import com.example.propdash.ui.theme.PropdashTheme
 import com.example.propdash.viewModel.UserViewModel
 import com.example.propdash.viewModel.UserViewModelFactory

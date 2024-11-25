@@ -14,11 +14,11 @@ import com.example.propdash.data.model.Role
 import com.example.propdash.viewModel.UserViewModel
 
 sealed class Screen(val route: String) {
-    object TenantScreen : Screen("tenant_screen")
-    object ManagerScreen : Screen("manager_screen")
-    object LoginScreen : Screen("login_screen")
-    object RegisterScreen : Screen("register_screen")
-    object VerificationScreen : Screen("verification_screen")
+    data object TenantScreen : Screen("tenant_screen")
+    data object ManagerScreen : Screen("manager_screen")
+    data object LoginScreen : Screen("login_screen")
+    data object RegisterScreen : Screen("register_screen")
+    data object VerificationScreen : Screen("verification_screen")
 }
 
 @Composable
