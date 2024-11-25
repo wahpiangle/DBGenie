@@ -1,4 +1,4 @@
-package com.example.propdash.components
+package com.example.propdash.components.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

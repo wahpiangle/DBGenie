@@ -6,7 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.propdash.components.manager.ManagerNavGraph
-import com.example.propdash.components.manager.ManagerScreen
+import com.example.propdash.components.shared.LoginScreen
+import com.example.propdash.components.shared.RegisterScreen
+import com.example.propdash.components.shared.VerificationScreen
 import com.example.propdash.components.tenant.TenantNavGraph
 import com.example.propdash.data.model.Role
 import com.example.propdash.viewModel.UserViewModel
