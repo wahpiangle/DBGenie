@@ -34,8 +34,6 @@ import com.example.propdash.components.manager.maintenanceDetail.ManagerMaintena
 import com.example.propdash.components.manager.maintenanceDetail.ManagerMaintenanceRequestUpdatesScreen
 import com.example.propdash.components.manager.shared.BottomNavBar
 import com.example.propdash.components.shared.PullToRefreshBox
-import com.example.propdash.components.tenant.TenantGraph
-import com.example.propdash.components.tenant.shared.TenantBottomNavBar
 import com.example.propdash.ui.theme.dark
 import com.example.propdash.ui.theme.grayText
 import com.example.propdash.ui.theme.light

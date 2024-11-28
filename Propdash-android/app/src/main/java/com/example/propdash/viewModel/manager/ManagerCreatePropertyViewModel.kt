@@ -27,7 +27,7 @@ class ManagerCreatePropertyViewModel(
     private val navigate: (String) -> Unit
 ) : ViewModel() {
     private val _createPropertyError = MutableStateFlow<String?>(null)
-    private val propertyRepository = PropertyRepository()
+    var propertyRepository = PropertyRepository()
     val createPropertyError = _createPropertyError.asStateFlow()
 
     fun createProperty(

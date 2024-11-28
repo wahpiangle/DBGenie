@@ -2,7 +2,6 @@ package com.example.propdash
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.example.propdash.components.manager.ManagerMaintenanceScreen
 import com.example.propdash.data.model.MaintenanceRequest

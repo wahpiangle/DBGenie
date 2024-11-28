@@ -144,6 +144,5 @@ fun ManagerCreatePropertyScreen(navigate: (String) -> Unit, viewModel: ManagerCr
                 Text("Create Property")
             }
         }
-
     }
 }
