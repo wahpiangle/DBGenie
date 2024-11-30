@@ -157,7 +157,7 @@ fun ManagerMaintenanceRequestUpdatesScreen(
                                 .data(selectedImageUri!!.asUriOrString())
                                 .build(),
                         ),
-                        contentDescription = null,
+                        contentDescription = "Image",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.height(120.dp),
                     )
@@ -181,7 +181,8 @@ fun ManagerMaintenanceRequestUpdatesScreen(
                     onValueChange = { input = it },
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp)),
+                    placeholder = { Text("Add a new update...") },
                 )
             }
 

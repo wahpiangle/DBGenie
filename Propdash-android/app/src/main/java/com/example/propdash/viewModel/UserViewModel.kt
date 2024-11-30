@@ -28,8 +28,9 @@ class UserViewModel(private val sessionManager: SessionManager) : ViewModel() {
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
+            try {
                 val user = userRepository.login(LoginRequest(email, password))
-                if(user.isSuccessful){
+                if (user.isSuccessful) {
                     val userResponse = user.body()
                     //get the cookie from the response headers
                     val cookie = user.headers().get("Set-Cookie")
@@ -46,61 +47,82 @@ class UserViewModel(private val sessionManager: SessionManager) : ViewModel() {
                             it.cookie
                         )
                     }
-                }else{
+                } else {
                     val errorResponse =
                         Gson().fromJson(user.errorBody()?.string(), ErrorResponse::class.java)
                     _errorMessage.value = errorResponse.error
                 }
-        }
-    }
-
-    fun register(name: String, email: String, phoneNumber: String, password: String, role: Role){
-        viewModelScope.launch {
-            val userResponse = userRepository.register(RegisterRequest(
-                name,
-                email,
-                password,
-                phoneNumber,
-                role
-            ))
-            if(userResponse.isSuccessful){
-                val user = userResponse.body()
-                val cookie = userResponse.headers().get("Set-Cookie")
-                user?.let {
-                    saveUserSession(
-                        it.id,
-                        it.name,
-                        it.email,
-                        it.role,
-                        it.verified,
-                        cookie!!
-                    )
-                }
-            }else{
-                val errorResponse = Gson().fromJson(userResponse.errorBody()?.string(), ErrorResponse::class.java)
-                _errorMessage.value = errorResponse.error
+            } catch (e: Exception) {
+                _errorMessage.value = e.message.toString()
             }
         }
     }
 
-    fun verifyAccount(token: String){
+    fun register(name: String, email: String, phoneNumber: String, password: String, role: Role) {
         viewModelScope.launch {
-            val response = userRepository.verifyAccount(userSession.value!!.cookie, VerificationRequest(token))
-            if (!response.isSuccessful) {
-                val errorResponse = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
-                _errorMessage.value = errorResponse.error
-            }else{
-                val user = userSession.value
-                user?.let {
-                    saveUserSession(
-                        it.id,
-                        it.name,
-                        it.email,
-                        it.role,
-                        true,
-                        it.cookie
+            try {
+                val userResponse = userRepository.register(
+                    RegisterRequest(
+                        name,
+                        email,
+                        password,
+                        phoneNumber,
+                        role
                     )
+                )
+                if (userResponse.isSuccessful) {
+                    val user = userResponse.body()
+                    val cookie = userResponse.headers().get("Set-Cookie")
+                    user?.let {
+                        saveUserSession(
+                            it.id,
+                            it.name,
+                            it.email,
+                            it.role,
+                            it.verified,
+                            cookie!!
+                        )
+                    }
+                } else {
+                    val errorResponse = Gson().fromJson(
+                        userResponse.errorBody()?.string(),
+                        ErrorResponse::class.java
+                    )
+                    _errorMessage.value = errorResponse.error
                 }
+            } catch (e: Exception) {
+                _errorMessage.value = e.message.toString()
+            }
+        }
+    }
+
+    fun verifyAccount(token: String) {
+        viewModelScope.launch {
+            try {
+
+                val response = userRepository.verifyAccount(
+                    userSession.value!!.cookie,
+                    VerificationRequest(token)
+                )
+                if (!response.isSuccessful) {
+                    val errorResponse =
+                        Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                    _errorMessage.value = errorResponse.error
+                } else {
+                    val user = userSession.value
+                    user?.let {
+                        saveUserSession(
+                            it.id,
+                            it.name,
+                            it.email,
+                            it.role,
+                            true,
+                            it.cookie
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = e.message.toString()
             }
         }
     }
@@ -127,7 +149,7 @@ class UserViewModel(private val sessionManager: SessionManager) : ViewModel() {
         }
     }
 
-    fun clearErrorMessage(){
+    fun clearErrorMessage() {
         _errorMessage.value = ""
     }
 }

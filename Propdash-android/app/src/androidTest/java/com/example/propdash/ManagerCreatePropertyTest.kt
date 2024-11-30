@@ -3,15 +3,12 @@ package com.example.propdash
 import android.content.Context
 import android.net.Uri
 import androidx.compose.ui.test.junit4.createComposeRule
-import com.example.propdash.components.manager.ManagerScreen
 import com.example.propdash.components.manager.createProperty.ImageItem
-import com.example.propdash.data.model.ErrorResponse
-import com.example.propdash.data.model.Property
 import com.example.propdash.data.model.User
 import com.example.propdash.data.repository.PropertyRepository
 import com.example.propdash.viewModel.manager.ManagerCreatePropertyViewModel
-import com.google.gson.Gson
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,8 +17,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.ResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
