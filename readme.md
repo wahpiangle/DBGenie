@@ -13,7 +13,7 @@ and run the following commands:
 Retrieve the IPV4 address of your current machine by running
 `ipconfig` on windows or `ifconfig` on linux
 
-Then open the APIService.kt file in the Android app and change the BASE_URL to the IPV4 address of your machine.
+Then open the `APIService.kt` file in the Android app and change the BASE_URL to the IPV4 address of your machine.
 For example if the IPV4 address is `123.456.78.90`, change the BASE_URL to
 `private const val BASE_URL = "http://123.456.78.90:8080/"`
 as the port of the backend server is `8080`.
