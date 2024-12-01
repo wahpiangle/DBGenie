@@ -18,4 +18,7 @@ For example if the IPV4 address is `123.456.78.90`, change the BASE_URL to
 `private const val BASE_URL = "http://123.456.78.90:8080/"`
 as the port of the backend server is `8080`.
 
+Prisma Studio (a tool to view the database) is also available on port `5556`
+if you would like to view the database.
+
 Then run the Android app.
