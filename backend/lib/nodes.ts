@@ -1,11 +1,12 @@
 import { Annotation } from "@langchain/langgraph"
-import { sqlQueryChain } from "./chatbot"
+import { db, sqlQueryChain } from "./chatbot"
 import { questionEvaluation } from "./tools/questionEvaluator"
 import { prisma } from "../prisma"
 import { type User } from "@prisma/client"
 import { userQueryChecker } from "./tools/userQueryChecker"
 import { determineExecuteOrQuery } from "./tools/determineExecuteOrQuery"
 import { injectionPreventionChecker } from "./tools/injectionPrevention"
+import { tableColumnGenerator } from "./tools/tableColumnGenerator"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
@@ -91,7 +92,8 @@ const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
     console.log("Checking if the user's query has sufficient information for the sql query")
     const hasSufficientInfo = questionEvaluation.invoke({
         input: state.question,
-        sql_statement: state.generation
+        sql_statement: state.generation,
+        table: tableColumnGenerator(db)
     })
     return { hasSufficientInfo }
 }

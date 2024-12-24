@@ -1,22 +1,31 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { llm } from "../llm";
-import { StringOutputParser } from "@langchain/core/output_parsers";
+import { JsonOutputParser, StringOutputParser } from "@langchain/core/output_parsers";
+import { db } from "../chatbot";
+import { tableColumnGenerator } from "./tableColumnGenerator";
 
 const QUESETION_EVALUATION_TEMPLATE = `
-Given a user query and a generated SQL statement, determine if the user's query provides enough information to execute the SQL statement accurately. Focus on whether each required field for the statement is specified, particularly for INSERT statements, where missing fields will prevent successful insertion.
+You are a database assistant. Your task is to evaluate whether a given user query contains sufficient information to execute an insert or update operation on a database table.
 
-If the information is sufficient, respond with 'Query Complete', and if any essential fields or values are missing, specify which ones are missing and request the necessary information from the user.
+You will receive the following inputs:
 
-Examples of missing information may include:
+    Table Information: Details about the table, including its name, columns, and constraints (e.g., primary keys, not-null columns, foreign key relationships).
+    User Query: The user's natural language input describing the intended operation.
+    SQL Statement: A partially or fully constructed SQL statement based on the user query.
 
-    Field names for INSERT statements,
-    Conditions for UPDATE or DELETE statements,
-    Any required data needed to meet NOT NULL constraints or primary key requirements in INSERT or UPDATE statements.
+Your evaluation must determine:
+    If all required fields for the table's schema (e.g., not-null fields) are provided in the user query or SQL statement.
+    For INSERT operations, the primary key field is optional unless explicitly provided by the user.
+    Whether the user's intent for the operation (insert or update) is clear and matches the provided SQL statement.
+    If any critical details are missing, specify what is missing and provide clear feedback to help complete the operation.
 
-For example, given the user input: 'Insert a new employee record,' and a generated SQL query INSERT INTO employees (id, name, role) VALUES (?, ?, ?);, respond with: 'Please provide values for id, name, and role to complete the insert.'
+Respond in the following format in JSON:
+    "evaluation": "Sufficient" or "Insufficient"
+    "feedback": "Feedback message here"
 
-User Query: {input}
-SQL statement: {sql_statement}
+Input: {input}
+Table: {table}
+SQL Statement: {sql_statement}
 
 `
 
@@ -24,6 +33,11 @@ const questionEvaluationPrompt = ChatPromptTemplate.fromTemplate(
     QUESETION_EVALUATION_TEMPLATE
 );
 
-const questionEvaluation = questionEvaluationPrompt.pipe(llm).pipe(new StringOutputParser());
+const questionEvaluation = questionEvaluationPrompt.pipe(llm).pipe(new JsonOutputParser());
+console.log(await questionEvaluation.invoke({
+    input: "Insert a new employee record of John Doe of age 30",
+    table: tableColumnGenerator(db),
+    sql_statement: "INSERT INTO Employee (name, age, department_id) VALUES ('John Doe', 30, 6)"
+}))
 
 export { questionEvaluation }
