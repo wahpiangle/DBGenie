@@ -1,8 +1,13 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { llm } from "../llm";
-import { JsonOutputParser, StringOutputParser } from "@langchain/core/output_parsers";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { db } from "../chatbot";
 import { tableColumnGenerator } from "./tableColumnGenerator";
+
+interface QuestionEvaluatorOutput {
+    evaluation: string;
+    feedback: string;
+}
 
 const QUESETION_EVALUATION_TEMPLATE = `
 You are a database assistant. Your task is to evaluate whether a given user query contains sufficient information to execute an insert or update operation on a database table.
@@ -34,10 +39,11 @@ const questionEvaluationPrompt = ChatPromptTemplate.fromTemplate(
 );
 
 const questionEvaluation = questionEvaluationPrompt.pipe(llm).pipe(new JsonOutputParser());
-console.log(await questionEvaluation.invoke({
+const response = await questionEvaluation.invoke({
     input: "Insert a new employee record of John Doe of age 30",
     table: tableColumnGenerator(db),
     sql_statement: "INSERT INTO Employee (name, age, department_id) VALUES ('John Doe', 30, 6)"
-}))
+}) as QuestionEvaluatorOutput
 
-export { questionEvaluation }
+export { questionEvaluation };
+export type { QuestionEvaluatorOutput };

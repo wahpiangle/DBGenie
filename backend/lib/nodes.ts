@@ -1,18 +1,21 @@
 import { Annotation } from "@langchain/langgraph"
 import { db, sqlQueryChain } from "./chatbot"
-import { questionEvaluation } from "./tools/questionEvaluator"
+import { questionEvaluation, type QuestionEvaluatorOutput } from "./tools/questionEvaluator"
 import { prisma } from "../prisma"
 import { type User } from "@prisma/client"
 import { userQueryChecker } from "./tools/userQueryChecker"
 import { determineExecuteOrQuery } from "./tools/determineExecuteOrQuery"
 import { injectionPreventionChecker } from "./tools/injectionPrevention"
 import { tableColumnGenerator } from "./tools/tableColumnGenerator"
+import { readQueryGenerator } from "./tools/readQueryGenerator"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
     generation: Annotation<string>,
     user: Annotation<User>,
     rejected: Annotation<boolean>,
+    errorMessage: Annotation<string>,
+    result: Annotation<string>
 })
 
 const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
@@ -61,41 +64,47 @@ const checkUserQuery = async (state: typeof GraphState.State): Promise<Partial<t
     return {}
 }
 
-const blockTables = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
+const blockTables = async (state: typeof GraphState.State) => {
     console.log("Blocking users from manipulating tables")
     const sqlQuery = state.generation
     const userQuery = await userQueryChecker.invoke({
+        blockedTables: ['users', 'RentalBill', 'Payment', 'VerificationToken', 'Session'].join(', '),
         sql_statement: sqlQuery
     })
-    // get the first word of the sql query
-    const firstWord = userQuery.split(' ')[0].toLowerCase()
-    if (firstWord === 'yes') {
-        return { rejected: true }
+    if (userQuery.split(' ')[0].toLowerCase() === 'yes') {
+        state.errorMessage = "You are not allowed to access the specific data. Please try again."
+        return { errorMessage: state.errorMessage }
     }
-    return { rejected: false }
+    return 'injectionPrevention';
 }
 
-const injectionPrevention = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
+const injectionPrevention = async (state: typeof GraphState.State) => {
     console.log("Checking for SQL injection attacks")
     const sqlQuery = state.generation
     const isMalicious = await injectionPreventionChecker.invoke({
         sql_statement: sqlQuery
     })
     if (isMalicious.split(' ')[0].toLowerCase() === 'yes') {
-        return { rejected: true }
+        state.errorMessage = "The query is invalid and cannot be processed. Please try again."
+        return { errorMessage: state.errorMessage }
     }
-    return { rejected: false }
+    return 'evaluateSufficientInfo';
 }
 
 const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
     // check if the user's query has sufficient information for the sql query
     console.log("Checking if the user's query has sufficient information for the sql query")
-    const hasSufficientInfo = questionEvaluation.invoke({
+    const hasSufficientInfo = await questionEvaluation.invoke({
         input: state.question,
         sql_statement: state.generation,
         table: tableColumnGenerator(db)
-    })
-    return { hasSufficientInfo }
+    }) as QuestionEvaluatorOutput
+
+    if (hasSufficientInfo.evaluation === 'Insufficient') {
+        return { errorMessage: hasSufficientInfo.feedback }
+    } else {
+        return
+    }
 }
 
 const runQueryToDb = async (state: typeof GraphState.State) => {
@@ -104,10 +113,26 @@ const runQueryToDb = async (state: typeof GraphState.State) => {
         sql_statement: state.generation
     })
     if (isQuery.split(' ')[0].toLowerCase() === 'yes') {
-        prisma.$queryRawUnsafe(state.generation)
+        return {
+            result: JSON.stringify(await prisma.$queryRawUnsafe(state.generation))
+        }
     } else {
         prisma.$executeRawUnsafe(state.generation)
     }
 }
 
-export { GraphState, generateSqlQuery, checkUserQuery, blockTables, evaluateSufficientInfo, runQueryToDb }
+const generateErrorMessage = async (state: typeof GraphState.State) => {
+    console.log("Generating error message")
+    return { result: state.errorMessage }
+}
+
+const generateReadQueryResult = async (state: typeof GraphState.State) => {
+    console.log("Generating read query result")
+    const response = await readQueryGenerator.invoke({
+        sql_statement: state.generation,
+        result: state.result
+    })
+    return { result: response }
+}
+
+export { GraphState, generateSqlQuery, checkUserQuery, blockTables, evaluateSufficientInfo, runQueryToDb, generateErrorMessage, injectionPrevention, generateReadQueryResult }
