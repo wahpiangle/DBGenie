@@ -1,4 +1,4 @@
-import { Annotation } from "@langchain/langgraph"
+import { Annotation, END } from "@langchain/langgraph"
 import { db, sqlQueryChain } from "./chatbot"
 import { questionEvaluation, type QuestionEvaluatorOutput } from "./tools/questionEvaluator"
 import { prisma } from "../prisma"
@@ -13,7 +13,6 @@ const GraphState = Annotation.Root({
     question: Annotation<string>,
     generation: Annotation<string>,
     user: Annotation<User>,
-    rejected: Annotation<boolean>,
     errorMessage: Annotation<string>,
     result: Annotation<string>
 })
@@ -23,7 +22,13 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
     const generatedQuery = await sqlQueryChain.invoke({
         question: state.question
     })
-    return { generation: generatedQuery }
+    const extractSQL = (input: string) => {
+        const regex = /```sql\n([\s\S]*?)\n```/;
+        const match = input.match(regex);
+        return match ? match[1] : input;
+    };
+
+    return { generation: extractSQL(generatedQuery) }
 }
 
 const checkUserQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
@@ -65,17 +70,15 @@ const checkUserQuery = async (state: typeof GraphState.State): Promise<Partial<t
 }
 
 const blockTables = async (state: typeof GraphState.State) => {
-    console.log("Blocking users from manipulating tables")
-    const sqlQuery = state.generation
+    console.log("\nBlocking users from manipulating tables\n")
     const userQuery = await userQueryChecker.invoke({
-        blockedTables: ['users', 'RentalBill', 'Payment', 'VerificationToken', 'Session'].join(', '),
-        sql_statement: sqlQuery
+        blockedTables: ['Users', 'RentalBill', 'Payment', 'VerificationToken', 'Session'].join(', '),
+        sql_statement: state.generation
     })
     if (userQuery.split(' ')[0].toLowerCase() === 'yes') {
-        state.errorMessage = "You are not allowed to access the specific data. Please try again."
-        return { errorMessage: state.errorMessage }
+        return { errorMessage: "You are not allowed to access the specific data. Please try again." }
     }
-    return 'injectionPrevention';
+    return;
 }
 
 const injectionPrevention = async (state: typeof GraphState.State) => {
@@ -85,10 +88,11 @@ const injectionPrevention = async (state: typeof GraphState.State) => {
         sql_statement: sqlQuery
     })
     if (isMalicious.split(' ')[0].toLowerCase() === 'yes') {
-        state.errorMessage = "The query is invalid and cannot be processed. Please try again."
-        return { errorMessage: state.errorMessage }
+        return {
+            errorMessage: "The query is invalid and cannot be processed. Please try again."
+        }
     }
-    return 'evaluateSufficientInfo';
+    return;
 }
 
 const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
@@ -102,9 +106,8 @@ const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
 
     if (hasSufficientInfo.evaluation === 'Insufficient') {
         return { errorMessage: hasSufficientInfo.feedback }
-    } else {
-        return
     }
+    return
 }
 
 const runQueryToDb = async (state: typeof GraphState.State) => {
@@ -135,4 +138,24 @@ const generateReadQueryResult = async (state: typeof GraphState.State) => {
     return { result: response }
 }
 
-export { GraphState, generateSqlQuery, checkUserQuery, blockTables, evaluateSufficientInfo, runQueryToDb, generateErrorMessage, injectionPrevention, generateReadQueryResult }
+const decideToReject = async (state: typeof GraphState.State) => {
+    console.log("The state is:", state)
+    if (state.errorMessage) {
+        return "reject"
+    } else {
+        return "accept"
+    }
+}
+
+export {
+    GraphState,
+    generateSqlQuery,
+    checkUserQuery,
+    blockTables,
+    evaluateSufficientInfo,
+    runQueryToDb,
+    generateErrorMessage,
+    injectionPrevention,
+    generateReadQueryResult,
+    decideToReject
+}
