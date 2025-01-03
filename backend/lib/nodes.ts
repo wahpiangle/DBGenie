@@ -8,6 +8,8 @@ import { determineExecuteOrQuery } from "./tools/determineExecuteOrQuery"
 import { injectionPreventionChecker } from "./tools/injectionPrevention"
 import { tableColumnGenerator } from "./tools/tableColumnGenerator"
 import { readQueryGenerator } from "./tools/readQueryGenerator"
+import { ownDataChecker } from "./tools/ownDataChecker"
+import successExecuteMessageGeneration from "./tools/successExecuteMessageGeneration"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
@@ -31,9 +33,9 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
     return { generation: extractSQL(generatedQuery) }
 }
 
-const checkUserQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
+const checkUserQuery = async (state: typeof GraphState.State) => {
     // check if the user is updating or deleting a record that does not belong to them
-    console.log("Checking if the user is updating or deleting a record that does not belong to them")
+    console.log("======== Checking if the user is updating or deleting a record that does not belong to them ========")
     const user = state.user
     const ids = await prisma.user.findUnique({
         where: {
@@ -62,15 +64,17 @@ const checkUserQuery = async (state: typeof GraphState.State): Promise<Partial<t
             },
         }
     })
-
-    // check if the user is updating or deleting a record that does not belong to them
-    const sqlQuery = state.generation
-
-    return {}
+    const response = await ownDataChecker.invoke({
+        sql_statement: state.generation,
+        user_json: JSON.stringify(ids)
+    }) as { error: string, conflicted_tables: string[] }
+    if (response.error) {
+        return { errorMessage: "You are not allowed to access the specific data. Please try again." }
+    }
 }
 
 const blockTables = async (state: typeof GraphState.State) => {
-    console.log("\nBlocking users from manipulating tables\n")
+    console.log("====== Blocking tables ======")
     const userQuery = await userQueryChecker.invoke({
         blockedTables: ['Users', 'RentalBill', 'Payment', 'VerificationToken', 'Session'].join(', '),
         sql_statement: state.generation
@@ -82,7 +86,7 @@ const blockTables = async (state: typeof GraphState.State) => {
 }
 
 const injectionPrevention = async (state: typeof GraphState.State) => {
-    console.log("Checking for SQL injection attacks")
+    console.log("====== Checking for SQL injection ======")
     const sqlQuery = state.generation
     const isMalicious = await injectionPreventionChecker.invoke({
         sql_statement: sqlQuery
@@ -97,7 +101,8 @@ const injectionPrevention = async (state: typeof GraphState.State) => {
 
 const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
     // check if the user's query has sufficient information for the sql query
-    console.log("Checking if the user's query has sufficient information for the sql query")
+    console.log(`====== Evaluating if the user's query has sufficient information ======
+        `)
     const hasSufficientInfo = await questionEvaluation.invoke({
         input: state.question,
         sql_statement: state.generation,
@@ -105,7 +110,10 @@ const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
     }) as QuestionEvaluatorOutput
 
     if (hasSufficientInfo.evaluation === 'Insufficient') {
+        console.log("====== QUERY INSUFFICIENT INFORMATION ======")
         return { errorMessage: hasSufficientInfo.feedback }
+    } else {
+        console.log("====== QUERY SUFFICIENT INFORMATION ======")
     }
     return
 }
@@ -117,29 +125,28 @@ const runQueryToDb = async (state: typeof GraphState.State) => {
     })
     if (isQuery.split(' ')[0].toLowerCase() === 'yes') {
         return {
-            result: JSON.stringify(await prisma.$queryRawUnsafe(state.generation))
+            result: await readQueryGenerator.invoke({
+                sql_statement: state.generation,
+                result: JSON.stringify(await prisma.$queryRawUnsafe(state.generation))
+            })
         }
     } else {
         prisma.$executeRawUnsafe(state.generation)
+        return {
+            result: await successExecuteMessageGeneration.invoke({
+                sql_statement: state.generation
+            })
+        }
     }
 }
 
 const generateErrorMessage = async (state: typeof GraphState.State) => {
     console.log("Generating error message")
+    console.log("The state is:", state)
     return { result: state.errorMessage }
 }
 
-const generateReadQueryResult = async (state: typeof GraphState.State) => {
-    console.log("Generating read query result")
-    const response = await readQueryGenerator.invoke({
-        sql_statement: state.generation,
-        result: state.result
-    })
-    return { result: response }
-}
-
 const decideToReject = async (state: typeof GraphState.State) => {
-    console.log("The state is:", state)
     if (state.errorMessage) {
         return "reject"
     } else {
@@ -156,6 +163,5 @@ export {
     runQueryToDb,
     generateErrorMessage,
     injectionPrevention,
-    generateReadQueryResult,
     decideToReject
 }

@@ -1,5 +1,3 @@
-import { Ollama } from "@langchain/ollama";
+import { ChatOpenAI } from "@langchain/openai";
 
-export const llm = new Ollama({
-    model: "llama3.1:8b",
-});
+export const llm = new ChatOpenAI({ model: "gpt-4o-mini-2024-07-18" });

@@ -16,7 +16,7 @@
     "@langchain/core": "^0.3.15",
     "@langchain/langgraph": "^0.2.18",
     "@langchain/ollama": "^0.1.0",
-    "@langchain/openai": "^0.3.11",
+    "@langchain/openai": "^0.3.16",
     "@prisma/client": "^5.22.0",
     "@quixo3/prisma-session-store": "^3.1.13",
     "@types/bcrypt": "^5.0.2",
