@@ -119,7 +119,7 @@ const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
 }
 
 const runQueryToDb = async (state: typeof GraphState.State) => {
-    console.log("Running query to database")
+    console.log("Running query to database: ", state.generation)
     const isQuery = await determineExecuteOrQuery.invoke({
         sql_statement: state.generation
     })

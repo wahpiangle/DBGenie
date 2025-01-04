@@ -3,7 +3,6 @@ import redirectLogin from '../middleware/redirectLogin';
 import { AuthController } from '../controller/authController';
 const router = express.Router();
 
-// TEST ROUTE
 router.get('/', redirectLogin, (req, res) => {
     res.send(`Welcome ${req.session.user.name}`);
 });

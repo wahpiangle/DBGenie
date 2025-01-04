@@ -31,15 +31,8 @@ graph.addConditionalEdges('injectionPrevention', decideToReject, {
 graph.addEdge('runQueryToDb', END);
 graph.addEdge('generateErrorMessage', END);
 
-const app = graph.compile({
+const appGraph = graph.compile({
     // checkpointer: new MemorySaver(),
 })
-app.invoke({
-    question: "create a maintenance request",
-},
-    {
-        configurable: {
-            thread_id: '1234'
-        }
-    },
-)
+
+export default appGraph;

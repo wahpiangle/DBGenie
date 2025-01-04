@@ -114,24 +114,30 @@ export class AuthController {
     }
 
     public static async login(req: Request, res: Response) {
-        const { email, password } = req.body;
-        const user = await prisma.user.findUnique({
-            where: {
-                email
+        try {
+            const { email, password } = req.body;
+            const user = await prisma.user.findUnique({
+                where: {
+                    email
+                }
+            });
+            if (!user) {
+                res.status(400).json({ error: 'Invalid credentials' });
+                return;
             }
-        });
-        if (!user) {
-            res.status(400).json({ error: 'Invalid credentials' });
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                res.status(400).json({ error: 'Invalid credentials' });
+                return;
+            }
+            req.session.user = user;
+            res.json(user);
             return;
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            res.status(400).json({ error: 'Invalid credentials' });
+        catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
             return;
         }
-        req.session.user = user;
-        res.json(user);
-        return;
     }
 
     public static logout(req: Request, res: Response) {

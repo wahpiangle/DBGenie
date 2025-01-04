@@ -32,6 +32,8 @@ Input: {input}
 Table: {table}
 SQL Statement: {sql_statement}
 
+Just return plain json, don't do it in markdown format.
+
 `
 
 const questionEvaluationPrompt = ChatPromptTemplate.fromTemplate(
@@ -39,11 +41,11 @@ const questionEvaluationPrompt = ChatPromptTemplate.fromTemplate(
 );
 
 const questionEvaluation = questionEvaluationPrompt.pipe(llm).pipe(new JsonOutputParser());
-const response = await questionEvaluation.invoke({
-    input: "Insert a new employee record of John Doe of age 30",
-    table: tableColumnGenerator(db),
-    sql_statement: "INSERT INTO Employee (name, age, department_id) VALUES ('John Doe', 30, 6)"
-}) as QuestionEvaluatorOutput
+// const response = await questionEvaluation.invoke({
+//     input: "Insert a new employee record of John Doe of age 30",
+//     table: tableColumnGenerator(db),
+//     sql_statement: "INSERT INTO Employee (name, age, department_id) VALUES ('John Doe', 30, 6)"
+// }) as QuestionEvaluatorOutput
 
 export { questionEvaluation };
 export type { QuestionEvaluatorOutput };

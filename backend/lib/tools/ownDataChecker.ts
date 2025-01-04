@@ -19,17 +19,16 @@ Validate the SQL statement as follows:
 1. Parse the JSON to extract the user_id and relationship details.
 2. Analyze the SQL statement to ensure it targets only rows in related tables corresponding to the user_id or its relationships. Any action outside these bounds must be flagged.
 3. If the SQL statement is valid, return in JSON format the user_id and the list of related tables that will be affected by the statement in this format:
-\`\`\`json
 {{
     "user_id": 123,
     "tables": ["user_roles", "permissions"]
 }}
 4. If the SQL statement is invalid, return an error message indicating the issue with the key "error" in this format:
-\`\`\`json
 {{
     "error": ...
 }}
 5. If the SQL statement is valid, just return the key "error" with a value of null.
+6. Just return plain json, don't do it in markdown format.
 `
 
 const ownDataCheckerPrompt = ChatPromptTemplate.fromTemplate(
@@ -67,9 +66,9 @@ const ids = await prisma.user.findUnique({
   }
 })
 
-console.log(await ownDataChecker.invoke({
-  sql_statement: "INSERT INTO Booking (id, status) VALUES ('cm2hejqr000009o2m2snq4l86', 'pending'); UPDATE Property SET status = 'confirmed' WHERE id = 'cm2hejqr000009o2m2snq4l86';",
-  user_json: JSON.stringify(ids),
-}))
+// console.log(await ownDataChecker.invoke({
+//   sql_statement: "INSERT INTO Booking (id, status) VALUES ('cm2hejqr000009o2m2snq4l86', 'pending'); UPDATE Property SET status = 'confirmed' WHERE id = 'cm2hejqr000009o2m2snq4l86';",
+//   user_json: JSON.stringify(ids),
+// }))
 
 export { ownDataChecker }
