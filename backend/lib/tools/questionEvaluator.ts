@@ -1,5 +1,5 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { llm } from "../llm";
+import { llm } from "../chatbot";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { db } from "../chatbot";
 import { tableColumnGenerator } from "./tableColumnGenerator";

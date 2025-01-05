@@ -35,4 +35,18 @@ const appGraph = graph.compile({
     // checkpointer: new MemorySaver(),
 })
 
+await appGraph.invoke({
+    question: "Create a property of name 'aaa",
+    user: {
+        id: "cm3pb9uml0000ki5wq8pb8mb6",
+        name: "test",
+        email: "t@t.com",
+        password: "",
+        role: "MANAGER",
+        createdAt: "2024-11-20T03:15:46.885Z",
+        updatedAt: "2024-11-20T03:19:40.793Z",
+        verified: true,
+    }
+});
+
 export default appGraph;

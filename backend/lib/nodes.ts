@@ -1,5 +1,5 @@
 import { Annotation, END } from "@langchain/langgraph"
-import { db, sqlQueryChain } from "./chatbot"
+import { db } from "./chatbot"
 import { questionEvaluation, type QuestionEvaluatorOutput } from "./tools/questionEvaluator"
 import { prisma } from "../prisma"
 import { type User } from "@prisma/client"
@@ -10,6 +10,7 @@ import { tableColumnGenerator } from "./tools/tableColumnGenerator"
 import { readQueryGenerator } from "./tools/readQueryGenerator"
 import { ownDataChecker } from "./tools/ownDataChecker"
 import successExecuteMessageGeneration from "./tools/successExecuteMessageGeneration"
+import { SQLStatementGenerator } from "./tools/generateSQLStatement"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
@@ -21,15 +22,17 @@ const GraphState = Annotation.Root({
 
 const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
     console.log("Generating SQL query for question:", state.question)
-    const generatedQuery = await sqlQueryChain.invoke({
-        question: state.question
+    const generatedQuery = await SQLStatementGenerator.invoke({
+        database_schema: db.allTables,
+        user_query: state.question,
+        user_id: state.user.id
     })
     const extractSQL = (input: string) => {
         const regex = /```sql\n([\s\S]*?)\n```/;
         const match = input.match(regex);
         return match ? match[1] : input;
     };
-
+    console.log("Generated SQL query:", generatedQuery)
     return { generation: extractSQL(generatedQuery) }
 }
 

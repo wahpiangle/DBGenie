@@ -1,8 +1,8 @@
 import { SqlDatabase } from "langchain/sql_db";
 import { DataSource } from "typeorm";
-import { llm } from "./llm";
-import { createSqlQueryChain } from "langchain/chains/sql_db";
+import { ChatOpenAI } from "@langchain/openai";
 
+const llm = new ChatOpenAI({ model: "gpt-4o-mini-2024-07-18" });
 const dataSource = new DataSource({
     type: "postgres",
     host: "localhost",
@@ -16,10 +16,4 @@ const db = await SqlDatabase.fromDataSourceParams({
     appDataSource: dataSource,
 })
 
-const sqlQueryChain = await createSqlQueryChain({
-    llm,
-    db,
-    dialect: "postgres",
-});
-
-export { sqlQueryChain, db };
+export { db, llm };
