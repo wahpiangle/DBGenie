@@ -1,6 +1,6 @@
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { llm } from "../chatbot";
+import { db, llm } from "../chatbot";
 
 const GENERATE_SQL_STATEMENT_TEMPLATE = `
 You are a chatbot designed to translate natural language user queries into SQL statements based on a provided database schema. Your goal is to generate accurate and efficient SQL queries that satisfy the user's request while adhering to the given schema.
@@ -13,6 +13,7 @@ Output Requirements:
     Generate the complete SQL statement.
     The SQL should include necessary clauses such as SELECT, INSERT, UPDATE, DELETE, FROM, WHERE, GROUP BY, ORDER BY, LIMIT, etc., based on the user query.
     If any ambiguous terms or missing details are in the user's query, use placeholders (e.g., <value> or <condition>) or ask clarifying questions.
+    Users should not be able to manipulate the database schema by manipulating tables or columns in their queries.
 
 Constraints:
     Ensure all table and column names used in the SQL match the provided schema exactly.
