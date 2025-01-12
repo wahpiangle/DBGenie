@@ -1,3 +1,4 @@
+'use client';
 import {
     Sidebar,
 } from "lucide-react"
@@ -5,9 +6,36 @@ import {
 import { ModeToggle } from "@/components/mode-toggle"
 import { SheetContent, SheetTrigger, Sheet } from "@/components/ui/sheet"
 import NavContent from "@/components/nav/nav-content"
-import Chatbox from "@/components/chatbox/chatbox"
+import ChatPage from "@/components/chat/ChatPage"
+import { Button } from "@/components/ui/button"
+import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Dashboard() {
+    const { toast } = useToast();
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post("http://localhost:8080/auth/login",
+                {
+                    email: "t@t.com",
+                    password: "test1234",
+                },
+                {
+                    withCredentials: true
+                }
+            )
+            toast({
+                title: "Success",
+                description: response.data.message,
+            })
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error.response.data.error,
+                variant: "destructive"
+            })
+        }
+    }
     return (
         <div className="flex flex-col dark:bg-darkSecondary w-full">
             <header className="sticky flex items-center justify-between shadow-md dark:shadow-none px-4 py-2 dark:border-none">
@@ -20,16 +48,10 @@ export default function Dashboard() {
                     </SheetContent>
                 </Sheet>
                 <h1 className="text-xl font-semibold">Playground</h1>
+                <Button className="hidden sm:block" onClick={handleLogin}>Login</Button>
                 <ModeToggle />
             </header>
-            <main className="flex-1 gap-4 overflow-auto p-4">
-                <div className="flex h-full min-h-[50vh] flex-col rounded-xl 0 p-4 lg:col-span-2 ">
-                    <div className="flex-1 justify-center flex items-center flex-col gap-8">
-                        <h2 className="text-2xl">Ask me anything!</h2>
-                        <Chatbox />
-                    </div>
-                </div>
-            </main>
+            <ChatPage />
         </div >
     )
 }

@@ -116,6 +116,10 @@ export class AuthController {
     public static async login(req: Request, res: Response) {
         try {
             const { email, password } = req.body;
+            if (!email || !password) {
+                res.status(400).json({ error: 'Invalid credentials' });
+                return;
+            }
             const user = await prisma.user.findUnique({
                 where: {
                     email

@@ -25,6 +25,7 @@
     "@types/audiobuffer-to-wav": "^1.0.4",
     "@wavesurfer/react": "^1.0.7",
     "audiobuffer-to-wav": "^1.0.0",
+    "axios": "^1.7.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.408.0",

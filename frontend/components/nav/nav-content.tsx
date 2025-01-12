@@ -11,11 +11,6 @@ export default function NavContent() {
             icon: <MessageCircle />,
             link: "/",
         },
-        {
-            title: "Products",
-            icon: <Package2 />,
-            link: "/products",
-        },
     ]
     return (
         <>
