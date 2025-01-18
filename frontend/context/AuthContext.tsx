@@ -39,11 +39,19 @@ export default function AuthProvider({
                 )
                 setUser(response.data);
             } catch (error: any) {
-                toast({
-                    title: "Error",
-                    description: error.response.data.message,
-                    variant: "destructive"
-                })
+                if (error.response) {
+                    toast({
+                        title: "Error",
+                        description: error.response.data.message,
+                        variant: "destructive"
+                    })
+                } else {
+                    toast({
+                        title: "Error",
+                        description: "Failed to fetch user.",
+                        variant: "destructive"
+                    })
+                }
                 setUser(null);
             }
         }
@@ -67,11 +75,19 @@ export default function AuthProvider({
             })
             setUser(response.data);
         } catch (error: any) {
-            toast({
-                title: "Error",
-                description: error.response.data.error,
-                variant: "destructive"
-            })
+            if (error.response) {
+                toast({
+                    title: "Error",
+                    description: error.response.data.error,
+                    variant: "destructive"
+                })
+            } else {
+                toast({
+                    title: "Error",
+                    description: "Failed to login.",
+                    variant: "destructive"
+                })
+            }
         }
     }
 

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { ChatMessage } from '@/types/ChatMessage';
+import { Spinner } from '../ui/spinner';
+import { toast } from '../ui/use-toast';
 
 export default function ChatPage() {
     const [inputText, setInputText] = useState('')
@@ -21,20 +23,31 @@ export default function ChatPage() {
         }
     })
     const handleSubmit = async () => {
-        setChatHistory((prev) => [...prev, {
-            message: inputText,
-            fromServer: false
-        }])
-        setInputText('')
-        const response = await useChat.mutateAsync(inputText);
         setChatHistory((prev) => [
             ...prev,
-            {
-                message: response.data.message,
-                fromServer: true,
-            },
+            { message: inputText, fromServer: false },
+            { message: 'Loading...', fromServer: true, pending: true }
         ]);
-    }
+        setInputText('');
+        try {
+            const response = await useChat.mutateAsync(inputText);
+            setChatHistory((prev) => [
+                ...prev.slice(0, -1),
+                { message: response.data.message, fromServer: true }
+            ]);
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to fetch response.",
+                variant: "destructive",
+            })
+            setChatHistory((prev) => [
+                ...prev.slice(0, -1),
+                { message: "Error fetching response.", fromServer: true, error: true }
+            ]);
+        }
+    };
+
     return (
         <main className="flex-1 gap-4 overflow-auto p-4 h-full">
             <div className="flex flex-col rounded-xl 0 p-8 lg:col-span-2 h-full justify-between gap-4">
@@ -46,8 +59,16 @@ export default function ChatPage() {
                     }
                     {chatHistory.map((chat, index) => (
                         <div key={index} className={`flex gap-2 ${chat.fromServer ? 'flex-row' : 'flex-row-reverse'}`}>
-                            <div className={`px-4 py-2 rounded-xl ${chat.fromServer ? 'bg-gray-200' : 'bg-blue-400'} text-black`}>
-                                {chat.message}
+                            <div className=
+                                {`px-4 py-2 rounded-xl
+                                ${chat.fromServer ? 'bg-gray-200' : 'bg-blue-400'}
+                                text-black`
+                                }
+                            >
+                                {chat.pending ?
+                                    <Spinner /> :
+                                    chat.message
+                                }
                             </div>
                         </div>
                     ))}
