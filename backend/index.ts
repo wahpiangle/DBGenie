@@ -42,6 +42,10 @@ app.use('/properties', propertyRoute)
 app.use('/bookings', bookingRoute)
 app.use('/maintenance-request', maintenanceRequestRoute)
 app.use('/chat', chatRoute)
+app.post('/cha', async (req, res) => {
+    const { inputText } = req.body
+    res.json({ message: 'Hello' })
+})
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}...`);

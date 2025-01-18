@@ -19,7 +19,7 @@ export default function Chatbox(
 ) {
     return (
         <div
-            className="flex p-4 dark:border-none border md:w-9/12 w-11/12 rounded-lg dark:bg-darkTertiary items-center gap-2 justify-between"
+            className="flex p-4 dark:border-none border md:w-full w-11/12 rounded-lg dark:bg-darkTertiary items-center gap-2 justify-between"
         >
             <Input
                 id="message"
@@ -27,6 +27,11 @@ export default function Chatbox(
                 className={`shadow-none dark:bg-darkSecondary border-none focus:border-none transition-none`}
                 value={inputText}
                 onInput={(e) => setInputText(e.currentTarget.value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        handleSubmit()
+                    }
+                }}
             />
             <Button type="button" className="gap-1" onClick={() => handleSubmit()}>
                 <SendHorizonalIcon className="size-4" />

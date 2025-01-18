@@ -8,8 +8,6 @@ import { SheetContent, SheetTrigger, Sheet } from "@/components/ui/sheet"
 import NavContent from "@/components/nav/nav-content"
 import ChatPage from "@/components/chat/ChatPage"
 import { Button } from "@/components/ui/button"
-import axios from "axios";
-import { useToast } from "@/components/ui/use-toast";
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 
@@ -26,7 +24,6 @@ export default function Dashboard() {
                         <NavContent />
                     </SheetContent>
                 </Sheet>
-                <h1 className="text-xl font-semibold">Playground</h1>
                 {
                     user ?
                         <Button className="hidden sm:block" onClick={logout}>Logout</Button>
