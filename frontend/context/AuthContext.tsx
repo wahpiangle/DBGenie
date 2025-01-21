@@ -74,6 +74,7 @@ export default function AuthProvider({
                 description: response.data.message,
             })
             setUser(response.data);
+            window.location.href = '/'
         } catch (error: any) {
             if (error.response) {
                 toast({
@@ -103,6 +104,7 @@ export default function AuthProvider({
                 description: response.data.message,
             })
             setUser(null);
+            window.location.href = '/login'
         } catch (error: any) {
             toast({
                 title: "Error",

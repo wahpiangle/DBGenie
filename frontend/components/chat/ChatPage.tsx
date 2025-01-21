@@ -35,7 +35,11 @@ export default function ChatPage() {
                 ...prev.slice(0, -1),
                 { message: response.data.message, fromServer: true }
             ]);
-        } catch (error) {
+        } catch (error: any) {
+            if (error.status === 401) {
+                window.location.href = '/login'
+                return
+            }
             toast({
                 title: "Error",
                 description: "Failed to fetch response.",
