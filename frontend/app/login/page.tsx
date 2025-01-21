@@ -1,18 +1,11 @@
-'use client';
-import { Button } from "@/components/ui/button";
-import { AuthContext } from "@/context/AuthContext";
-import { useContext } from "react";
+'use client'
+import { LoginForm } from "@/components/auth/login-form";
+import withAuth from "@/components/hoc/withAuth";
 
-export default function LoginPage() {
-    const { user, login, logout } = useContext(AuthContext);
+const LoginPage = () => {
     return (
-        <div>
-            {
-                user ?
-                    <Button className="hidden sm:block" onClick={logout}>Logout</Button>
-                    :
-                    <Button className="hidden sm:block" onClick={login}>Login</Button>
-            }
-        </div>
+        <LoginForm />
     )
 }
+
+export default withAuth(LoginPage, { requireAuth: false });

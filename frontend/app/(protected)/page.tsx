@@ -10,8 +10,8 @@ import ChatPage from "@/components/chat/ChatPage"
 import { Button } from "@/components/ui/button"
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
-
-export default function Dashboard() {
+import withAuth from "@/components/hoc/withAuth";
+const Dashboard = () => {
     const { user, login, logout } = useContext(AuthContext);
     return (
         <div className="flex flex-col dark:bg-darkSecondary w-full">
@@ -25,10 +25,8 @@ export default function Dashboard() {
                     </SheetContent>
                 </Sheet>
                 {
-                    user ?
-                        <Button className="hidden sm:block" onClick={logout}>Logout</Button>
-                        :
-                        <Button className="hidden sm:block" onClick={login}>Login</Button>
+                    user &&
+                    <Button className="hidden sm:block" onClick={logout}>Logout</Button>
                 }
                 <ModeToggle />
             </header>
@@ -36,3 +34,4 @@ export default function Dashboard() {
         </div >
     )
 }
+export default withAuth(Dashboard);

@@ -135,7 +135,12 @@ export class AuthController {
                 return;
             }
             req.session.user = user;
-            res.json(user);
+            res.json({
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                verified: user.verified
+            });
             return;
         }
         catch (error) {

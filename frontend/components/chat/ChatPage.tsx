@@ -37,7 +37,8 @@ export default function ChatPage() {
             ]);
         } catch (error: any) {
             if (error.status === 401) {
-                window.location.href = '/login'
+                // TODO
+                // window.location.href = '/login'
                 return
             }
             toast({
