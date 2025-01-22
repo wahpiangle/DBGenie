@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from '../ui/button'
 import { ScrollArea } from '../ui/scroll-area'
 import ChatButton from '../chat-button'
-import { MessageCircle, Package2, Triangle } from 'lucide-react'
+import { House, MessageCircle, Package2, Triangle } from 'lucide-react'
 
 export default function NavContent() {
     const mockData = [
@@ -11,6 +11,11 @@ export default function NavContent() {
             icon: <MessageCircle />,
             link: "/",
         },
+        {
+            title: "Properties",
+            icon: <House />,
+            link: "/properties",
+        }
     ]
     return (
         <>

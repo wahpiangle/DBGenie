@@ -24,7 +24,7 @@ export const CardWrapper = ({
     backButtonHref,
 }: CardWrapperProps) => {
     return (
-        <Card className="shadow-md">
+        <Card className="shadow-md w-full md:w-96">
             <Header label={headerLabel} />
             <CardContent>
                 {children}

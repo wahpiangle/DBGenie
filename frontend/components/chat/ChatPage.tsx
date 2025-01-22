@@ -6,11 +6,12 @@ import axios from "axios";
 import { ChatMessage } from '@/types/ChatMessage';
 import { Spinner } from '../ui/spinner';
 import { toast } from '../ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 export default function ChatPage() {
     const [inputText, setInputText] = useState('')
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
-
+    const router = useRouter();
     const useChat = useMutation({
         mutationFn: (input: String) => {
             return axios.post("http://localhost:8080/cha", {
@@ -37,8 +38,7 @@ export default function ChatPage() {
             ]);
         } catch (error: any) {
             if (error.status === 401) {
-                // TODO
-                // window.location.href = '/login'
+                router.push('/login')
                 return
             }
             toast({
