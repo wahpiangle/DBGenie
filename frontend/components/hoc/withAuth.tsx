@@ -20,7 +20,6 @@ const withAuth = (
                 router.push('/');
             }
         }, [user, requireAuth, router]);
-        console.log(user, loading, requireAuth);
         if (loading || (!requireAuth && user)) {
             return <div className='w-screen h-screen justify-center items-center flex'>
                 <Loader />

@@ -3,10 +3,10 @@ import Chatbox from '../chatbox/chatbox'
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { ChatMessage } from '@/types/ChatMessage';
 import { Spinner } from '../ui/spinner';
 import { toast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
+import { ChatMessage } from '@/types/types';
 
 export default function ChatPage() {
     const [inputText, setInputText] = useState('')

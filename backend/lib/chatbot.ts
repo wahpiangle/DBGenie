@@ -5,7 +5,7 @@ import { Ollama } from "@langchain/ollama";
 
 // const llm = new ChatOpenAI({ model: "gpt-4o-mini-2024-07-18" });
 const llm = new Ollama({
-    model: "llama3.1:8b",
+    model: "deepseek-r1:14b",
 });
 const dataSource = new DataSource({
     type: "postgres",
