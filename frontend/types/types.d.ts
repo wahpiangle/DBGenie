@@ -21,7 +21,7 @@ export interface User {
     id: string;
     email: string;
     name: string;
-    role: string;
+    role: Role;
     properties: Property[];
     bookings: Booking[];
     MaintenanceRequest: MaintenanceRequest[];

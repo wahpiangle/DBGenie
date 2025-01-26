@@ -43,7 +43,7 @@ export const LoginForm = () => {
         <CardWrapper
             headerLabel="Welcome Back"
             backButtonLabel="Create an account"
-            backButtonHref="/auth/register"
+            backButtonHref="/register"
         >
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

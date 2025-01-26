@@ -1,3 +1,4 @@
+import { Role } from "@/types/role";
 import { z } from "zod";
 
 export const LoginSchema = z.object({
@@ -8,3 +9,14 @@ export const LoginSchema = z.object({
         message: "Please enter a valid password",
     }),
 })
+
+export const RegisterSchema = z.object({
+    name: z.string(),
+    email: z.string().email({
+        message: "Please enter a valid email"
+    }),
+    password: z.string().min(1, {
+        message: "Please enter a valid password",
+    }),
+    role: z.nativeEnum(Role),
+});

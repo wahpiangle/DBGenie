@@ -4,7 +4,6 @@ import { Property } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal, AwaitedReactNode } from "react";
 
 export default function PropertiesPage() {
     const router = useRouter();
