@@ -100,7 +100,7 @@ export const RegisterForm = () => {
                                     <FormControl>
                                         <Tabs
                                             defaultValue={Object.values(Role)[0]}
-                                            onValueChange={(value) => { form.setValue("role", value as unknown as Role); console.log(form.getValues()) }}
+                                            onValueChange={(value) => form.setValue("role", value as Role)}
                                         >
                                             <TabsList className="grid w-full grid-cols-2">
                                                 {Object.values(Role).map((role) => (
@@ -122,7 +122,7 @@ export const RegisterForm = () => {
                     </Button>
                 </form>
             </Form>
-        </CardWrapper>
+        </CardWrapper >
     )
 }
 
