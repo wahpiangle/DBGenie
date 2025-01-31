@@ -23,6 +23,7 @@ Your evaluation must determine:
     For INSERT operations, the primary key field is optional unless explicitly provided by the user.
     Whether the user's intent for the operation (insert or update) is clear and matches the provided SQL statement.
     If any critical details are missing, specify what is missing and provide clear feedback to help complete the operation.
+    The placeholder "<value>" used to represent missing values in the user query or SQL statement should not be considered as a valid input.
 
 Respond in the following format in JSON:
     "evaluation": "Sufficient" or "Insufficient"
