@@ -25,6 +25,7 @@ app.use(
         saveUninitialized: false,
         cookie: {
             maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
         },
         store: new PrismaSessionStore(
             prisma,
@@ -47,6 +48,6 @@ app.post('/cha', async (req, res) => {
     res.json({ message: 'Hello' })
 })
 
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`Listening on port ${port}...`);
 });

@@ -1,8 +1,8 @@
 'use client';
 import { AuthContext } from '@/context/AuthContext';
-import { Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
+import { Spinner } from '../ui/spinner';
 
 const withAuth = (
     Component: React.FC,
@@ -22,12 +22,12 @@ const withAuth = (
         }, [user, requireAuth, router]);
         if (loading || (!requireAuth && user)) {
             return <div className='w-screen h-screen justify-center items-center flex'>
-                <Loader />
+                <Spinner />
             </div>
         }
         if (requireAuth && !user) {
             return <div className='w-full h-full justify-center items-center flex'>
-                <Loader />
+                <Spinner />
             </div>
         }
         return <Component {...props} />;

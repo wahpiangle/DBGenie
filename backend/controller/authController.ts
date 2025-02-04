@@ -29,9 +29,9 @@ export class AuthController {
                 }
             });
 
-            const token = await prisma.verificationToken.create({
+            const token = await prisma.verification_token.create({
                 data: {
-                    userId: user.id,
+                    user_id: user.id,
                     token: Math.floor(100000 + Math.random() * 900000).toString()
                 }
             });
@@ -70,11 +70,11 @@ export class AuthController {
 
         if (!userWithCode?.verificationToken) {
             res.status(400).json({ error: 'No verification token found' });
-            const token = await prisma.verificationToken.create({
+            const token = await prisma.verification_token.create({
                 data: {
-                    userId: user.id,
+                    user_id: user.id,
                     token: Math.floor(100000 + Math.random() * 900000).toString(),
-                    createdAt: new Date()
+                    created_at: new Date()
                 }
             });
             await sendEmail(user.email, 'Verify your account', `Your verification code is ${token.token}`);
@@ -82,15 +82,15 @@ export class AuthController {
         }
 
         // 1 hour expiry
-        if (userWithCode?.verificationToken?.createdAt < new Date(new Date().getTime() - 60 * 60 * 1000)) {
+        if (userWithCode?.verificationToken?.created_at < new Date(new Date().getTime() - 60 * 60 * 1000)) {
             res.status(400).json({ error: 'Token expired, a new one has been sent' });
-            await prisma.verificationToken.update({
+            await prisma.verification_token.update({
                 where: {
                     id: userWithCode.verificationToken.id
                 },
                 data: {
                     token: Math.floor(100000 + Math.random() * 900000).toString(),
-                    createdAt: new Date()
+                    created_at: new Date()
                 }
             });
             return;

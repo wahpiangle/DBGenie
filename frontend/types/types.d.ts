@@ -8,11 +8,11 @@ export interface Property {
     id: string;
     name: string;
     description: string;
-    createdAt: Date;
-    updatedAt: Date;
+    created_at: Date;
+    updated_at: Date;
     userId: string;
-    imageUrl: string[];
-    createdBy: User;
+    image_url: string[];
+    created_by: User;
     bookings: Booking[];
     MaintenanceRequest: MaintenanceRequest[];
 }

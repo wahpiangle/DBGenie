@@ -28,7 +28,8 @@ Validate the SQL statement as follows:
     "error": ...
 }}
 5. If the SQL statement is valid, just return the key "error" with a value of null.
-6. Just return plain json, don't do it in markdown format.
+6. Users of role "MANAGER" can insert or update properties and bookings.
+7. Just return plain json, don't do it in markdown format.
 `
 
 const ownDataCheckerPrompt = ChatPromptTemplate.fromTemplate(
@@ -43,22 +44,22 @@ const ids = await prisma.user.findUnique({
     id: 'cm2hejqr000009o2m2snq4l86'
   },
   select: {
-    Booking: {
+    booking: {
       select: {
         id: true
       }
     },
-    maintenanceRequest: {
+    maintenance_request: {
       select: {
         id: true
       }
     },
-    maintenanceRequestUpdate: {
+    maintenance_request_update: {
       select: {
         id: true
       }
     },
-    Property: {
+    property: {
       select: {
         id: true
       }

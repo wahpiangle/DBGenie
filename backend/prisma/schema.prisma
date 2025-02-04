@@ -18,87 +18,87 @@ enum Role {
   MANAGER
 }
 
-model Property {
-  id                 String               @id @default(cuid())
+model property {
+  id                 String                @id @default(cuid())
   name               String
   description        String
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  userId             String //manager
-  imageUrl           String[]
-  createdBy          User                 @relation(fields: [userId], references: [id])
-  bookings           Booking[]
-  MaintenanceRequest MaintenanceRequest[]
+  created_at         DateTime              @default(now())
+  updated_at         DateTime              @updatedAt
+  user_id            String //manager
+  image_url          String[]
+  created_by         user                  @relation(fields: [user_id], references: [id])
+  bookings           booking[]
+  MaintenanceRequest maintenance_request[]
 }
 
-model Booking {
-  id                String   @id @default(cuid())
-  propertyId        String
-  userId            String //tenant
-  remarks           String?
-  checkIn           DateTime
-  checkOut          DateTime
-  rentalPrice       Decimal
-  rentCollectionDay Int
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  property          Property @relation(fields: [propertyId], references: [id])
-  user              User     @relation(fields: [userId], references: [id])
+model booking {
+  id                  String   @id @default(cuid())
+  property_id         String
+  user_id             String //tenant
+  remarks             String?
+  check_in            DateTime
+  check_out           DateTime
+  rental_price        Decimal
+  rent_collection_day Int
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  property            property @relation(fields: [property_id], references: [id])
+  user                user     @relation(fields: [user_id], references: [id])
 }
 
-model MaintenanceRequest {
-  id                        String                     @id @default(cuid())
-  propertyId                String
-  userId                    String //tenant
-  title                     String
-  description               String
-  imageUrl                  String[]
-  resolved                  Boolean                    @default(false)
-  createdAt                 DateTime                   @default(now())
-  updatedAt                 DateTime                   @updatedAt
-  property                  Property                   @relation(fields: [propertyId], references: [id])
-  maintenanceRequestUpdates MaintenanceRequestUpdate[]
-  user                      User                       @relation(fields: [userId], references: [id])
+model maintenance_request {
+  id                         String                       @id @default(cuid())
+  property_id                String
+  user_id                    String //tenant
+  title                      String
+  description                String
+  image_url                  String[]
+  resolved                   Boolean                      @default(false)
+  created_at                 DateTime                     @default(now())
+  updated_at                 DateTime                     @updatedAt
+  property                   property                     @relation(fields: [property_id], references: [id])
+  maintenance_request_update maintenance_request_update[]
+  user                       user                         @relation(fields: [user_id], references: [id])
 }
 
-model MaintenanceRequestUpdate {
-  id                   String             @id @default(cuid())
+model maintenance_request_update {
+  id                   String              @id @default(cuid())
   maintenanceRequestId String
   description          String
-  imageUrl             String
-  userId               String //tenant or manager
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  maintenanceRequest   MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id])
-  user                 User               @relation(fields: [userId], references: [id])
+  image_url            String
+  user_id              String //tenant or manager
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+  maintenance_request  maintenance_request @relation(fields: [maintenanceRequestId], references: [id])
+  user                 user                @relation(fields: [user_id], references: [id])
 }
 
-model User {
-  id                       String                     @id @default(cuid())
-  name                     String
-  email                    String                     @unique
-  password                 String
-  role                     Role
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
-  verified                 Boolean                    @default(false)
-  Property                 Property[]
-  Booking                  Booking[]
-  maintenanceRequest       MaintenanceRequest[]
-  maintenanceRequestUpdate MaintenanceRequestUpdate[]
-  verificationToken        verificationToken?
+model user {
+  id                         String                       @id @default(cuid())
+  name                       String
+  email                      String                       @unique
+  password                   String
+  role                       Role
+  created_at                 DateTime                     @default(now())
+  updated_at                 DateTime                     @updatedAt
+  verified                   Boolean                      @default(false)
+  property                   property[]
+  booking                    booking[]
+  maintenance_request        maintenance_request[]
+  maintenance_request_update maintenance_request_update[]
+  verificationToken          verification_token?
 }
 
-model verificationToken {
-  id        String   @id @default(cuid())
-  token     String
-  userId    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
+model verification_token {
+  id         String   @id @default(cuid())
+  token      String
+  user_id    String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       user     @relation(fields: [user_id], references: [id])
 }
 
-model Session {
+model session {
   id        String   @id
   sid       String   @unique
   data      String

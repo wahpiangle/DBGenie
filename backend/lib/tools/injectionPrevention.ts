@@ -15,8 +15,4 @@ const injectionPreventionPrompt = ChatPromptTemplate.fromTemplate(
 
 const injectionPreventionChecker = injectionPreventionPrompt.pipe(llm).pipe(new StringOutputParser());
 
-console.log(await injectionPreventionChecker.invoke({
-    sql_statement: "SELECT * FROM users WHERE username = 'admin' AND password = 'password' OR '1'='1';"
-}))
-
 export { injectionPreventionChecker }

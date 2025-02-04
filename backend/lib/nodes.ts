@@ -2,11 +2,12 @@ import { Annotation, END } from "@langchain/langgraph"
 import { db } from "./chatbot"
 import { questionEvaluation, type QuestionEvaluatorOutput } from "./tools/questionEvaluator"
 import { prisma } from "../prisma"
-import { type User } from "@prisma/client"
+import { type user } from "@prisma/client"
 import { userQueryChecker } from "./tools/userQueryChecker"
 import { determineExecuteOrQuery } from "./tools/determineExecuteOrQuery"
 import { injectionPreventionChecker } from "./tools/injectionPrevention"
 import { tableColumnGenerator } from "./tools/tableColumnGenerator"
+import { createId } from '@paralleldrive/cuid2';
 import { readQueryGenerator } from "./tools/readQueryGenerator"
 import { ownDataChecker } from "./tools/ownDataChecker"
 import successExecuteMessageGeneration from "./tools/successExecuteMessageGeneration"
@@ -15,7 +16,7 @@ import { SQLStatementGenerator } from "./tools/generateSQLStatement"
 const GraphState = Annotation.Root({
     question: Annotation<string>,
     generation: Annotation<string>,
-    user: Annotation<User>,
+    user: Annotation<user>,
     errorMessage: Annotation<string>,
     result: Annotation<string>
 })
@@ -23,6 +24,7 @@ const GraphState = Annotation.Root({
 const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
     console.log("Generating SQL query for question:", state.question)
     const generatedQuery = await SQLStatementGenerator.invoke({
+        generated_id: createId(),
         database_schema: db.allTables,
         user_query: state.question,
         user_id: state.user.id
@@ -32,12 +34,15 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
         const match = input.match(regex);
         return match ? match[1] : input;
     };
+    const removeThinkTag = (input: string) => {
+        return input.replace(/<think>[\s\S]*?<\/think>/g, "")
+    }
     console.log("Generated SQL query:", generatedQuery)
-    return { generation: extractSQL(generatedQuery) }
+    console.log("Extracted SQL query:", removeThinkTag(extractSQL(generatedQuery)))
+    return { generation: removeThinkTag(extractSQL(generatedQuery)) }
 }
 
 const checkUserQuery = async (state: typeof GraphState.State) => {
-    // check if the user is updating or deleting a record that does not belong to them
     console.log("======== Checking if the user is updating or deleting a record that does not belong to them ========")
     const user = state.user
     const ids = await prisma.user.findUnique({
@@ -45,22 +50,22 @@ const checkUserQuery = async (state: typeof GraphState.State) => {
             id: user.id
         },
         select: {
-            Booking: {
+            booking: {
                 select: {
                     id: true
                 }
             },
-            maintenanceRequest: {
+            maintenance_request: {
                 select: {
                     id: true
                 }
             },
-            maintenanceRequestUpdate: {
+            maintenance_request_update: {
                 select: {
                     id: true
                 }
             },
-            Property: {
+            property: {
                 select: {
                     id: true
                 }
@@ -103,13 +108,11 @@ const injectionPrevention = async (state: typeof GraphState.State) => {
 }
 
 const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
-    // check if the user's query has sufficient information for the sql query
-    console.log(`====== Evaluating if the user's query has sufficient information ======
-        `)
+    console.log(`====== Evaluating if the user's query has sufficient information ======`)
     const hasSufficientInfo = await questionEvaluation.invoke({
         input: state.question,
         sql_statement: state.generation,
-        table: tableColumnGenerator(db)
+        table: db.allTables
     }) as QuestionEvaluatorOutput
 
     if (hasSufficientInfo.evaluation === 'Insufficient') {
@@ -126,19 +129,33 @@ const runQueryToDb = async (state: typeof GraphState.State) => {
     const isQuery = await determineExecuteOrQuery.invoke({
         sql_statement: state.generation
     })
-    if (isQuery.split(' ')[0].toLowerCase() === 'yes') {
-        return {
-            result: await readQueryGenerator.invoke({
-                sql_statement: state.generation,
-                result: JSON.stringify(await prisma.$queryRawUnsafe(state.generation))
-            })
+    const removeThinkTag = (input: string) => {
+        return input.replace(/<think>[\s\S]*?<\/think>/g, "")
+    }
+    try {
+
+        if (isQuery.split(' ')[0].toLowerCase() === 'yes') {
+            const queryResult = await prisma.$queryRawUnsafe(state.generation)
+            console.log("Query result:", queryResult)
+            return {
+                result: removeThinkTag(await readQueryGenerator.invoke({
+                    sql_statement: state.generation,
+                    result: JSON.stringify(queryResult)
+                }))
+            }
+        } else {
+            const queryResult = await prisma.$executeRawUnsafe(state.generation)
+            return {
+                result: removeThinkTag(await successExecuteMessageGeneration.invoke({
+                    sql_statement: state.generation
+                }))
+            }
         }
-    } else {
-        prisma.$executeRawUnsafe(state.generation)
+    }
+    catch (e) {
+        console.log("Error:", e)
         return {
-            result: await successExecuteMessageGeneration.invoke({
-                sql_statement: state.generation
-            })
+            errorMessage: "The query is invalid and cannot be processed. Please try again."
         }
     }
 }

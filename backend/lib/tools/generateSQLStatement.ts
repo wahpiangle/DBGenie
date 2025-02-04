@@ -3,7 +3,7 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { db, llm } from "../chatbot";
 
 const GENERATE_SQL_STATEMENT_TEMPLATE = `
-You are a chatbot designed to translate natural language user queries into SQL statements based on a provided database schema. Your goal is to generate accurate and efficient SQL queries that satisfy the user's request while adhering to the given schema.
+You are a chatbot designed to translate natural language user queries into PostgreSQL statements based on a provided database schema. Your goal is to generate accurate and efficient SQL queries that satisfy the user's request while adhering to the given schema.
 
 Input Details:
     Database Schema: The schema will be provided as a list of tables, columns, data types, and relationships (e.g., primary keys, foreign keys).
@@ -27,16 +27,16 @@ Schema Example:
     Columns: EmployeeID (INTEGER, PRIMARY KEY), Name (TEXT), DepartmentID (INTEGER), HireDate (DATE), Salary (DECIMAL)
 
 Example User Query:
-
     "Show me the names of employees and their department names."
-    Generated SQL: SELECT Employees.Name, Departments.DepartmentName FROM Employees INNER JOIN Departments ON Employees.DepartmentID = Departments.DepartmentID;
+    Generated SQL: SELECT public."Employees".Name, Departments.DepartmentName FROM Employees INNER JOIN Departments ON Employees.DepartmentID = Departments.DepartmentID;
 
 Database Schema: {database_schema}
 User Query: {user_query}
 
-- INSERT statements should not include the id column as it is auto-generated.
-- createdAt and updatedAt columns should be automatically populated with the current timestamp.
-- The userId is {user_id}.
+- Use {generated_id} as the id for new inserts.
+- created_at and updated_at columns should be automatically populated with the current timestamp.
+- The user_id is {user_id}.
+- The database is PostgreSQL. Include quotation marks around table and column names.
 - Provide only the SQL statement as output as plain text, without the markdown formatting.
 `
 const generateSQLStatementPrompt = ChatPromptTemplate.fromTemplate(

@@ -47,11 +47,11 @@ export class BookingController {
             // convert checkOut and checkIn from milliseconds to Date
             const bookings = await prisma.booking.findMany({
                 where: {
-                    propertyId: propertyId,
-                    checkIn: {
+                    property_id: propertyId,
+                    check_in: {
                         lte: checkOut
                     },
-                    checkOut: {
+                    check_out: {
                         gte: checkIn
                     }
                 }
@@ -64,12 +64,12 @@ export class BookingController {
 
             const booking = await prisma.booking.create({
                 data: {
-                    propertyId,
-                    checkIn,
-                    checkOut,
-                    userId: user.id,
-                    rentalPrice,
-                    rentCollectionDay,
+                    property_id: propertyId,
+                    check_in: checkIn,
+                    check_out: checkOut,
+                    user_id: user.id,
+                    rental_price: rentalPrice,
+                    rent_collection_day: rentCollectionDay,
                     remarks
                 },
             });
@@ -98,7 +98,7 @@ export class BookingController {
                 include: {
                     property: {
                         include: {
-                            createdBy: {
+                            created_by: {
                                 select: {
                                     id: true,
                                 }
@@ -111,7 +111,7 @@ export class BookingController {
                 res.status(400).json({ error: 'Booking not found' });
                 return;
             }
-            if (booking.userId !== user.id && booking.property.createdBy.id !== user.id) {
+            if (booking.user_id !== user.id && booking.property.created_by.id !== user.id) {
                 res.status(403).json({ error: 'You are not authorized to view this booking' });
                 return;
             }
@@ -145,11 +145,11 @@ export class BookingController {
             // check if the property is available
             const bookings = await prisma.booking.findMany({
                 where: {
-                    propertyId: propertyId,
-                    checkIn: {
+                    property_id: propertyId,
+                    check_in: {
                         lte: checkOut
                     },
-                    checkOut: {
+                    check_out: {
                         gte: checkIn
                     }
                 }
@@ -191,7 +191,7 @@ export class BookingController {
                 include: {
                     property: {
                         include: {
-                            createdBy: true
+                            created_by: true
                         }
                     },
                 }
@@ -200,7 +200,7 @@ export class BookingController {
                 res.status(400).json({ error: 'Booking not found' });
                 return;
             }
-            if (booking.property.createdBy.id !== user.id) {
+            if (booking.property.created_by.id !== user.id) {
                 res.status(403).json({ error: 'You are not authorized to edit this booking' });
                 return;
             }
@@ -209,11 +209,11 @@ export class BookingController {
                     id: bookingId
                 },
                 data: {
-                    checkIn,
-                    checkOut,
-                    rentalPrice,
+                    check_in: checkIn,
+                    check_out: checkOut,
+                    rental_price: rentalPrice,
                     remarks,
-                    rentCollectionDay
+                    rent_collection_day: rentCollectionDay
                 }
             });
             res.json({ message: 'Booking updated successfully' });
@@ -235,7 +235,7 @@ export class BookingController {
                 include: {
                     property: {
                         include: {
-                            createdBy: true
+                            created_by: true
                         }
                     },
                 }
@@ -244,7 +244,7 @@ export class BookingController {
                 res.status(400).json({ error: 'Booking not found' });
                 return;
             }
-            if (booking.userId !== user.id || booking.property.createdBy.id !== user.id) {
+            if (booking.user_id !== user.id || booking.property.created_by.id !== user.id) {
                 res.status(403).json({ error: 'You are not authorized to delete this booking' });
                 return;
             }
@@ -267,7 +267,7 @@ export class BookingController {
         try {
             const bookings = await prisma.booking.findMany({
                 where: {
-                    userId: user.id,
+                    user_id: user.id,
                 },
                 include: {
                     property: true

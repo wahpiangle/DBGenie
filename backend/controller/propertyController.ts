@@ -21,7 +21,7 @@ export class PropertyController {
                 data: {
                     name: req.body.name,
                     description: req.body.description,
-                    createdBy: {
+                    created_by: {
                         connect: {
                             id: user.id
                         }
@@ -47,7 +47,7 @@ export class PropertyController {
                     id: property.id
                 },
                 data: {
-                    imageUrl: fileUrls
+                    image_url: fileUrls
                 }
             });
 
@@ -127,7 +127,7 @@ export class PropertyController {
             user.role === Role.MANAGER ?
                 await prisma.property.findMany({
                     where: {
-                        userId: user.id
+                        user_id: user.id
                     },
                     include: {
                         bookings: true
@@ -138,7 +138,7 @@ export class PropertyController {
                     where: {
                         bookings: {
                             some: {
-                                userId: user.id
+                                user_id: user.id
                             }
                         }
                     },
