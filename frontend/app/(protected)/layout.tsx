@@ -8,7 +8,9 @@ export default function ProtectedLayout({
   return (
     <div className="h-screen w-full flex">
       <SideNav />
-      {children}
+      <div className="w-full bg-darkSecondary">
+        {children}
+      </div>
     </div>
   );
 }

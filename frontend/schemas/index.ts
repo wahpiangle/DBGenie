@@ -20,3 +20,11 @@ export const RegisterSchema = z.object({
     }),
     role: z.nativeEnum(Role),
 });
+
+export const createPropertySchema = z.object({
+    name: z.string().min(1),
+    description: z.string().min(1),
+    imageFiles: z.array(
+        z.instanceof(File)
+    ).min(1),
+});

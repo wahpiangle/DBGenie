@@ -14,7 +14,7 @@ import withAuth from "@/components/hoc/withAuth";
 const Dashboard = () => {
     const { user, login, logout } = useContext(AuthContext);
     return (
-        <div className="flex flex-col dark:bg-darkSecondary w-full">
+        <div className="flex flex-col h-full dark:bg-darkSecondary">
             <header className="sticky flex items-center justify-between shadow-md dark:shadow-none px-4 py-2 dark:border-none">
                 <Sheet>
                     <SheetTrigger className="sm:hidden">
