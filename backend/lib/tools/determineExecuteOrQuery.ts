@@ -1,5 +1,5 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { llm } from "../llm";
+import { llm } from "../chatbot";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 const DETERMINE_EXECUTE_OR_QUERY_TEMPLATE = `

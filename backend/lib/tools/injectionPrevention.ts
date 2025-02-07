@@ -1,5 +1,5 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { llm } from "../llm";
+import { llm } from "../chatbot";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 const INJECTION_PREVENTION_TEMPLATE = `
@@ -14,9 +14,5 @@ const injectionPreventionPrompt = ChatPromptTemplate.fromTemplate(
 );
 
 const injectionPreventionChecker = injectionPreventionPrompt.pipe(llm).pipe(new StringOutputParser());
-
-console.log(await injectionPreventionChecker.invoke({
-    sql_statement: "SELECT * FROM users WHERE username = 'admin' AND password = 'password' OR '1'='1';"
-}))
 
 export { injectionPreventionChecker }

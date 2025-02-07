@@ -29,9 +29,9 @@ export class AuthController {
                 }
             });
 
-            const token = await prisma.verificationToken.create({
+            const token = await prisma.verification_token.create({
                 data: {
-                    userId: user.id,
+                    user_id: user.id,
                     token: Math.floor(100000 + Math.random() * 900000).toString()
                 }
             });
@@ -70,11 +70,11 @@ export class AuthController {
 
         if (!userWithCode?.verificationToken) {
             res.status(400).json({ error: 'No verification token found' });
-            const token = await prisma.verificationToken.create({
+            const token = await prisma.verification_token.create({
                 data: {
-                    userId: user.id,
+                    user_id: user.id,
                     token: Math.floor(100000 + Math.random() * 900000).toString(),
-                    createdAt: new Date()
+                    created_at: new Date()
                 }
             });
             await sendEmail(user.email, 'Verify your account', `Your verification code is ${token.token}`);
@@ -82,15 +82,15 @@ export class AuthController {
         }
 
         // 1 hour expiry
-        if (userWithCode?.verificationToken?.createdAt < new Date(new Date().getTime() - 60 * 60 * 1000)) {
+        if (userWithCode?.verificationToken?.created_at < new Date(new Date().getTime() - 60 * 60 * 1000)) {
             res.status(400).json({ error: 'Token expired, a new one has been sent' });
-            await prisma.verificationToken.update({
+            await prisma.verification_token.update({
                 where: {
                     id: userWithCode.verificationToken.id
                 },
                 data: {
                     token: Math.floor(100000 + Math.random() * 900000).toString(),
-                    createdAt: new Date()
+                    created_at: new Date()
                 }
             });
             return;
@@ -114,24 +114,39 @@ export class AuthController {
     }
 
     public static async login(req: Request, res: Response) {
-        const { email, password } = req.body;
-        const user = await prisma.user.findUnique({
-            where: {
-                email
+        try {
+            const { email, password } = req.body;
+            if (!email || !password) {
+                res.status(400).json({ error: 'Invalid credentials' });
+                return;
             }
-        });
-        if (!user) {
-            res.status(400).json({ error: 'Invalid credentials' });
+            const user = await prisma.user.findUnique({
+                where: {
+                    email
+                }
+            });
+            if (!user) {
+                res.status(400).json({ error: 'Invalid credentials' });
+                return;
+            }
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                res.status(400).json({ error: 'Invalid credentials' });
+                return;
+            }
+            req.session.user = user;
+            res.json({
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                verified: user.verified
+            });
             return;
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            res.status(400).json({ error: 'Invalid credentials' });
+        catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
             return;
         }
-        req.session.user = user;
-        res.json(user);
-        return;
     }
 
     public static logout(req: Request, res: Response) {

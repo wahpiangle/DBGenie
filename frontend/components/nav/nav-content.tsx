@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from '../ui/button'
 import { ScrollArea } from '../ui/scroll-area'
 import ChatButton from '../chat-button'
-import { MessageCircle, Package2, Triangle } from 'lucide-react'
+import { House, MessageCircle, Package2, Triangle } from 'lucide-react'
 
 export default function NavContent() {
     const mockData = [
@@ -12,10 +12,10 @@ export default function NavContent() {
             link: "/",
         },
         {
-            title: "Products",
-            icon: <Package2 />,
-            link: "/products",
-        },
+            title: "Properties",
+            icon: <House />,
+            link: "/properties",
+        }
     ]
     return (
         <>
@@ -24,7 +24,6 @@ export default function NavContent() {
             </Button>
             <ScrollArea className="mt-2">
                 <div className="flex flex-col gap-1">
-                    {/* Bolded Text to categorise */}
                     {mockData.map((item) => (
                         <ChatButton item={item} key={item.link} />
                     ))}

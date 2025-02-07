@@ -31,12 +31,12 @@ export class MaintenanceRequestController {
             // check if user is tenant of property
             const booking = await prisma.booking.findFirst({
                 where: {
-                    propertyId,
-                    userId: user.id,
-                    checkIn: {
+                    property_id: propertyId,
+                    user_id: user.id,
+                    check_in: {
                         lte: new Date()
                     },
-                    checkOut: {
+                    check_out: {
                         gte: new Date()
                     }
                 }
@@ -46,12 +46,12 @@ export class MaintenanceRequestController {
                 return;
             }
 
-            let maintenanceRequest = await prisma.maintenanceRequest.create({
+            let maintenanceRequest = await prisma.maintenance_request.create({
                 data: {
                     title,
-                    propertyId,
+                    property_id: propertyId,
                     description,
-                    userId: user.id
+                    user_id: user.id
                 },
             });
             const fileUrls = await Promise.all(
@@ -69,12 +69,12 @@ export class MaintenanceRequestController {
                 })
             );
 
-            maintenanceRequest = await prisma.maintenanceRequest.update({
+            maintenanceRequest = await prisma.maintenance_request.update({
                 where: {
                     id: maintenanceRequest.id
                 },
                 data: {
-                    imageUrl: fileUrls
+                    image_url: fileUrls
                 }
             });
             res.json(maintenanceRequest);
@@ -94,9 +94,9 @@ export class MaintenanceRequestController {
     public static async getMaintenanceRequestByProperty(req: Request, res: Response) {
         const { propertyId } = req.params;
         try {
-            const maintenanceRequests = await prisma.maintenanceRequest.findMany({
+            const maintenanceRequests = await prisma.maintenance_request.findMany({
                 where: {
-                    propertyId
+                    property_id: propertyId
                 }
             });
             res.json(maintenanceRequests);
@@ -114,10 +114,10 @@ export class MaintenanceRequestController {
     public static async getMaintenanceRequestByUser(req: Request, res: Response) {
         const user = req.session.user;
         try {
-            const maintenanceRequests = await prisma.maintenanceRequest.findMany({
+            const maintenanceRequests = await prisma.maintenance_request.findMany({
                 where: user.role === Role.MANAGER
-                    ? { property: { userId: user.id } }
-                    : { userId: user.id },
+                    ? { property: { user_id: user.id } }
+                    : { user_id: user.id },
                 include: {
                     property: true
                 }
@@ -142,7 +142,7 @@ export class MaintenanceRequestController {
         const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
         const file = req.file as Express.Multer.File;
         try {
-            const maintenanceRequest = await prisma.maintenanceRequest.findUnique({
+            const maintenanceRequest = await prisma.maintenance_request.findUnique({
                 where: {
                     id: maintenanceRequestId
                 },
@@ -157,18 +157,18 @@ export class MaintenanceRequestController {
             }
 
             if (
-                (user.role === Role.TENANT && maintenanceRequest.userId !== user.id) ||
-                (user.role === Role.MANAGER && maintenanceRequest.property.userId !== user.id)
+                (user.role === Role.TENANT && maintenanceRequest.user_id !== user.id) ||
+                (user.role === Role.MANAGER && maintenanceRequest.property.user_id !== user.id)
             ) {
                 res.status(403).json({ error: 'You are not authorized to update this maintenance request' });
                 return;
             }
-            const maintenanceRequestUpdate = await prisma.maintenanceRequestUpdate.create({
+            const maintenanceRequestUpdate = await prisma.maintenance_request_update.create({
                 data: {
                     maintenanceRequestId,
                     description,
-                    userId: user.id,
-                    imageUrl: ""
+                    user_id: user.id,
+                    image_url: ""
                 }
             });
             if (file) {
@@ -181,12 +181,12 @@ export class MaintenanceRequestController {
                     action: 'read',
                 });
 
-                await prisma.maintenanceRequestUpdate.update({
+                await prisma.maintenance_request_update.update({
                     where: {
                         id: maintenanceRequestUpdate.id
                     },
                     data: {
-                        imageUrl: fileUrl
+                        image_url: fileUrl
                     }
                 });
             }
@@ -206,14 +206,14 @@ export class MaintenanceRequestController {
     public static async getMaintenanceRequest(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const maintenanceRequest = await prisma.maintenanceRequest.findUnique({
+            const maintenanceRequest = await prisma.maintenance_request.findUnique({
                 where: {
                     id,
                 },
                 include: {
-                    maintenanceRequestUpdates: {
+                    maintenance_request_update: {
                         orderBy: {
-                            createdAt: 'asc'
+                            created_at: 'asc'
                         }
                     }
                 },
@@ -234,7 +234,7 @@ export class MaintenanceRequestController {
         const { id } = req.params;
         const user = req.session.user;
         try {
-            const maintenanceRequest = await prisma.maintenanceRequest.findUnique({
+            const maintenanceRequest = await prisma.maintenance_request.findUnique({
                 where: {
                     id
                 },
@@ -248,14 +248,14 @@ export class MaintenanceRequestController {
             }
 
             if (
-                (user.role === Role.TENANT && maintenanceRequest.userId !== user.id) ||
-                (user.role === Role.MANAGER && maintenanceRequest.property.userId !== user.id)
+                (user.role === Role.TENANT && maintenanceRequest.user_id !== user.id) ||
+                (user.role === Role.MANAGER && maintenanceRequest.property.user_id !== user.id)
             ) {
                 res.status(403).json({ error: 'You are not authorized to resolve this maintenance request' });
                 return;
             }
 
-            const resolvedMaintenanceRequest = await prisma.maintenanceRequest.update({
+            const resolvedMaintenanceRequest = await prisma.maintenance_request.update({
                 where: {
                     id
                 },
