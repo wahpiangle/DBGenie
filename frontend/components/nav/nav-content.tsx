@@ -24,7 +24,6 @@ export default function NavContent() {
             </Button>
             <ScrollArea className="mt-2">
                 <div className="flex flex-col gap-1">
-                    {/* Bolded Text to categorise */}
                     {mockData.map((item) => (
                         <ChatButton item={item} key={item.link} />
                     ))}

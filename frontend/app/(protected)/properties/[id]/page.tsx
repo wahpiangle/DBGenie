@@ -1,7 +1,7 @@
-import React from 'react'
+import PropertyDetailSection from '@/components/property/property-detail-section'
 
 export default function PropertyDetailPage() {
     return (
-        <div>PropertyDetailPage</div>
+        <PropertyDetailSection />
     )
 }

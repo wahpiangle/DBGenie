@@ -3,7 +3,6 @@ import {
     Sidebar,
 } from "lucide-react"
 
-import { ModeToggle } from "@/components/mode-toggle"
 import { SheetContent, SheetTrigger, Sheet } from "@/components/ui/sheet"
 import NavContent from "@/components/nav/nav-content"
 import ChatPage from "@/components/chat/ChatPage"
@@ -28,7 +27,6 @@ const Dashboard = () => {
                     user &&
                     <Button className="hidden sm:block" onClick={logout}>Logout</Button>
                 }
-                <ModeToggle />
             </header>
             <ChatPage />
         </div >
