@@ -14,7 +14,7 @@ export default function ChatPage() {
     const router = useRouter();
     const useChat = useMutation({
         mutationFn: (input: String) => {
-            return axios.post("http://localhost:8080/cha", {
+            return axios.post("http://localhost:8080/chat", {
                 inputText: input
             },
                 {
@@ -34,7 +34,7 @@ export default function ChatPage() {
             const response = await useChat.mutateAsync(inputText);
             setChatHistory((prev) => [
                 ...prev.slice(0, -1),
-                { message: response.data.message, fromServer: true }
+                { message: response.data.response, fromServer: true }
             ]);
         } catch (error: any) {
             if (error.status === 401) {
@@ -54,7 +54,7 @@ export default function ChatPage() {
     };
 
     return (
-        <main className="flex-1 gap-4 overflow-auto p-4 h-full">
+        <main className="flex-1 gap-4 overflow-auto p-4">
             <div className="flex flex-col rounded-xl 0 p-8 lg:col-span-2 h-full justify-between gap-4">
                 <div className="flex flex-col gap-4 w-full overflow-auto">
                     {
