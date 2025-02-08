@@ -3,10 +3,10 @@ import { DataSource } from "typeorm";
 import { ChatOpenAI } from "@langchain/openai";
 import { Ollama } from "@langchain/ollama";
 
-// const llm = new ChatOpenAI({ model: "gpt-4o-mini-2024-07-18" });
-const llm = new Ollama({
-    model: "deepseek-r1:8b",
-});
+const llm = new ChatOpenAI({ model: "gpt-4o-mini-2024-07-18" });
+// const llm = new Ollama({
+//     model: "deepseek-r1:8b",
+// });
 const dataSource = new DataSource({
     type: "postgres",
     host: "localhost",

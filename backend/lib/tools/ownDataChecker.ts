@@ -6,7 +6,7 @@ import { prisma } from "../../prisma";
 const OWN_DATA_CHECKER_TEMPLATE = `
 You are tasked with validating and executing an SQL statement provided by a user. The SQL statement must comply with the following rules:
 
-1. **Scope Restriction**: The statement can only modify or affect relationships to other tables related to the specified user. It must not update or delete the user itself or other unrelated records in the database.
+1. **Scope Restriction**: The statement can only modify or affect relationships to other tables related to the specified user. It must not update or delete the user itself or other unrelated records in the database. If the statement is to retrieve data, it must only return data related to the user or their relationships.
 2. **Validation Input**: You are provided:
    - **SQL Statement**: {sql_statement}
    - **User JSON**:
@@ -37,35 +37,6 @@ const ownDataCheckerPrompt = ChatPromptTemplate.fromTemplate(
 );
 
 const ownDataChecker = ownDataCheckerPrompt.pipe(llm).pipe(new JsonOutputParser());
-
-
-const ids = await prisma.user.findUnique({
-  where: {
-    id: 'cm2hejqr000009o2m2snq4l86'
-  },
-  select: {
-    booking: {
-      select: {
-        id: true
-      }
-    },
-    maintenance_request: {
-      select: {
-        id: true
-      }
-    },
-    maintenance_request_update: {
-      select: {
-        id: true
-      }
-    },
-    property: {
-      select: {
-        id: true
-      }
-    },
-  }
-})
 
 // console.log(await ownDataChecker.invoke({
 //   sql_statement: "INSERT INTO Booking (id, status) VALUES ('cm2hejqr000009o2m2snq4l86', 'pending'); UPDATE Property SET status = 'confirmed' WHERE id = 'cm2hejqr000009o2m2snq4l86';",

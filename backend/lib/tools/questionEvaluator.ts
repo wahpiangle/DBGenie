@@ -9,6 +9,7 @@ interface QuestionEvaluatorOutput {
 
 const QUESETION_EVALUATION_TEMPLATE = `
 You are a database assistant. Your task is to evaluate whether a given user query contains sufficient information to execute an insert or update operation on a database table and respond in JSON.
+If the user query is just to read data, you should return "Sufficient" as the evaluation.
 
 You will receive the following inputs:
 

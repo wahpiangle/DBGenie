@@ -7,6 +7,8 @@ import { Spinner } from '../ui/spinner';
 import { toast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { ChatMessage } from '@/types/types';
+import Markdown from 'react-markdown'
+import MessageDialog from './message-dialog';
 
 export default function ChatPage() {
     const [inputText, setInputText] = useState('')
@@ -54,28 +56,19 @@ export default function ChatPage() {
     };
 
     return (
-        <main className="flex-1 gap-4 overflow-auto p-4">
+        <main className="flex-1 gap-4 overflow-auto p-4 ">
             <div className="flex flex-col rounded-xl 0 p-8 lg:col-span-2 h-full justify-between gap-4">
-                <div className="flex flex-col gap-4 w-full overflow-auto">
+                <div className="flex flex-col gap-4 max-w-full">
                     {
                         chatHistory.length === 0 && (
                             <h2 className="text-2xl text-center">Ask me anything!</h2>
                         )
                     }
                     {chatHistory.map((chat, index) => (
-                        <div key={index} className={`flex gap-2 ${chat.fromServer ? 'flex-row' : 'flex-row-reverse'}`}>
-                            <div className=
-                                {`px-4 py-2 rounded-xl
-                                ${chat.fromServer ? 'bg-gray-200' : 'bg-blue-400'}
-                                text-black`
-                                }
-                            >
-                                {chat.pending ?
-                                    <Spinner /> :
-                                    chat.message
-                                }
-                            </div>
-                        </div>
+                        <MessageDialog
+                            key={index}
+                            chat={chat}
+                        />
                     ))}
                 </div>
                 <Chatbox
