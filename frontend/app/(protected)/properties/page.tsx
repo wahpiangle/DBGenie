@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
+import API_URL from "@/constants";
 import { cn } from "@/lib/utils";
 import { Property } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +14,8 @@ export default function PropertiesPage() {
     const useProperties = useQuery({
         queryKey: ['properties'],
         queryFn: () => {
-            return axios.get('http://localhost:8080/properties',
+            return axios.get(
+                `${API_URL}/properties`,
                 {
                     withCredentials: true
                 }

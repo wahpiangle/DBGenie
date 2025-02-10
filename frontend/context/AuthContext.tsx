@@ -1,5 +1,6 @@
 'use client'
 import { toast } from "@/components/ui/use-toast";
+import API_URL from "@/constants";
 import { Role } from "@/types/role";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -79,13 +80,14 @@ export default function AuthProvider({
         }
     };
 
-    const handleLogin = (email: string, password: string) => authRequest("http://localhost:8080/auth/login", { email, password });
-    const handleRegister = (email: string, password: string, name: string, role: Role) => authRequest("http://localhost:8080/auth/register", { email, password, name, role });
+    const handleLogin = (email: string, password: string) => authRequest(`${API_URL}/auth/login`, { email, password });
+    const handleRegister = (email: string, password: string, name: string, role: Role) => authRequest(
+        `${API_URL}/auth/register`, { email, password, name, role });
 
     const handleLogout = async () => {
         try {
             setLoading(true);
-            const response = await axios.get("http://localhost:8080/auth/logout", { withCredentials: true });
+            const response = await axios.get(`${API_URL}/auth/logout`, { withCredentials: true });
             toast({ title: "Success", description: response.data.message });
             setUser(null);
             router.push("/login");
@@ -102,7 +104,7 @@ export default function AuthProvider({
 
     useEffect(() => {
         setLoading(true);
-        axios.get("http://localhost:8080/auth", { withCredentials: true })
+        axios.get(`${API_URL}/auth`, { withCredentials: true })
             .then((response) => setUser(response.data))
             .catch(() => setUser(null))
             .finally(() => setLoading(false));

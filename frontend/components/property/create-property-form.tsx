@@ -19,6 +19,7 @@ import axios from "axios";
 import { toast } from "../ui/use-toast";
 import { useRef, useState } from "react";
 import { Spinner } from "../ui/spinner";
+import API_URL from "@/constants";
 
 export default function CreatePropertyForm() {
     const [loading, setLoading] = useState(false)
@@ -42,9 +43,11 @@ export default function CreatePropertyForm() {
             });
             formData.append("name", values.name);
             formData.append("description", values.description);
-            const res = await axios.post('http://localhost:8080/properties', formData, {
-                withCredentials: true,
-            })
+            const res = await axios.post(`${API_URL}/properties`,
+                formData,
+                {
+                    withCredentials: true,
+                })
             toast({
                 title: "Success",
                 description: "Property created successfully.",
