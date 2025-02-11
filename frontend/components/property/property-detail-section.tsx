@@ -3,6 +3,10 @@ import API_URL from '@/constants'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useParams } from 'next/navigation'
+import { Spinner } from '../ui/spinner'
+import { ArrowLeftCircle } from 'lucide-react'
+import ImageCarousel from './image-carousel'
+import PropertyDropdownMenu from './property-dropdown-menu'
 
 export default function PropertyDetailSection() {
     const { id } = useParams<{ id: string }>()
@@ -16,16 +20,28 @@ export default function PropertyDetailSection() {
         }
     })
     return (
-        <div>
-            {isLoading && <p>Loading...</p>}
-            {isError && <p>{error.message}</p>}
-            {data && (
-                <div>
-                    <h1>{data.name}</h1>
-                    <p>{data.description}</p>
-                    <img src={data.image_url[0] ?? "https://placehold.co/600x400"} alt="Property Image" />
-                </div>
-            )}
-        </div>
+        <>
+            {isLoading ? <Spinner />
+                : isError ? <p>{error.message}</p> :
+                    (
+                        <>
+                            <div className='mb-8 flex justify-between'>
+                                <div className="flex items-center gap-2">
+                                    <ArrowLeftCircle className='cursor-pointer hover:scale-110' onClick={() => window.history.back()} />
+                                    <h1 className='text-2xl font-semibold'>
+                                        {data ? data.name : ''}
+                                    </h1>
+                                </div>
+                                <PropertyDropdownMenu propertyId={data.id} />
+                            </div>
+                            <div className='w-full'>
+                                <div className='flex w-full justify-center'>
+                                    <ImageCarousel imageUrls={data.image_url} />
+                                </div>
+                                <p>{data.description}</p>
+                            </div>
+                        </>
+                    )}
+        </>
     )
 }

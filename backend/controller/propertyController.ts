@@ -66,10 +66,9 @@ export class PropertyController {
 
     public static async updateProperty(req: Request, res: Response) {
         try {
-            const { updateImage, name, description } = req.body;
+            const { name, description } = req.body;
             updatePropertySchema.parse(
                 {
-                    updateImage,
                     name,
                     description,
                 }
@@ -78,17 +77,17 @@ export class PropertyController {
             let data: {
                 name?: string,
                 description?: string,
-                imageUrl?: string[]
-            } = { name, description };
+                image_url?: string[]
+            } = { name, description, image_url: [] };
             const storage = getStorage(firebaseApp).bucket("gs://fittrack-61776.appspot.com")
-            const files = req.files as Express.Multer.File[];
-            if (updateImage) {
+            const imageFiles = req.files as Express.Multer.File[];
+            if (imageFiles) {
                 await storage.deleteFiles({
                     prefix: `properties/${id}`
                 });
-
+                console.log("imageFiles", imageFiles)
                 const fileUrls = await Promise.all(
-                    files.map(async (file: Express.Multer.File) => {
+                    imageFiles.map(async (file: Express.Multer.File) => {
                         const [uploadResponse] = await storage.upload(file.path, {
                             destination: `properties/${id}/${file.originalname}`,
                         });
@@ -102,7 +101,7 @@ export class PropertyController {
                     })
                 );
 
-                data.imageUrl = fileUrls;
+                data.image_url = fileUrls;
             }
             const property = await prisma.property.update({
                 where: { id },

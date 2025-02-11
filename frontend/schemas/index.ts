@@ -28,3 +28,11 @@ export const createPropertySchema = z.object({
         z.instanceof(File)
     ).min(1),
 });
+
+export const editPropertySchema = z.object({
+    name: z.string(),
+    description: z.string(),
+    imageFiles: z.array(
+        z.instanceof(File)
+    ),
+});

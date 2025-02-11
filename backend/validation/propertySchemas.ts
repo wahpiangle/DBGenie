@@ -6,9 +6,8 @@ const CreatePropertySchema = z.object({
 });
 
 const updatePropertySchema = z.object({
-    name: z.string().min(3).max(255),
-    description: z.string().min(3).max(255),
-    updateImage: z.string(),
+    name: z.string().min(1).max(255),
+    description: z.string().min(1).max(255),
 });
 
 export { CreatePropertySchema, updatePropertySchema };

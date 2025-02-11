@@ -3,28 +3,18 @@ import { createPropertySchema } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { ArrowLeftCircle } from "lucide-react";
 import axios from "axios";
 import { toast } from "../ui/use-toast";
-import { useRef, useState } from "react";
-import { Spinner } from "../ui/spinner";
 import API_URL from "@/constants";
+import PropertyForm from "./property-form";
+import { useRef, useState } from "react";
+import { ArrowLeftCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CreatePropertyForm() {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+    const router = useRouter();
     const form = useForm<z.infer<typeof createPropertySchema>>({
         resolver: zodResolver(createPropertySchema),
         defaultValues: {
@@ -57,6 +47,7 @@ export default function CreatePropertyForm() {
             if (fileInputRef.current) {
                 fileInputRef.current.value = "";
             }
+            router.push('/properties')
         } catch (error) {
             toast({
                 title: "Error",
@@ -75,67 +66,13 @@ export default function CreatePropertyForm() {
                     Create Property
                 </h1>
             </div>
-            <Form {...form} >
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Property Name</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Property Name" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Property Description</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Property Description" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="imageFiles"
-                        render={({ field: { value, onChange, ...fieldProps } }) => (
-                            <FormItem>
-                                <FormLabel>Picture</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...fieldProps}
-                                        placeholder="Picture"
-                                        type="file"
-                                        ref={fileInputRef}
-                                        accept="image/*, application/pdf"
-                                        multiple
-                                        onChange={(event) =>
-                                            onChange(
-                                                Array.from(event.target.files || []).map(
-                                                    (file) => file
-                                                )
-                                            )
-                                        }
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="submit" disabled={loading}>
-                        {loading ? <Spinner /> : "Create Property"}
-                    </Button>
-                    {/* <Button type="submit">Submit</Button> */}
-                </form>
-            </Form>
+            <PropertyForm
+                form={form}
+                onSubmit={onSubmit}
+                fileInputRef={fileInputRef}
+                loading={loading}
+            />
         </>
+
     )
 }
