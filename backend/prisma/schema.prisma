@@ -89,6 +89,14 @@ model user {
   verificationToken          verification_token?
 }
 
+model chat_history {
+  id         String   @id @default(cuid())
+  message    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  system     Boolean  @default(false)
+}
+
 model verification_token {
   id         String   @id @default(cuid())
   token      String
