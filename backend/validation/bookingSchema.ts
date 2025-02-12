@@ -2,16 +2,12 @@ import { z } from "zod";
 
 const CreateBookingSchema = z.object({
     propertyId: z.string(),
-    checkIn: z.number(),
-    checkOut: z.number(),
+    checkIn: z.string(),
+    checkOut: z.string(),
     tenantEmail: z.string(),
-    rentalPrice: z.string(),
+    rentalPrice: z.number(),
     remarks: z.string().nullable(),
     rentCollectionDay: z.number().min(1).max(28)
-}).refine((data) => {
-    return !isNaN(parseFloat(data.rentalPrice));
-}, {
-    message: 'Rental price must be a number'
 });
 
 const CheckBookingsByPropertySchema = z.object({

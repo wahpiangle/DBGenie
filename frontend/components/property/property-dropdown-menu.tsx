@@ -6,7 +6,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Pencil, Trash } from "lucide-react"
+import { BookCheck, Pencil, Trash } from "lucide-react"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -53,7 +53,15 @@ export default function PropertyDropdownMenu({ propertyId }: { propertyId: strin
                 <DropdownMenuTrigger className="pointer-events-auto bg-white text-black py-2 px-4 rounded-lg">
                     Actions
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent align="end">
+                    <Link href={`/properties/${propertyId}/bookings/create`}>
+                        <DropdownMenuItem>
+                            <BookCheck className="w-4" />
+                            <DropdownMenuLabel>
+                                Create Booking
+                            </DropdownMenuLabel>
+                        </DropdownMenuItem>
+                    </Link>
                     <Link href={`/properties/${propertyId}/edit`}>
                         <DropdownMenuItem>
                             <Pencil className="w-4" />

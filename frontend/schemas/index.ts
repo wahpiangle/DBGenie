@@ -36,3 +36,14 @@ export const editPropertySchema = z.object({
         z.instanceof(File)
     ),
 });
+
+export const createBookingSchema = z.object({
+    date: z.object({
+        from: z.date(),
+        to: z.date(),
+    }),
+    tenantEmail: z.string().email(),
+    rentalPrice: z.coerce.number().gte(1),
+    remarks: z.string(),
+    rentCollectionDay: z.coerce.number().gte(1).lte(28),
+});

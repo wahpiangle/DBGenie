@@ -1,6 +1,6 @@
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { db, llm } from "../chatbot";
+import { llm } from "../chatbot";
 
 const GENERATE_SQL_STATEMENT_TEMPLATE = `
 You are a chatbot designed to translate natural language user queries into PostgreSQL statements based on a provided database schema. Your goal is to generate accurate and efficient SQL queries that satisfy the user's request while adhering to the given schema.
