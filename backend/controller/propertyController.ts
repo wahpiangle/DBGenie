@@ -143,7 +143,7 @@ export class PropertyController {
                     },
                     include: {
                         bookings: true
-                    }
+                    },
                 })
         res.json(properties);
         return;
@@ -157,11 +157,7 @@ export class PropertyController {
             },
             include: {
                 MaintenanceRequest: true,
-                bookings: {
-                    include: {
-                        user: true
-                    }
-                },
+                bookings: true
             },
         });
         res.json(property);
