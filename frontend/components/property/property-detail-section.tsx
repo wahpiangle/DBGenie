@@ -7,10 +7,8 @@ import { Spinner } from '../ui/spinner'
 import { ArrowLeftCircle } from 'lucide-react'
 import ImageCarousel from './image-carousel'
 import PropertyDropdownMenu from './property-dropdown-menu'
-import { Label } from '@radix-ui/react-label'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
-import { Input } from '../ui/input'
 import { Property } from '@/types/types'
 
 export default function PropertyDetailSection() {
