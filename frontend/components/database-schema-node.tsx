@@ -38,7 +38,7 @@ export function DatabaseSchemaNode({
                   title={entry.type}
                   type="source"
                   position={Position.Right}
-                  className="p-0"
+                  className="p-2"
                   handleClassName="p-0"
                   labelClassName="p-0"
                 />

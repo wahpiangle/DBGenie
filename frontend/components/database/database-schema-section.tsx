@@ -72,7 +72,8 @@ const nodeTypes = {
     databaseSchema: DatabaseSchemaNode,
 };
 
-export default function DatabaseSchemaSection() {
+export default function DatabaseSchemaSection(databaseInfo: any) {
+    console.log("Database info:", databaseInfo)
     return (
         <ReactFlow
             defaultNodes={defaultNodes}
