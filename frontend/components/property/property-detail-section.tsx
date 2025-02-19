@@ -10,13 +10,14 @@ import PropertyDropdownMenu from './property-dropdown-menu'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Property } from '@/types/types'
+import BookingListSection from '../bookings/booking-list-section'
 
 export default function PropertyDetailSection() {
-    const { id } = useParams<{ id: string }>()
+    const { propertyId } = useParams<{ propertyId: string }>()
     const { isLoading, isError, data, error } = useQuery({
-        queryKey: ['property', id],
+        queryKey: ['property', propertyId],
         queryFn: async () => {
-            const response = await axios.get(`${API_URL}/properties/${id}`, {
+            const response = await axios.get(`${API_URL}/properties/${propertyId}`, {
                 withCredentials: true
             });
             return response.data as Property
@@ -62,26 +63,20 @@ export default function PropertyDetailSection() {
                                     </Card>
                                 </TabsContent>
                                 <TabsContent value="booking">
-                                    <Card>
+                                    <Card >
                                         <CardHeader>
                                             <CardTitle>Bookings</CardTitle>
                                             <CardDescription>
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent className="space-y-2">
-                                            {data!.bookings.map((booking) => (
-                                                <div key={booking.id}>
-                                                    {JSON.stringify(booking)}
-                                                </div>
-                                            ))}
+                                            <BookingListSection bookings={data!.bookings} />
                                         </CardContent>
                                         <CardFooter>
                                         </CardFooter>
                                     </Card>
                                 </TabsContent>
                             </Tabs>
-
-
                         </>
                     )}
         </>

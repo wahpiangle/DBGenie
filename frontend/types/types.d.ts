@@ -29,12 +29,13 @@ export interface User {
 
 export interface Booking {
     id: string;
-    checkIn: Date;
-    checkOut: Date;
+    check_in: string;
+    check_out: string;
     propertyId: string;
     property: Property;
     userId: string;
     user: User;
+    remarks: string?;
 }
 
 export interface MaintenanceRequest {

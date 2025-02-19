@@ -6,7 +6,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { BookCheck, Pencil, Trash } from "lucide-react"
+import { BookCheck, MoreVertical, Pencil, Trash } from "lucide-react"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -25,15 +25,15 @@ import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function PropertyDropdownMenu({ propertyId }: { propertyId: string }) {
+export default function BookingDropdownMenu({ bookingId }: { bookingId: string }) {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const router = useRouter();
-    const handleDelete = async (propertyId: string) => {
+    const handleDelete = async (bookingId: string) => {
         try {
-            const res = await axios.delete(`${API_URL}/properties/${propertyId}`, {
+            const res = await axios.delete(`${API_URL}/bookings/${bookingId}`, {
                 withCredentials: true
             })
-            router.push('/properties')
+            // router.push('/bookings')
             toast({
                 title: "Success",
                 description: "Property deleted successfully.",
@@ -50,23 +50,15 @@ export default function PropertyDropdownMenu({ propertyId }: { propertyId: strin
     return (
         <>
             <DropdownMenu modal={false}>
-                <DropdownMenuTrigger className="pointer-events-auto bg-white text-black py-2 px-4 rounded-lg">
-                    Actions
+                <DropdownMenuTrigger className="pointer-events-auto dark:hover:bg-darkTertiaryBright rounded-full p-2">
+                    <MoreVertical />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <Link href={`/properties/${propertyId}/bookings/create`}>
-                        <DropdownMenuItem>
-                            <BookCheck className="w-4" />
-                            <DropdownMenuLabel>
-                                Create Booking
-                            </DropdownMenuLabel>
-                        </DropdownMenuItem>
-                    </Link>
-                    <Link href={`/properties/${propertyId}/edit`}>
+                    <Link href={`/bookings/${bookingId}/edit`}>
                         <DropdownMenuItem>
                             <Pencil className="w-4" />
                             <DropdownMenuLabel>
-                                Edit Property
+                                Edit Booking
                             </DropdownMenuLabel>
                         </DropdownMenuItem>
                     </Link>
@@ -74,7 +66,7 @@ export default function PropertyDropdownMenu({ propertyId }: { propertyId: strin
                         <div className="flex items-center gap-1 text-red-600">
                             <Trash className="w-4" />
                             <DropdownMenuLabel>
-                                Delete Property
+                                Delete Booking
                             </DropdownMenuLabel>
                         </div>
                     </DropdownMenuItem>
@@ -82,20 +74,22 @@ export default function PropertyDropdownMenu({ propertyId }: { propertyId: strin
             </DropdownMenu >
 
             <AlertDialog open={isDeleteDialogOpen}
-                onOpenChange={() => setIsDeleteDialogOpen(!isDeleteDialogOpen)}>
+                onOpenChange={() => setIsDeleteDialogOpen(!isDeleteDialogOpen)}
+
+            >
                 <AlertDialogTrigger asChild>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete this property?
+                            Are you sure you want to delete this booking?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={() => { handleDelete(propertyId) }}
+                            onClick={() => { handleDelete(bookingId) }}
                         >Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

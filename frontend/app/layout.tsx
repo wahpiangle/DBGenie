@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider"
 import AuthProvider from "@/context/AuthContext";
+import '@xyflow/react/dist/style.css';
 
 export const metadata: Metadata = {
   title: "Create Next App",

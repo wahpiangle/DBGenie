@@ -157,7 +157,17 @@ export class PropertyController {
             },
             include: {
                 MaintenanceRequest: true,
-                bookings: true
+                bookings: {
+                    include: {
+                        user: {
+                            select: {
+                                email: true,
+                                name: true,
+                                id: true,
+                            }
+                        }
+                    }
+                },
             },
         });
         res.json(property);

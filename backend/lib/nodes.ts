@@ -6,19 +6,20 @@ import { type user } from "@prisma/client"
 import { userQueryChecker } from "./tools/userQueryChecker"
 import { determineExecuteOrQuery } from "./tools/determineExecuteOrQuery"
 import { injectionPreventionChecker } from "./tools/injectionPrevention"
-import { tableColumnGenerator } from "./tools/tableColumnGenerator"
 import { createId } from '@paralleldrive/cuid2';
 import { readQueryGenerator } from "./tools/readQueryGenerator"
 import { ownDataChecker } from "./tools/ownDataChecker"
 import successExecuteMessageGeneration from "./tools/successExecuteMessageGeneration"
 import { SQLStatementGenerator } from "./tools/generateSQLStatement"
+import { determineAlterSchema } from "./tools/determineAlterSchema"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
     generation: Annotation<string>,
     user: Annotation<user>,
     errorMessage: Annotation<string>,
-    result: Annotation<string>
+    result: Annotation<string>,
+    alterSchema: Annotation<boolean>
 })
 
 const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
@@ -42,7 +43,18 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
     return { generation: removeThinkTag(extractSQL(generatedQuery)) }
 }
 
-const checkUserQuery = async (state: typeof GraphState.State) => {
+const checkAlterTableSchema = async (state: typeof GraphState.State) => {
+    console.log("====== Checking if the user is trying to update the table schema ======")
+    const response = await determineAlterSchema.invoke({
+        sql_statement: state.generation
+    });
+
+    return ({
+        alterSchema: (response.split(' ')[0].toLowerCase() === 'yes')
+    });
+}
+
+const checkUserQueryOwnData = async (state: typeof GraphState.State) => {
     console.log("======== Checking if the user is updating or deleting a record that does not belong to them ========")
     const user = state.user
     const ids = await prisma.user.findUnique({
@@ -84,7 +96,7 @@ const checkUserQuery = async (state: typeof GraphState.State) => {
 const blockTables = async (state: typeof GraphState.State) => {
     console.log("====== Blocking tables ======")
     const userQuery = await userQueryChecker.invoke({
-        blockedTables: ['Users', 'RentalBill', 'Payment', 'VerificationToken', 'Session'].join(', '),
+        blockedTables: ['Users', 'VerificationToken', 'Session'].join(', '),
         sql_statement: state.generation
     })
     if (userQuery.split(' ')[0].toLowerCase() === 'yes') {
@@ -174,14 +186,24 @@ const decideToReject = async (state: typeof GraphState.State) => {
     }
 }
 
+const decideAlterSchema = async (state: typeof GraphState.State) => {
+    if (state.alterSchema) {
+        return "alter"
+    } else {
+        return "not alter"
+    }
+}
+
 export {
     GraphState,
     generateSqlQuery,
-    checkUserQuery,
+    checkAlterTableSchema,
+    checkUserQueryOwnData,
     blockTables,
     evaluateSufficientInfo,
     runQueryToDb,
     generateErrorMessage,
     injectionPrevention,
-    decideToReject
+    decideToReject,
+    decideAlterSchema,
 }

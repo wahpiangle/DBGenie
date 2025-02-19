@@ -13,7 +13,7 @@ Output Requirements:
     Generate the complete SQL statement.
     The SQL should include necessary clauses such as SELECT, INSERT, UPDATE, DELETE, FROM, WHERE, GROUP BY, ORDER BY, LIMIT, etc., based on the user query.
     If any ambiguous terms or missing details are in the user's query, use placeholders (e.g., <value> or <condition>) or ask clarifying questions.
-    Users should not be able to manipulate the database schema by manipulating tables or columns in their queries.
+    If the user intends to manipulate the table schema, make sure to delete, update, and create new tables, columns, and relationships as necessary. No need to insert or update data in these statements.
 
 Constraints:
     Ensure all table and column names used in the SQL match the provided schema exactly.
