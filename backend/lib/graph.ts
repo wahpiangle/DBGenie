@@ -12,15 +12,18 @@ const graph = new StateGraph(GraphState)
     .addNode('checkUserQueryOwnData', checkUserQueryOwnData);
 
 graph.addEdge(START, 'generateSqlQuery')
-graph.addEdge('generateSqlQuery', 'checkAlterTableSchema');
-graph.addConditionalEdges('checkAlterTableSchema', decideAlterSchema, {
-    'alter': 'injectionPrevention',
-    'not alter': 'blockTables'
-})
+graph.addEdge('generateSqlQuery', 'blockTables');
+
 graph.addConditionalEdges('blockTables', decideToReject, {
-    'accept': 'evaluateSufficientInfo',
+    'accept': 'checkAlterTableSchema',
     'reject': 'generateErrorMessage'
 });
+
+graph.addConditionalEdges('checkAlterTableSchema', decideAlterSchema, {
+    'alter': 'runQueryToDb',
+    'not alter': 'evaluateSufficientInfo'
+})
+
 graph.addConditionalEdges('evaluateSufficientInfo', decideToReject, {
     'accept': 'checkUserQueryOwnData',
     'reject': 'generateErrorMessage'

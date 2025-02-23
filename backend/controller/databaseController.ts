@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import { prisma } from "../prisma";
+import pg from 'pg'
+import format from 'pg-format';
 
 export class DatabaseController {
     public static async getDatabaseTables(req: Request, res: Response) {
@@ -49,6 +51,48 @@ export class DatabaseController {
                 to: row.target_table,
                 toColumn: row.target_column
             })),
+        });
+        return;
+    }
+
+    public static async getTableInfo(req: Request, res: Response) {
+        const { Client } = pg
+        const client = new Client({
+            connectionString: process.env.DATABASE_URL
+        })
+        await client.connect()
+        const { tableName } = req.query;
+        const blockedTables = [
+            'user',
+            'session',
+            'verification_token'
+        ]
+
+        if (!tableName) {
+            res.status(400).json({ errorMessage: "Table name is required. Please try again." });
+            return;
+        }
+
+        if (blockedTables.includes(tableName as string)) {
+            res.status(400).json({ errorMessage: "You are not allowed to access the specific data. Please try again." });
+            return;
+        }
+        const query = format(`SELECT * FROM %I;`, tableName as string)
+        const data = await client.query(query)
+        const allTablesQuery = format(`
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema
+            NOT IN ('pg_catalog', 'information_schema')
+            AND table_name NOT IN (%L);`, blockedTables
+        )
+        const allTables = await client.query(
+            allTablesQuery
+        )
+        await client.end()
+        res.json({
+            ...data,
+            tables: allTables.rows
         });
         return;
     }

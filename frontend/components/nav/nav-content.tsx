@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from '../ui/button'
 import { ScrollArea } from '../ui/scroll-area'
 import ChatButton from '../chat-button'
-import { MessageCircle, Table, Triangle } from 'lucide-react'
+import { Database, MessageCircle, Table, Triangle } from 'lucide-react'
 
 export default function NavContent() {
     const mockData = [
@@ -13,14 +13,14 @@ export default function NavContent() {
         },
         {
             title: "Database",
-            icon: <Table />,
+            icon: <Database />,
             link: "/database",
+        },
+        {
+            title: "Tables",
+            icon: <Table />,
+            link: "/table",
         }
-        // {
-        //     title: "Properties",
-        //     icon: <House />,
-        //     link: "/properties",
-        // }
     ]
     return (
         <>

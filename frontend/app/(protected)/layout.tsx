@@ -7,8 +7,8 @@ export default function ProtectedLayout({
 }>) {
   return (
     <div className="h-full min-h-screen flex w-screen">
-      <SideNav />
-      <div className="w-full bg-darkSecondary">
+      <SideNav classname="w-2/12" />
+      <div className="w-10/12 bg-darkSecondary">
         {children}
       </div>
     </div>

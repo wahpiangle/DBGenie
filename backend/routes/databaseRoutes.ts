@@ -7,4 +7,7 @@ router.use(redirectLogin);
 router.route('/')
     .get(DatabaseController.getDatabaseTables)
 
+router.route('/get-table-info')
+    .get(DatabaseController.getTableInfo)
+
 export default router;

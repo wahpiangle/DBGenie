@@ -47,3 +47,25 @@ export interface MaintenanceRequest {
     userId: string;
     user: User;
 }
+
+export interface databaseInfo {
+    tables: databaseTable[]
+    relationships: databaseRelationship[]
+}
+
+export interface databaseTable {
+    table_name: string,
+    columns: databaseColumn[]
+}
+
+export interface databaseColumn {
+    name: string,
+    type: string
+}
+
+export interface databaseRelationship {
+    from: string,
+    fromColumn: string,
+    to: string,
+    toColumn: string
+}

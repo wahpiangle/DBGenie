@@ -1,10 +1,11 @@
 'use client';
 import DatabaseSchemaSection from '@/components/database/database-schema-section'
+import withAuth from '@/components/hoc/withAuth';
 import API_URL from '@/constants';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-export default function DatabasePage() {
+const DatabasePage = () => {
     const databaseInfo = useQuery({
         queryKey: ['database-info'],
         queryFn: async () => {
@@ -16,6 +17,7 @@ export default function DatabasePage() {
     return (
         databaseInfo.isLoading ?
             <div>Loading...</div> :
-            <DatabaseSchemaSection databaseInfo={databaseInfo} />
+            <DatabaseSchemaSection databaseInfo={databaseInfo.data!.data} />
     )
 }
+export default withAuth(DatabasePage);
