@@ -1,6 +1,7 @@
 'use client'
 import { DataTableSection } from '@/components/database/data-table-section';
 import { Spinner } from '@/components/ui/spinner';
+import { toast } from '@/components/ui/use-toast';
 import API_URL from '@/constants';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -16,6 +17,22 @@ export default function TablePage() {
             });
         }
     })
+    const deleteRow = async (selectedTable: string, id: string) => {
+        try {
+            await axios.delete(`${API_URL}/database/delete-row?tableName=${selectedTable}&id=${id}`,
+                {
+                    withCredentials: true
+                }
+            );
+            tableInfo.refetch();
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to delete row.",
+                variant: "destructive",
+            })
+        }
+    }
 
     return (
         <>
@@ -32,6 +49,7 @@ export default function TablePage() {
                             )}
                             onChangeTable={(table: string) => setSelectedTable(table)}
                             selectedTable={selectedTable}
+                            deleteRow={deleteRow}
                         />
                     </div>
             }

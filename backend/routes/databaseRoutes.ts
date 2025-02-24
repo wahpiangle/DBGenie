@@ -10,4 +10,6 @@ router.route('/')
 router.route('/get-table-info')
     .get(DatabaseController.getTableInfo)
 
+router.route('/delete-row')
+    .delete(DatabaseController.deleteRow)
 export default router;

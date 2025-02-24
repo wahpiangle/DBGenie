@@ -96,4 +96,22 @@ export class DatabaseController {
         });
         return;
     }
+
+    public static async deleteRow(req: Request, res: Response) {
+        const { Client } = pg
+        const client = new Client({
+            connectionString: process.env.DATABASE_URL
+        })
+        await client.connect()
+        const { tableName, id } = req.query;
+        if (!tableName || !id) {
+            res.status(400).json({ errorMessage: "Table name and id are required. Please try again." });
+            return;
+        }
+        const query = format(`DELETE FROM %I WHERE id = %L;`, tableName as string, id as string)
+        const data = await client.query(query)
+        await client.end()
+        res.json(data);
+        return;
+    }
 }

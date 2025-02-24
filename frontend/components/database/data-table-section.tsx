@@ -16,17 +16,13 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -36,6 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useState } from "react"
+import API_URL from "@/constants"
 
 export type TableData = {
   rows: any[],
@@ -51,13 +48,15 @@ export function DataTableSection(
     tables,
     onChangeTable,
     selectedTable,
+    deleteRow,
   }:
     {
       data: any[],
       fields: { name: string; format: string, dataTypeID: number }[],
       tables: string[],
       onChangeTable: (table: string) => void,
-      selectedTable: string
+      selectedTable: string,
+      deleteRow: (tableName: string, id: string) => void
     }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -105,7 +104,10 @@ export function DataTableSection(
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => {
-                  console.log(info.row)
+                  deleteRow(
+                    selectedTable,
+                    info.row.original.id
+                  )
                 }}
               >
                 Delete
