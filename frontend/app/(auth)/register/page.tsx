@@ -31,7 +31,7 @@ export const RegisterForm = () => {
             name: "",
             email: "",
             password: "",
-            role: Role.TENANT,
+            role: Role.USER,
         },
     })
 

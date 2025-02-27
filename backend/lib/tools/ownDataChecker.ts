@@ -1,7 +1,6 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { llm } from "../chatbot";
 import { JsonOutputParser, StringOutputParser } from "@langchain/core/output_parsers";
-import { prisma } from "../../prisma";
 
 const OWN_DATA_CHECKER_TEMPLATE = `
 You are tasked with validating and executing an SQL statement provided by a user. The SQL statement must comply with the following rules:
@@ -28,8 +27,7 @@ Validate the SQL statement as follows:
     "error": ...
 }}
 5. If the SQL statement is valid, just return the key "error" with a value of null.
-6. Users of role "MANAGER" can insert or update properties and bookings.
-7. Just return plain json, don't do it in markdown format.
+6. Just return plain json, don't do it in markdown format.
 `
 
 const ownDataCheckerPrompt = ChatPromptTemplate.fromTemplate(
