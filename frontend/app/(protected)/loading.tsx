@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function ProtectedLoading() {
     return (
-        <div className='w-full justify-center items-center flex'>
+        <div className='justify-center items-center flex h-screen'>
             <Spinner />
         </div>
     )

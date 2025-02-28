@@ -4,24 +4,6 @@ import { Background, Edge, ReactFlow } from "@xyflow/react";
 import { DatabaseSchemaNode } from "@/components/database-schema-node";
 import { databaseInfo } from "@/types/types";
 
-
-const defaultEdges: Edge[] = [
-    {
-        id: "products-warehouses",
-        source: "1",
-        target: "2",
-        sourceHandle: "warehouse_id",
-        targetHandle: "id",
-    },
-    {
-        id: "products-suppliers",
-        source: "1",
-        target: "3",
-        sourceHandle: "supplier_id",
-        targetHandle: "id",
-    },
-];
-
 const nodeTypes = {
     databaseSchema: DatabaseSchemaNode,
 };

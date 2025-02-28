@@ -1,6 +1,7 @@
 'use client';
 import DatabaseSchemaSection from '@/components/database/database-schema-section'
 import withAuth from '@/components/hoc/withAuth';
+import { Spinner } from '@/components/ui/spinner';
 import API_URL from '@/constants';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -16,7 +17,7 @@ const DatabasePage = () => {
     })
     return (
         databaseInfo.isLoading ?
-            <div>Loading...</div> :
+            <Spinner className='h-screen' /> :
             <DatabaseSchemaSection databaseInfo={databaseInfo.data!.data} />
     )
 }
