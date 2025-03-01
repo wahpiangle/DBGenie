@@ -12,6 +12,8 @@ import { ownDataChecker } from "./tools/ownDataChecker"
 import successExecuteMessageGeneration from "./tools/successExecuteMessageGeneration"
 import { SQLStatementGenerator } from "./tools/generateSQLStatement"
 import { determineAlterSchema } from "./tools/determineAlterSchema"
+import pg from 'pg'
+import { queryPg } from "./pgdb"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
@@ -57,38 +59,52 @@ const checkAlterTableSchema = async (state: typeof GraphState.State) => {
 const checkUserQueryOwnData = async (state: typeof GraphState.State) => {
     console.log("======== Checking if the user is updating or deleting a record that does not belong to them ========")
     const user = state.user
-    const ids = await prisma.user.findUnique({
-        where: {
-            id: user.id
-        },
-        select: {
-            booking: {
-                select: {
-                    id: true
-                }
-            },
-            maintenance_request: {
-                select: {
-                    id: true
-                }
-            },
-            maintenance_request_update: {
-                select: {
-                    id: true
-                }
-            },
-            property: {
-                select: {
-                    id: true
-                }
-            },
-        }
-    })
+    await queryPg(`
+        CREATE OR REPLACE FUNCTION get_related_ids(user_id_value TEXT)
+        RETURNS TABLE(id TEXT, table_name TEXT)
+        LANGUAGE plpgsql AS $$
+        DECLARE
+            rec RECORD;
+            query TEXT := '';
+        BEGIN
+            FOR rec IN (
+                SELECT conrelid::regclass AS table_name, attname AS column_name
+                FROM pg_constraint c
+                JOIN pg_attribute a
+                    ON a.attnum = ANY(c.conkey)
+                    AND a.attrelid = c.conrelid
+                WHERE c.confrelid = 'user'::regclass
+            ) LOOP
+                query := query || format(
+                    'SELECT id::TEXT, %L AS table_name FROM %I WHERE %I = %L UNION ALL ',
+                    rec.table_name, rec.table_name, rec.column_name, user_id_value
+                );
+            END LOOP;
+
+            IF query != '' THEN
+                query := left(query, length(query) - 11);  -- Remove last ' UNION ALL '
+                RETURN QUERY EXECUTE query;
+            ELSE
+                RETURN;
+            END IF;
+        END $$;
+    `);
+
+    const ids = await queryPg(`SELECT * FROM get_related_ids('${user.id}');`);
+    const idsMap = Object.values(
+        ids.rows.reduce((acc, { table_name, id }) => {
+            if (!acc[table_name]) {
+                acc[table_name] = { table_name, id: [] };
+            }
+            acc[table_name].id.push(id);
+            return acc;
+        }, {})
+    );
     const response = await ownDataChecker.invoke({
         sql_statement: state.generation,
-        user_json: JSON.stringify(ids)
-    }) as { error: string, conflicted_tables: string[] }
-    if (response.error) {
+        user_json: JSON.stringify(idsMap)
+    }) as { error: string, valid: boolean }
+    if (!response?.valid) {
         return { errorMessage: "You are not allowed to access the specific data. Please try again." }
     }
 }

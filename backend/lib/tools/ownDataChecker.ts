@@ -24,9 +24,14 @@ Validate the SQL statement as follows:
 }}
 4. If the SQL statement is invalid, return an error message indicating the issue with the key "error" in this format:
 {{
-    "error": ...
+    "valid": false,
+    "errorMessage": ...
 }}
-5. If the SQL statement is valid, just return the key "error" with a value of null.
+5. If the SQL statement is valid, return the JSON in this format:
+{{
+    "valid": true,
+    "errorMessage": null
+}}
 6. Just return plain json, don't do it in markdown format.
 `
 
