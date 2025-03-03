@@ -37,7 +37,7 @@ export default function TablePage() {
     return (
         <>
             {tableInfo.error ?
-                <h1 className='text-2xl font-bold text-red-500'>Error</h1> :
+                <h1 className='text-2xl font-bold'>Error</h1> :
                 tableInfo.isLoading ?
                     <Spinner className='h-screen' /> :
                     <div className='p-4'>
