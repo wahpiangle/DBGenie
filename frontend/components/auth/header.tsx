@@ -17,7 +17,7 @@ export const Header = ({ label }: HeaderProps) => {
                 "text-3xl font-semibold text-center",
                 font.className
             )}>
-                🏠 Propdash Property Management
+                🤖 Text-to-SQL chatbot
             </h1>
             <p className="text-muted-foreground text-sm py-2">
                 {label}

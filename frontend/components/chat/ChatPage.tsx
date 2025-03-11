@@ -3,11 +3,9 @@ import Chatbox from '../chatbox/chatbox'
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { Spinner } from '../ui/spinner';
 import { toast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { ChatMessage } from '@/types/types';
-import Markdown from 'react-markdown'
 import MessageDialog from './message-dialog';
 
 export default function ChatPage() {
@@ -58,7 +56,7 @@ export default function ChatPage() {
     return (
         <main className="flex-1 gap-4 overflow-auto p-4 ">
             <div className="flex flex-col rounded-xl 0 p-8 lg:col-span-2 h-full justify-between gap-4">
-                <div className="flex flex-col gap-4 max-w-full">
+                <div className="flex flex-col gap-4 max-w-full overflow-auto">
                     {
                         chatHistory.length === 0 && (
                             <h2 className="text-2xl text-center">Ask me anything!</h2>

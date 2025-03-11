@@ -12,8 +12,8 @@ import { ownDataChecker } from "./tools/ownDataChecker"
 import successExecuteMessageGeneration from "./tools/successExecuteMessageGeneration"
 import { SQLStatementGenerator } from "./tools/generateSQLStatement"
 import { determineAlterSchema } from "./tools/determineAlterSchema"
-import pg from 'pg'
 import { queryPg } from "./pgdb"
+import { determineValidQuery } from "./tools/determineValidQuery"
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
@@ -23,6 +23,19 @@ const GraphState = Annotation.Root({
     result: Annotation<string>,
     alterSchema: Annotation<boolean>
 })
+
+const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
+    console.log("====== Checking if the user query is valid ======")
+    const result = await determineValidQuery.invoke({
+        database_schema: db.allTables,
+        user_query: state.question
+    })
+    if (result.split(' ')[0].toLowerCase() === 'yes') {
+        return {}
+    } else {
+        return { errorMessage: result }
+    }
+}
 
 const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
     console.log("Generating SQL query for question:", state.question)
@@ -214,6 +227,7 @@ export {
     GraphState,
     generateSqlQuery,
     checkAlterTableSchema,
+    determineUserQueryIsValid,
     checkUserQueryOwnData,
     blockTables,
     evaluateSufficientInfo,

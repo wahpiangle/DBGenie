@@ -1,7 +1,8 @@
 import { END, START, StateGraph } from "@langchain/langgraph";
-import { blockTables, checkAlterTableSchema, checkUserQueryOwnData, decideAlterSchema, decideToReject, evaluateSufficientInfo, generateErrorMessage, generateSqlQuery, GraphState, injectionPrevention, runQueryToDb } from "./nodes";
+import { blockTables, checkAlterTableSchema, checkUserQueryOwnData, decideAlterSchema, decideToReject, determineUserQueryIsValid, evaluateSufficientInfo, generateErrorMessage, generateSqlQuery, GraphState, injectionPrevention, runQueryToDb } from "./nodes";
 
 const graph = new StateGraph(GraphState)
+    .addNode('determineUserQueryIsValid', determineUserQueryIsValid)
     .addNode('generateSqlQuery', generateSqlQuery)
     .addNode('checkAlterTableSchema', checkAlterTableSchema)
     .addNode('blockTables', blockTables)
@@ -11,7 +12,13 @@ const graph = new StateGraph(GraphState)
     .addNode('injectionPrevention', injectionPrevention)
     .addNode('checkUserQueryOwnData', checkUserQueryOwnData);
 
-graph.addEdge(START, 'generateSqlQuery')
+graph.addEdge(START, 'determineUserQueryIsValid');
+
+graph.addConditionalEdges('determineUserQueryIsValid', decideToReject, {
+    'accept': 'generateSqlQuery',
+    'reject': 'generateErrorMessage'
+});
+
 graph.addEdge('generateSqlQuery', 'blockTables');
 
 graph.addConditionalEdges('blockTables', decideToReject, {
