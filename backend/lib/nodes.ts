@@ -27,6 +27,7 @@ const GraphState = Annotation.Root({
 const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
     console.log("====== Checking if the user query is valid ======")
     const result = await determineValidQuery.invoke({
+        user_id: state.user.id,
         database_schema: db.allTables,
         user_query: state.question
     })

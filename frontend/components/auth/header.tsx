@@ -17,7 +17,7 @@ export const Header = ({ label }: HeaderProps) => {
                 "text-3xl font-semibold text-center",
                 font.className
             )}>
-                🤖 Text-to-SQL chatbot
+                🤖 DBGenie
             </h1>
             <p className="text-muted-foreground text-sm py-2">
                 {label}
