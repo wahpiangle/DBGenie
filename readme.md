@@ -1,5 +1,3 @@
-COMP3040 Coursework for Tan Quan Ming (20475320)
-
 The folder structure is as follows:
 - Propdash-android (Android app)
 - backend (Node.js backend)
