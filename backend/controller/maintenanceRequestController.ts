@@ -157,7 +157,7 @@ export class MaintenanceRequestController {
             }
 
             if (
-                (user.role === Role.TENANT && maintenanceRequest.user_id !== user.id) ||
+                (user.role === Role.USER && maintenanceRequest.user_id !== user.id) ||
                 (user.role === Role.MANAGER && maintenanceRequest.property.user_id !== user.id)
             ) {
                 res.status(403).json({ error: 'You are not authorized to update this maintenance request' });
@@ -248,7 +248,7 @@ export class MaintenanceRequestController {
             }
 
             if (
-                (user.role === Role.TENANT && maintenanceRequest.user_id !== user.id) ||
+                (user.role === Role.USER && maintenanceRequest.user_id !== user.id) ||
                 (user.role === Role.MANAGER && maintenanceRequest.property.user_id !== user.id)
             ) {
                 res.status(403).json({ error: 'You are not authorized to resolve this maintenance request' });

@@ -31,7 +31,7 @@ const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
         database_schema: db.allTables,
         user_query: state.question
     })
-    if (result.split(' ')[0].toLowerCase() === 'yes') {
+    if (result.split(' ')[0].toLowerCase().includes('yes')) {
         return {}
     } else {
         return { errorMessage: result }

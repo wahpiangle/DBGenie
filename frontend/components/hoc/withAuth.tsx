@@ -20,12 +20,7 @@ const withAuth = (
                 router.push('/');
             }
         }, [user, requireAuth, router]);
-        if (loading || (!requireAuth && user)) {
-            return <div className='w-screen h-screen justify-center items-center flex'>
-                <Spinner />
-            </div>
-        }
-        if (requireAuth && !user) {
+        if (loading || (!requireAuth && user) || (requireAuth && !user)) {
             return <div className='w-full h-full justify-center items-center flex'>
                 <Spinner />
             </div>
