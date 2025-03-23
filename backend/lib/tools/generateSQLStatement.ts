@@ -35,7 +35,7 @@ User Query: {user_query}
 
 - Use {generated_id} as the id for new inserts.
 - created_at and updated_at columns should be automatically populated with the current timestamp.
-- For select statments, do not include the user_id in the output columns. Limit the output to 10 rows.
+- For select statements, do not include the user_id in the output columns. Limit the output to 10 rows.
 - The user_id is {user_id}.
 - The database is PostgreSQL. Include quotation marks around table and column names.
 - Provide only the SQL statement as output as plain text, without the markdown formatting.
