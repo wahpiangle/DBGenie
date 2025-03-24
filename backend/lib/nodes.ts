@@ -171,26 +171,23 @@ const runQueryToDb = async (state: typeof GraphState.State) => {
     const isQuery = await determineExecuteOrQuery.invoke({
         sql_statement: state.generation
     })
-    const removeThinkTag = (input: string) => {
-        return input.replace(/<think>[\s\S]*?<\/think>/g, "")
-    }
     try {
 
         if (isQuery.split(' ')[0].toLowerCase() === 'yes') {
-            const queryResult = await prisma.$queryRawUnsafe(state.generation)
+            const queryResult = await queryPg(state.generation)
             console.log("Query result:", queryResult)
             return {
-                result: removeThinkTag(await readQueryGenerator.invoke({
+                result: await readQueryGenerator.invoke({
                     sql_statement: state.generation,
-                    result: JSON.stringify(queryResult)
-                }))
+                    result: queryResult
+                })
             }
         } else {
             const queryResult = await prisma.$executeRawUnsafe(state.generation)
             return {
-                result: removeThinkTag(await successExecuteMessageGeneration.invoke({
+                result: await successExecuteMessageGeneration.invoke({
                     sql_statement: state.generation
-                }))
+                })
             }
         }
     }

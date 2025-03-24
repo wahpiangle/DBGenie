@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { prisma } from "../prisma";
 import appGraph from "../lib/graph";
 
 export class ChatController {
