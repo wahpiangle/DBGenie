@@ -2,7 +2,7 @@ import { Annotation, END } from "@langchain/langgraph"
 import { db } from "./chatbot"
 import { questionEvaluation, type QuestionEvaluatorOutput } from "./tools/questionEvaluator"
 import { prisma } from "../prisma"
-import { type user } from "@prisma/client"
+import { Role, type user } from "@prisma/client"
 import { userQueryChecker } from "./tools/userQueryChecker"
 import { determineExecuteOrQuery } from "./tools/determineExecuteOrQuery"
 import { injectionPreventionChecker } from "./tools/injectionPrevention"
@@ -166,6 +166,15 @@ const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
     return
 }
 
+const blockUserFromAlteringSchema = async (state: typeof GraphState.State) => {
+    console.log("Blocking user from altering schema")
+    if (state.user.role === Role.USER && state.alterSchema) {
+        return { errorMessage: "You are not allowed to alter the database schema. Please try again." }
+    } else {
+        return {}
+    }
+}
+
 const runQueryToDb = async (state: typeof GraphState.State) => {
     console.log("Running query to database: ", state.generation)
     const isQuery = await determineExecuteOrQuery.invoke({
@@ -227,6 +236,7 @@ export {
     checkAlterTableSchema,
     determineUserQueryIsValid,
     checkUserQueryOwnData,
+    blockUserFromAlteringSchema,
     blockTables,
     evaluateSufficientInfo,
     runQueryToDb,

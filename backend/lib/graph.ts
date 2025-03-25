@@ -1,9 +1,10 @@
 import { END, START, StateGraph } from "@langchain/langgraph";
-import { blockTables, checkAlterTableSchema, checkUserQueryOwnData, decideAlterSchema, decideToReject, determineUserQueryIsValid, evaluateSufficientInfo, generateErrorMessage, generateSqlQuery, GraphState, injectionPrevention, runQueryToDb } from "./nodes";
+import { blockTables, blockUserFromAlteringSchema, checkAlterTableSchema, checkUserQueryOwnData, decideAlterSchema, decideToReject, determineUserQueryIsValid, evaluateSufficientInfo, generateErrorMessage, generateSqlQuery, GraphState, injectionPrevention, runQueryToDb } from "./nodes";
 
 const graph = new StateGraph(GraphState)
     .addNode('determineUserQueryIsValid', determineUserQueryIsValid)
     .addNode('generateSqlQuery', generateSqlQuery)
+    .addNode('blockUserFromAlteringSchema', blockUserFromAlteringSchema)
     .addNode('checkAlterTableSchema', checkAlterTableSchema)
     .addNode('blockTables', blockTables)
     .addNode('evaluateSufficientInfo', evaluateSufficientInfo)
@@ -27,9 +28,14 @@ graph.addConditionalEdges('blockTables', decideToReject, {
 });
 
 graph.addConditionalEdges('checkAlterTableSchema', decideAlterSchema, {
-    'alter': 'runQueryToDb',
+    'alter': 'blockUserFromAlteringSchema',
     'not alter': 'evaluateSufficientInfo'
 })
+
+graph.addConditionalEdges('blockUserFromAlteringSchema', decideToReject, {
+    'accept': 'runQueryToDb',
+    'reject': 'generateErrorMessage'
+});
 
 graph.addConditionalEdges('evaluateSufficientInfo', decideToReject, {
     'accept': 'checkUserQueryOwnData',

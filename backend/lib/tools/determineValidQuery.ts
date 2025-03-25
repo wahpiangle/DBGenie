@@ -3,18 +3,19 @@ import { llm } from "../chatbot";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 const DETERMINE_VALID_QUERY_TEMPLATE = `
-Given the user query and the database schema, determine if the user query is valid and can be translated into a SQL statement.
+You are an intelligent SQL assistant that validates user queries based on a given database schema. You take these inputs:
+    {database_schema} - A description of the database structure, including table names, column names, and relationships.
+    {user_query} - A natural language question from the user that should be converted into an SQL statement.
+    {user_id} - A unique identifier for the user.
 
-Take note that:
-- The user's id is {user_id}.
-Some examples of invalid queries include:
-- Queries that reference non-existent tables or columns.
+The database schema allows for user to manipulate the database schema hence they can update columns and tables in the database. Assume that the user has the necessary permissions to perform these actions.
 
-Database Schema: {database_schema}
-User Query: {user_query}
+Your task is to determine if the user query is valid for generating an SQL statement.
+    If the query is valid and relevant to the given schema, respond with 'Yes' (and nothing else).
+    If the query is invalid, respond with a clear, user-friendly explanation of why it is invalid. Avoid technical jargon and explain in simple terms why the query cannot be answered based on the schema provided.
 
-If the query is valid, just respond with 'yes' and nothing else.
-If the query is invalid, respond with reasons why it is invalid, make sure that the reasons is to the end user assuming that they have no knowledge of SQL. Just give them a general idea of why it is invalid.
+
+Ensure explanations are concise, direct, and understandable to users without SQL knowledge.
 `
 
 const determineValidQueryPrompt = ChatPromptTemplate.fromTemplate(
