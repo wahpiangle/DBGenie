@@ -35,14 +35,30 @@ export class DatabaseController {
             tables:
                 Object.values(
                     tables.reduce(
-                        (acc: Record<string, { table_name: string; columns: { name: string; type: string }[] }>, row: { table_name: string; column_name: string; data_type: string; }) => {
+                        (acc: Record<string,
+                            {
+                                table_name: string; columns:
+                                {
+                                    name: string;
+                                    type: string
+                                }[]
+                            }>,
+                            row: {
+                                table_name: string;
+                                column_name: string;
+                                data_type: string;
+                            }) => {
                             if (!acc[row.table_name]) {
                                 acc[row.table_name] = { table_name: row.table_name, columns: [] };
                             }
                             acc[row.table_name].columns.push({ name: row.column_name, type: row.data_type });
                             return acc;
                         },
-                        {} as Record<string, { table_name: string; columns: { name: string; type: string }[] }>
+                        {} as Record<string,
+                            {
+                                table_name: string;
+                                columns: { name: string; type: string }[]
+                            }>
                     )
                 ),
             relationships: foreignKeys.map((row: any) => ({
