@@ -25,7 +25,8 @@ export default function ChatPage() {
     console.log("Chat history query:", chatHistoryQuery.data);
     const useChat = useMutation({
         mutationFn: (input: String) => {
-            return axios.post("http://localhost:8080/chat", {
+            return axios.post(
+                `${API_URL}/chat`, {
                 inputText: input
             },
                 {

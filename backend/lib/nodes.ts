@@ -21,7 +21,8 @@ const GraphState = Annotation.Root({
     user: Annotation<user>,
     errorMessage: Annotation<string>,
     result: Annotation<string>,
-    alterSchema: Annotation<boolean>
+    alterSchema: Annotation<boolean>,
+    messages: Annotation<any[]>,
 })
 
 const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
@@ -57,7 +58,13 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
     }
     console.log("Generated SQL query:", generatedQuery)
     console.log("Extracted SQL query:", removeThinkTag(extractSQL(generatedQuery)))
-    return { generation: removeThinkTag(extractSQL(generatedQuery)) }
+    return {
+        generation: removeThinkTag(extractSQL(generatedQuery)),
+        messages: [
+            ...state.messages,
+            { role: "human", content: state.question, created_at: new Date() }
+        ],
+    }
 }
 
 const checkAlterTableSchema = async (state: typeof GraphState.State) => {
@@ -183,22 +190,21 @@ const runQueryToDb = async (state: typeof GraphState.State) => {
     })
     try {
 
-        if (isQuery.split(' ')[0].toLowerCase() === 'yes') {
-            const queryResult = await queryPg(state.generation)
-            console.log("Query result:", queryResult)
-            return {
-                result: await readQueryGenerator.invoke({
-                    sql_statement: state.generation,
-                    result: queryResult
-                })
-            }
-        } else {
-            const queryResult = await prisma.$executeRawUnsafe(state.generation)
-            return {
-                result: await successExecuteMessageGeneration.invoke({
-                    sql_statement: state.generation
-                })
-            }
+        const isReadQuery = isQuery.split(' ')[0].toLowerCase() === 'yes';
+        const queryResult = isReadQuery
+            ? await queryPg(state.generation)
+            : await prisma.$executeRawUnsafe(state.generation);
+
+        const resultMessage = isReadQuery
+            ? await readQueryGenerator.invoke({ sql_statement: state.generation, result: queryResult })
+            : await successExecuteMessageGeneration.invoke({ sql_statement: state.generation });
+
+        return {
+            result: resultMessage,
+            messages: [
+                ...state.messages,
+                { role: "assistant", content: resultMessage, created_at: new Date() }
+            ]
         }
     }
     catch (e) {
@@ -212,7 +218,13 @@ const runQueryToDb = async (state: typeof GraphState.State) => {
 const generateErrorMessage = async (state: typeof GraphState.State) => {
     console.log("Generating error message")
     console.log("The state is:", state)
-    return { result: state.errorMessage }
+    return {
+        result: state.errorMessage,
+        messages: [
+            ...state.messages,
+            { role: "assistant", content: state.errorMessage, created_at: new Date() }
+        ]
+    }
 }
 
 const decideToReject = async (state: typeof GraphState.State) => {
