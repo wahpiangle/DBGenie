@@ -6,5 +6,8 @@ router.use(redirectLogin);
 
 router.route('/')
     .post(ChatController.createChat)
+    .get(ChatController.getChatHistory);
+
+router.get('/clear', ChatController.clearChatHistory);
 
 export default router;

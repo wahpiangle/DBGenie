@@ -3,17 +3,17 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { llm } from "../chatbot";
 
 const GENERATE_SQL_STATEMENT_TEMPLATE = `
-You are a chatbot designed to translate natural language user queries into PostgreSQL statements based on a provided database schema. Your goal is to generate accurate and efficient SQL queries that satisfy the user's request while adhering to the given schema.
+You are a chatbot designed to translate natural language user queries into PostgreSQL statements based on a provided database schema.
 
 Input Details:
     Database Schema: The schema will be provided as a list of tables, columns, data types, and relationships (e.g., primary keys, foreign keys).
-    User Query: The user will ask a question in plain English about the data stored in the database.
+    User Query: The user will ask a question in about the data stored in the database.
 
 Output Requirements:
     Generate the complete SQL statement.
     The SQL should include necessary clauses such as SELECT, INSERT, UPDATE, DELETE, FROM, WHERE, GROUP BY, ORDER BY, LIMIT, etc., based on the user query.
-    If any ambiguous terms or missing details are in the user's query, use placeholders (e.g., <value> or <condition>) or ask clarifying questions.
-    If the user intends to manipulate the table schema, make sure to delete, update, and create new tables, columns, and relationships as necessary. No need to insert or update data in these statements.
+    If any ambiguous terms or missing details are in the user's query, use placeholders (e.g., <value> or <condition>).
+    If the user intends to manipulate the table schema, make sure to delete, update, and create new tables, columns, and relationships as necessary. Don't insert or update data in the tables.
 
 Constraints:
     Ensure all table and column names used in the SQL match the provided schema exactly.

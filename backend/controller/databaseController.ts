@@ -5,15 +5,22 @@ import format from 'pg-format';
 
 export class DatabaseController {
     public static async getDatabaseTables(req: Request, res: Response) {
-        const tablesWithColumnQuery = `
-            SELECT
+        const hiddenTables = [
+            'session',
+            'checkpoints',
+            'checkpoint_writes',
+            'checkpoint_migrations',
+            'checkpoint_blobs',
+        ]
+
+        const tablesWithColumnQuery = format(`SELECT
                 table_name,
                 column_name,
                 data_type
             FROM information_schema.columns
             WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
-            ORDER BY table_name, ordinal_position;
-        `;
+            AND table_name NOT IN (%L)
+            ORDER BY table_name, ordinal_position;`, hiddenTables);
         const foreignKeysQuery = `
             SELECT
             o.conname AS constraint_name,
@@ -81,7 +88,11 @@ export class DatabaseController {
         const blockedTables = [
             'user',
             'session',
-            'verification_token'
+            'verification_token',
+            'checkpoint_writes',
+            'checkpoint_migrations',
+            'checkpoints',
+            'checkpoint_blobs',
         ]
 
         if (!tableName) {

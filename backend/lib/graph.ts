@@ -1,9 +1,10 @@
 import { END, START, StateGraph } from "@langchain/langgraph";
 import { blockTables, blockUserFromAlteringSchema, checkAlterTableSchema, checkUserQueryOwnData, decideAlterSchema, decideToReject, determineUserQueryIsValid, evaluateSufficientInfo, generateErrorMessage, generateSqlQuery, GraphState, injectionPrevention, runQueryToDb } from "./nodes";
+import checkpointer from "./checkpointer";
 
 const graph = new StateGraph(GraphState)
-    .addNode('determineUserQueryIsValid', determineUserQueryIsValid)
     .addNode('generateSqlQuery', generateSqlQuery)
+    .addNode('determineUserQueryIsValid', determineUserQueryIsValid)
     .addNode('blockUserFromAlteringSchema', blockUserFromAlteringSchema)
     .addNode('checkAlterTableSchema', checkAlterTableSchema)
     .addNode('blockTables', blockTables)
@@ -13,14 +14,13 @@ const graph = new StateGraph(GraphState)
     .addNode('injectionPrevention', injectionPrevention)
     .addNode('checkUserQueryOwnData', checkUserQueryOwnData);
 
-graph.addEdge(START, 'determineUserQueryIsValid');
+graph.addEdge(START, 'generateSqlQuery');
+graph.addEdge('generateSqlQuery', 'determineUserQueryIsValid');
 
 graph.addConditionalEdges('determineUserQueryIsValid', decideToReject, {
-    'accept': 'generateSqlQuery',
+    'accept': 'blockTables',
     'reject': 'generateErrorMessage'
 });
-
-graph.addEdge('generateSqlQuery', 'blockTables');
 
 graph.addConditionalEdges('blockTables', decideToReject, {
     'accept': 'checkAlterTableSchema',
@@ -53,7 +53,7 @@ graph.addEdge('runQueryToDb', END);
 graph.addEdge('generateErrorMessage', END);
 
 const appGraph = graph.compile({
-    // checkpointer: new MemorySaver(),
+    checkpointer,
 })
 
 export default appGraph;

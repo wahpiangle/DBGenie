@@ -29,7 +29,8 @@ const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
     const result = await determineValidQuery.invoke({
         user_id: state.user.id,
         database_schema: db.allTables,
-        user_query: state.question
+        user_query: state.question,
+        sql_statement: state.generation
     })
     if (result.split(' ')[0].toLowerCase().includes('yes')) {
         return {}

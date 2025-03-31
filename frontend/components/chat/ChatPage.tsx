@@ -1,17 +1,28 @@
 'use client';
 import Chatbox from '../chatbox/chatbox'
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { ChatMessage } from '@/types/types';
 import MessageDialog from './message-dialog';
+import API_URL from '@/constants';
 
 export default function ChatPage() {
     const [inputText, setInputText] = useState('')
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
     const router = useRouter();
+    const chatHistoryQuery = useQuery({
+        queryKey: ['chatHistory'],
+        queryFn: async () => {
+            const response = await axios.get(`${API_URL}/chat`, {
+                withCredentials: true,
+            })
+            return response.data
+        },
+    })
+    console.log("Chat history query:", chatHistoryQuery.data);
     const useChat = useMutation({
         mutationFn: (input: String) => {
             return axios.post("http://localhost:8080/chat", {
