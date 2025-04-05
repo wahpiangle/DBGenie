@@ -1,4 +1,4 @@
-import { Annotation, END } from "@langchain/langgraph"
+import { Annotation } from "@langchain/langgraph"
 import { db } from "./chatbot"
 import { questionEvaluation, type QuestionEvaluatorOutput } from "./tools/questionEvaluator"
 import { prisma } from "../prisma"
@@ -14,6 +14,7 @@ import { SQLStatementGenerator } from "./tools/generateSQLStatement"
 import { determineAlterSchema } from "./tools/determineAlterSchema"
 import { queryPg } from "./pgdb"
 import { determineValidQuery } from "./tools/determineValidQuery"
+
 const GraphState = Annotation.Root({
     question: Annotation<string>,
     generation: Annotation<string>,

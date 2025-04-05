@@ -3,10 +3,7 @@ import session from 'express-session';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import { prisma } from "./prisma";
 import authRoute from './routes/authRoutes';
-import propertyRoute from './routes/propertyRoutes';
-import bookingRoute from './routes/bookingRoutes';
 import chatRoute from './routes/chatRoutes';
-import maintenanceRequestRoute from './routes/maintenanceRequestRoutes';
 import databaseRoute from './routes/databaseRoutes';
 import cors from 'cors';
 
@@ -40,9 +37,6 @@ app.use(
 )
 
 app.use('/auth', authRoute)
-app.use('/properties', propertyRoute)
-app.use('/bookings', bookingRoute)
-app.use('/maintenance-request', maintenanceRequestRoute)
 app.use('/chat', chatRoute)
 app.use('/database', databaseRoute)
 
