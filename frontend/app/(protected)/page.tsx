@@ -31,7 +31,6 @@ const Dashboard = () => {
                 description: response.data.message,
             })
         } catch (error: any) {
-            console.error("Error clearing chat history:", error);
             if (error.status === 401) {
                 router.push('/login')
                 return
