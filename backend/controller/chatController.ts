@@ -44,7 +44,7 @@ export class ChatController {
                     thread_id: threadId,
                 }
             })
-            res.status(200).json(data);
+            res.status(200).json(data?.channel_values?.messages ?? []);
         } catch (error) {
             console.error("Error getting chat history:", error);
             res.status(500).json({ message: "Error getting chat history" });

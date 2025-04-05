@@ -14,7 +14,6 @@ import { SQLStatementGenerator } from "./tools/generateSQLStatement"
 import { determineAlterSchema } from "./tools/determineAlterSchema"
 import { queryPg } from "./pgdb"
 import { determineValidQuery } from "./tools/determineValidQuery"
-
 const GraphState = Annotation.Root({
     question: Annotation<string>,
     generation: Annotation<string>,
@@ -22,7 +21,11 @@ const GraphState = Annotation.Root({
     errorMessage: Annotation<string>,
     result: Annotation<string>,
     alterSchema: Annotation<boolean>,
-    messages: Annotation<any[]>,
+    messages: Annotation<{
+        role: string;
+        content: string;
+        created_at: Date;
+    }[]>,
 })
 
 const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
@@ -31,7 +34,11 @@ const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
         user_id: state.user.id,
         database_schema: db.allTables,
         user_query: state.question,
-        sql_statement: state.generation
+        sql_statement: state.generation,
+        conversation_history: state.messages?.map((message) => ({
+            role: message.role,
+            content: message.content,
+        })) ?? [],
     })
     if (result.split(' ')[0].toLowerCase().includes('yes')) {
         return {}
@@ -42,11 +49,16 @@ const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
 
 const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
     console.log("Generating SQL query for question:", state.question)
+    console.log("The messages state is:", state.messages)
     const generatedQuery = await SQLStatementGenerator.invoke({
         generated_id: createId(),
         database_schema: db.allTables,
         user_query: state.question,
-        user_id: state.user.id
+        user_id: state.user.id,
+        conversation_history: state.messages?.map((message) => ({
+            role: message.role,
+            content: message.content,
+        })) ?? [],
     })
     const extractSQL = (input: string) => {
         const regex = /```sql\n([\s\S]*?)\n```/;
@@ -61,8 +73,12 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
     return {
         generation: removeThinkTag(extractSQL(generatedQuery)),
         messages: [
-            ...state.messages,
-            { role: "human", content: state.question, created_at: new Date() }
+            ...(state.messages || []),
+            {
+                role: "human",
+                content: state.question,
+                created_at: new Date()
+            }
         ],
     }
 }
@@ -243,6 +259,14 @@ const decideAlterSchema = async (state: typeof GraphState.State) => {
     }
 }
 
+const resetState = async (state: typeof GraphState.State) => {
+    return {
+        errorMessage: "",
+        generation: "",
+        result: "",
+    }
+}
+
 export {
     GraphState,
     generateSqlQuery,
@@ -257,4 +281,5 @@ export {
     injectionPrevention,
     decideToReject,
     decideAlterSchema,
+    resetState,
 }

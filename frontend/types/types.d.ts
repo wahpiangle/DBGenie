@@ -1,7 +1,7 @@
 export interface ChatMessage {
     message: string;
     fromServer: boolean;
-    pending?: boolean;
+    loading?: boolean;
 }
 
 export interface Property {

@@ -8,6 +8,6 @@ router.route('/')
     .post(ChatController.createChat)
     .get(ChatController.getChatHistory);
 
-router.get('/clear', ChatController.clearChatHistory);
+router.get('/clear', (req, res) => ChatController.clearChatHistory(req, res));
 
 export default router;

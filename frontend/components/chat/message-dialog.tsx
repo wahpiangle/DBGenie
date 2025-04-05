@@ -13,7 +13,7 @@ export default function MessageDialog(
                                 text-black`
                 }
             >
-                {chat.pending ?
+                {chat.loading ?
                     <Spinner /> :
                     <Markdown>
                         {chat.message}
