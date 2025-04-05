@@ -4,7 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { HandleProps } from "@xyflow/react";
 
-import { BaseHandle } from "@/components/base-handle";
+import { BaseHandle } from "@/components/database/base-handle";
 
 const flexDirections = {
   top: "flex-col",
@@ -16,11 +16,11 @@ const flexDirections = {
 const LabeledHandle = React.forwardRef<
   HTMLDivElement,
   HandleProps &
-    React.HTMLAttributes<HTMLDivElement> & {
-      title: string;
-      handleClassName?: string;
-      labelClassName?: string;
-    }
+  React.HTMLAttributes<HTMLDivElement> & {
+    title: string;
+    handleClassName?: string;
+    labelClassName?: string;
+  }
 >(
   (
     { className, labelClassName, handleClassName, title, position, ...props },

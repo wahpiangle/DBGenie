@@ -1,7 +1,7 @@
 "use client";
 
 import { Background, Edge, ReactFlow } from "@xyflow/react";
-import { DatabaseSchemaNode } from "@/components/database-schema-node";
+import { DatabaseSchemaNode } from "@/components/database/database-schema-node";
 import { databaseInfo } from "@/types/types";
 
 const nodeTypes = {

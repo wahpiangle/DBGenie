@@ -8,7 +8,6 @@ export class ChatController {
     public static async createChat(req: Request, res: Response) {
         const { inputText } = req.body;
         const { user } = req.session;
-        // await ChatController.resetThread(user.id);
         const response = await appGraph.invoke({
             user: user,
             question: inputText,
