@@ -6,7 +6,7 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-full min-h-screen flex w-screen">
+    <div className="h-screen flex w-screen">
       <SideNav classname="w-2/12" />
       <div className="w-10/12 bg-darkSecondary h-screen">
         {children}
