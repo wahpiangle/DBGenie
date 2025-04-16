@@ -12,6 +12,9 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
+  "scripts": {
+    "dev": "bun --watch index.ts"
+  },
   "dependencies": {
     "@langchain/community": "^0.3.10",
     "@langchain/core": "^0.3.15",

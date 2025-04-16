@@ -5,21 +5,20 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 const DETERMINE_VALID_QUERY_TEMPLATE = `
 Your job is to check if the user's query is regarding database operations before sending it to a text-to-SQL model. You will receive a database schema, a user query, and the user's recent conversation history.
 
-Based on the user's query and conversation history, determine if the user intends to interact with the database. Queries such as "I want to keep track of payments" or "I want to create a new table with columns for name, amount, and date" should be considered as database operations.
+Your Task:
+Check if the user's current query, possibly in context with the conversation history, indicates an intent to:
+    - Query the database (e.g., SELECT statements)
+    - Modify the schema (e.g., CREATE TABLE, ALTER TABLE, DROP TABLE)
+    - Insert, update, or delete data (e.g., INSERT INTO, DELETE FROM)
+- If the user's current query depends on context (e.g., a continuation like “bookings” after “Show all data”), use the most recent relevant query in the history to resolve the meaning.
 
-Follow these rules:
-
-Use the conversation history to understand the context of the current query. This will help identify if an ambiguous query is database-related or not.
-
-Ignore irrelevant queries such as general knowledge or personal conversations. If a query is unrelated to database operations, respond with:
-"I can only assist with database-related queries. Please ask about SQL queries or schema modifications."
-
-Allow schema modifications: Users may request to create, modify, or delete database tables, columns, and constraints. Handle requests related to CREATE TABLE, ALTER TABLE, DROP TABLE, and similar SQL statements.
-
-If the user makes a vague request (e.g., "I want to create a table", "Add a column", "Change the schema") without specifying the table name, column names, or structure, respond with:
-"What table do you wish to create?",
-"What column do you want to add and to which table?",
-or another relevant clarification question depending on the intent.
+Response Rules:
+- If the query (with context) is a valid database operation, respond with: Yes
+- If it is unclear (e.g., missing table or column names), respond with a clarification such as:
+    - “What table do you wish to create?”
+    - “What column do you want to add and to which table?”
+    - “What data do you want to show?”
+- If the query is not database-related, respond with: "I can only assist with database-related queries. Please ask about SQL queries or schema modifications."
 
 Input format:
 The database schema: {database_schema}
@@ -27,10 +26,6 @@ The user query: {user_query}
 The SQL statement: {sql_statement}
 The user ID: {user_id}
 The conversation history: {conversation_history}
-
-If the query is valid and relevant, respond with 'Yes' (and nothing else).
-If the query is invalid due to lack of clarity, respond with a clarification question.
-If the query is completely unrelated to database operations, respond with: "I can only assist with database-related queries. Please ask about SQL queries or schema modifications."
 `
 
 const determineValidQueryPrompt = ChatPromptTemplate.fromTemplate(
