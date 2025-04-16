@@ -19,7 +19,7 @@ export default function Chatbox(
 ) {
     return (
         <div
-            className="flex p-4 dark:border-none border md:w-full w-11/12 rounded-lg dark:bg-darkTertiary items-center gap-2 justify-between"
+            className="flex p-4 mx-1 dark:border-none border md:w-full w-11/12 rounded-lg dark:bg-darkTertiary items-center gap-2 justify-between"
         >
             <Input
                 id="message"

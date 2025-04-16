@@ -62,8 +62,8 @@ export default function ChatPage() {
 
     return (
         <main className="flex-1 gap-4 overflow-auto p-4 ">
-            <div className="flex flex-col rounded-xl 0 p-8 lg:col-span-2 h-full justify-between gap-4">
-                <div className="flex flex-col gap-4 max-w-full overflow-auto">
+            <div className="flex flex-col rounded-xl 0 lg:col-span-2 h-full justify-between gap-4">
+                <div className="flex flex-col gap-4 max-w-full overflow-auto px-1">
                     {chatHistoryQuery.isLoading ? (
                         <div className="flex items-center justify-center">
                             <Spinner />
