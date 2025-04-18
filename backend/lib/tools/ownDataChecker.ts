@@ -5,7 +5,10 @@ import { JsonOutputParser, StringOutputParser } from "@langchain/core/output_par
 const OWN_DATA_CHECKER_TEMPLATE = `
 You are tasked with validating and executing an SQL statement provided by a user. The SQL statement must comply with the following rules:
 
-1. **Scope Restriction**: The statement can only modify or affect relationships to other tables related to the specified user. It must not update or delete the user itself or other unrelated records in the database. If the statement is to retrieve data, it must only return data related to the user or their relationships.
+1. **Scope Restriction**:
+If the user is a MANAGER, the SQL statement can modify or affect any table in the database.
+If the user is not a MANAGER, the statement can only modify or affect relationships to other tables related to the specified user. It must not update or delete the user itself or other unrelated records in the database.
+If the statement is to retrieve data, it must only return data related to the user or their relationships.
 2. **Validation Input**: You are provided:
    - **SQL Statement**: {sql_statement}
    - **User JSON**:
@@ -36,7 +39,7 @@ Validate the SQL statement as follows:
 `
 
 const ownDataCheckerPrompt = ChatPromptTemplate.fromTemplate(
-  OWN_DATA_CHECKER_TEMPLATE
+    OWN_DATA_CHECKER_TEMPLATE
 );
 
 const ownDataChecker = ownDataCheckerPrompt.pipe(llm).pipe(new JsonOutputParser());
