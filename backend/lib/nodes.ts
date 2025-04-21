@@ -14,6 +14,10 @@ import { SQLStatementGenerator } from "./tools/generateSQLStatement"
 import { determineAlterSchema } from "./tools/determineAlterSchema"
 import { queryPg } from "./pgdb"
 import { determineValidQuery } from "./tools/determineValidQuery"
+import { emptyOwnDataChecker } from "./tools/emptyOwnDataChecker"
+
+//tables that are not allowed to be modified by the chatbot
+const blockedTables = ['users', 'verification_token', 'session']
 
 const GraphState = Annotation.Root({
     question: Annotation<string>,
@@ -98,6 +102,9 @@ const checkAlterTableSchema = async (state: typeof GraphState.State) => {
 const checkUserQueryOwnData = async (state: typeof GraphState.State) => {
     console.log("======== Checking if the user is updating or deleting a record that does not belong to them ========")
     const user = state.user
+    if (user.role === Role.MANAGER) {
+        return { errorMessage: "" }
+    }
     await queryPg(`
         CREATE OR REPLACE FUNCTION get_related_ids(user_id_value TEXT)
         RETURNS TABLE(id TEXT, table_name TEXT)
@@ -131,18 +138,26 @@ const checkUserQueryOwnData = async (state: typeof GraphState.State) => {
 
     const ids = await queryPg(`SELECT * FROM get_related_ids('${user.id}');`);
     const idsMap = Object.values(
-        ids.rows.reduce((acc, { table_name, id }) => {
-            if (!acc[table_name]) {
-                acc[table_name] = { table_name, id: [] };
-            }
-            acc[table_name].id.push(id);
-            return acc;
-        }, {})
+        ids.rows
+            .filter(({ table_name }) => !blockedTables.includes(table_name))
+            .reduce((acc, { table_name, id }) => {
+                if (!acc[table_name]) {
+                    acc[table_name] = { table_name, id: [] };
+                }
+                acc[table_name].id.push(id);
+                return acc;
+            }, {})
     );
-    const response = await ownDataChecker.invoke({
-        sql_statement: state.generation,
-        user_json: JSON.stringify(idsMap)
-    }) as { error: string, valid: boolean }
+    const response = idsMap.length === 0 ?
+        await emptyOwnDataChecker.invoke({
+            sql_statement: state.generation,
+            user_id: user.id,
+        }) : await ownDataChecker.invoke({
+            sql_statement: state.generation,
+            user_id: user.id,
+            user_json: JSON.stringify(idsMap),
+        }) as { error: string, valid: boolean }
+
     if (!response?.valid) {
         return { errorMessage: "You are not allowed to access the specific data. Please try again." }
     }
@@ -151,7 +166,7 @@ const checkUserQueryOwnData = async (state: typeof GraphState.State) => {
 const blockTables = async (state: typeof GraphState.State) => {
     console.log("====== Blocking tables ======")
     const userQuery = await userQueryChecker.invoke({
-        blockedTables: ['Users', 'VerificationToken', 'Session'].join(', '),
+        blockedTables: blockedTables.join(', '),
         sql_statement: state.generation
     })
     if (userQuery.split(' ')[0].toLowerCase() === 'yes') {
