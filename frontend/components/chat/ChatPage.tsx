@@ -6,7 +6,7 @@ import axios from "axios";
 import { toast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
 import MessageDialog from './message-dialog';
-import API_URL from '@/constants';
+import API_URL from '@/lib/constants';
 import { ChatMessage } from '@/types/types';
 import { Spinner } from '../ui/spinner';
 

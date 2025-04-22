@@ -2,7 +2,7 @@
 import DatabaseSchemaSection from '@/components/database/database-schema-section'
 import withAuth from '@/components/hoc/withAuth';
 import { Spinner } from '@/components/ui/spinner';
-import API_URL from '@/constants';
+import API_URL from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 

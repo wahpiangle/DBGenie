@@ -1,6 +1,6 @@
 'use client'
 import { toast } from "@/components/ui/use-toast";
-import API_URL from "@/constants";
+import API_URL from "@/lib/constants";
 import { Role } from "@/types/role";
 import axios from "axios";
 import { useRouter } from "next/navigation";

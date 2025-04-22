@@ -13,7 +13,7 @@ import { AuthContext } from "@/context/AuthContext";
 import withAuth from "@/components/hoc/withAuth";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import API_URL from "@/constants";
+import API_URL from "@/lib/constants";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 

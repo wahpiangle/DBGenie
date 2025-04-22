@@ -1,6 +1,6 @@
 'use client';
 
-import API_URL from "@/constants";
+import API_URL from "@/lib/constants";
 import { createBookingSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";

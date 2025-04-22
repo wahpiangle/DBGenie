@@ -19,7 +19,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useState } from "react";
-import API_URL from "@/constants";
+import API_URL from "@/lib/constants";
 import axios from "axios";
 import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";

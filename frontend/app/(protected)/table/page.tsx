@@ -3,7 +3,7 @@ import { DataTableSection } from '@/components/database/data-table-section';
 import withAuth from '@/components/hoc/withAuth';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/use-toast';
-import API_URL from '@/constants';
+import API_URL from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React from 'react'
