@@ -13,8 +13,8 @@ import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthContext";
 import { useContext } from "react";
-export default function ChatPageHeader() {
 
+export default function ChatPageHeader() {
     const queryClient = useQueryClient();
     const router = useRouter();
     const { user, logout } = useContext(AuthContext);

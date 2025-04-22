@@ -10,7 +10,7 @@ import API_URL from '@/lib/constants';
 import { ChatMessage } from '@/types/types';
 import { Spinner } from '../ui/spinner';
 
-export default function ChatPage() {
+export default function ChatPageBody() {
     const [pendingMessage, setPendingMessage] = useState('');
     const [inputText, setInputText] = useState('')
     const router = useRouter();
