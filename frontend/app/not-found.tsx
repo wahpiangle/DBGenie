@@ -1,7 +1,7 @@
-import React from 'react'
-
 export default function NotFound() {
     return (
-        <div className='w-full'>NotFound</div>
+        <div className='w-full'>
+            404 Not Found
+        </div>
     )
 }
