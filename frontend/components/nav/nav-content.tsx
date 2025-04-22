@@ -1,10 +1,13 @@
-import React from 'react'
+'use client'
+import { useContext } from 'react'
 import { Button } from '../ui/button'
 import { ScrollArea } from '../ui/scroll-area'
 import ChatButton from '../chat-button'
 import { Database, MessageCircle, Table, Triangle } from 'lucide-react'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function NavContent() {
+    const { user, logout } = useContext(AuthContext);
     const mockData = [
         {
             title: "Chat",
@@ -32,6 +35,10 @@ export default function NavContent() {
                     {mockData.map((item) => (
                         <ChatButton item={item} key={item.link} />
                     ))}
+                    {
+                        user &&
+                        <Button className="sm:hidden" onClick={logout}>Logout</Button>
+                    }
                 </div>
             </ScrollArea>
         </>

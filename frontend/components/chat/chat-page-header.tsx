@@ -1,9 +1,5 @@
-import {
-    Sidebar,
-    TrashIcon,
-} from "lucide-react"
-
-import { SheetContent, SheetTrigger, Sheet } from "@/components/ui/sheet"
+import { Sidebar, TrashIcon, } from "lucide-react"
+import { SheetContent, SheetTrigger, Sheet, SheetTitle } from "@/components/ui/sheet"
 import NavContent from "@/components/nav/nav-content"
 import { Button } from "@/components/ui/button"
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,8 +38,11 @@ export default function ChatPageHeader() {
         }
     }
     return (
-        <header className="sticky flex items-center justify-between shadow-md dark:shadow-none px-4 py-2 dark:border-none">
+        <header className="sticky flex items-center justify-between shadow-md px-4 py-2">
             <Sheet>
+                <SheetTitle className="sr-only">
+                    Menu
+                </SheetTitle>
                 <SheetTrigger className="sm:hidden">
                     <Sidebar className="size-5" />
                 </SheetTrigger>

@@ -61,7 +61,7 @@ export default function ChatPageBody() {
     };
 
     return (
-        <main className="flex-1 gap-4 overflow-auto p-4 ">
+        <main className="flex-1 gap-4 overflow-auto px-4">
             <div className="flex flex-col rounded-xl 0 lg:col-span-2 h-full justify-between gap-4">
                 <div className="flex flex-col gap-4 max-w-full overflow-auto px-1">
                     {chatHistoryQuery.isLoading ? (
@@ -71,7 +71,7 @@ export default function ChatPageBody() {
                     ) : chatHistoryQuery.isError ? (
                         <h2 className="text-2xl text-center">Error loading chat history</h2>
                     ) : (chatHistoryQuery.data?.length ?? 0) === 0 && pendingMessage === '' ? (
-                        <h2 className="text-2xl text-center">Ask me anything!</h2>
+                        <h2 className="text-2xl text-center">Ask me anything about the database</h2>
                     ) : (
                         chatHistoryQuery?.data?.map((chat, index) => (
                             <MessageDialog key={index} chat={chat} />
