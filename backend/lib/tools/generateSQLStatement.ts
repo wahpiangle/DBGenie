@@ -14,12 +14,12 @@ Output Requirements:
     - Generate the complete SQL statement.
     - The SQL should include necessary clauses such as SELECT, INSERT, UPDATE, DELETE, FROM, WHERE, GROUP BY, ORDER BY, LIMIT, etc., based on the user query and prior context.
     - If any ambiguous terms or missing details are in the user's query and cannot be resolved from history, use placeholders (e.g., <value> or <condition>).
+    - Assume that the id is automatically generated when inserting new rows. Do not include it in the SQL statement.
     - If the user intends to manipulate the table schema, make sure to delete, update, or create new tables, columns, and relationships as necessary. Do NOT insert or update data in the tables for schema manipulation requests.
 
 Constraints:
     - Ensure all table and column names used in the SQL match the provided schema exactly.
     - If the schema specifies relationships (e.g., foreign keys), ensure joins are correctly formed.
-    - Handle both basic and advanced queries, including aggregation, filtering, sorting, joins, and subqueries.
 
 Additional Instructions:
     - Use {generated_id} as the id for new inserts.

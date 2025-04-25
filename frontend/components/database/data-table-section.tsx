@@ -216,7 +216,9 @@ export function DataTableSection(
                     return (
                       <TableCell key={cellId} className="relative">
                         <div
-                          className={`${isLong && !isExpanded ? "truncate max-w-[150px] overflow-hidden text-ellipsis" : "whitespace-normal"
+                          className={`${isLong && !isExpanded
+                            ? "truncate max-w-[150px] overflow-hidden text-ellipsis"
+                            : "whitespace-normal"
                             }`}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -3,8 +3,8 @@ import { llm } from "../chatbot";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
 
 interface QuestionEvaluatorOutput {
-    evaluation: string;
-    feedback: string;
+  evaluation: string;
+  feedback: string;
 }
 
 const QUESETION_EVALUATION_TEMPLATE = `
@@ -12,29 +12,36 @@ You are a database assistant. Your task is to evaluate whether a given user quer
 If the user query is just to read data, you should return "Sufficient" as the evaluation.
 
 You will receive the following inputs:
+- Table Information: Details about the table, including its name, columns, and constraints (e.g., primary keys, non-null columns, foreign key relationships).
+- SQL Statement: A partially or fully constructed SQL statement based on the user query.
+- Auto-Supplied Columns (optional): A list of column names that are automatically supplied by the system (e.g., user_id, created_at, updated_at).
 
-    Table Information: Details about the table, including its name, columns, and constraints (e.g., primary keys, non-null columns, foreign key relationships).
-    User Query: The user's natural language input describing the intended operation.
-    SQL Statement: A partially or fully constructed SQL statement based on the user query.
+The inputs are as follows:
+  - Table Information : {table},
+  - SQL Statement: {sql_statement},
+  - Auto-Supplied Columns: {auto_supplied_columns}
 
 Your evaluation must determine:
-    If all non-null fields for the table's schema are provided in the user query or SQL statement.
-    Whether the user's intent for the operation (insert or update) is clear and matches the provided SQL statement.
-    If any critical details are missing, specify what is missing and provide clear feedback to help complete the operation.
-    The placeholder "<value>" used to represent missing values in the user query or SQL statement should not be considered as a valid input.
+- If all non-null fields for the table's schema are either:
+  - Provided directly in the user query or SQL statement,
+  - Resolved via valid subqueries or lookups (e.g., SELECT id FROM properties WHERE name = 'XYZ'), or
+  - Listed in the auto-supplied columns.
 
-    Input: {input}
-    Table: {table}
-    SQL Statement: {sql_statement}
+- Insert operations do not require the primary key (e.g., id) to be provided explicitly.
+- Placeholders such as <value> are not valid inputs and count as missing information.
 
-    Respond in the following format in JSON:
-        "evaluation": "Sufficient" or "Insufficient"
-        "feedback": "Feedback message here"
+If any critical information is missing, mark the evaluation as "Insufficient" and provide a specific feedback message indicating what is required to complete the operation.
+
+Respond in the following format in JSON:
+{{
+    "evaluation": "Sufficient" or "Insufficient",
+    "feedback": "Feedback message here"
+}}
 
 `
 
 const questionEvaluationPrompt = ChatPromptTemplate.fromTemplate(
-    QUESETION_EVALUATION_TEMPLATE
+  QUESETION_EVALUATION_TEMPLATE
 );
 
 const questionEvaluation = questionEvaluationPrompt.pipe(llm).pipe(new JsonOutputParser());

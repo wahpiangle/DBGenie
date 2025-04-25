@@ -194,7 +194,8 @@ const evaluateSufficientInfo = async (state: typeof GraphState.State) => {
     const hasSufficientInfo = await questionEvaluation.invoke({
         input: state.question,
         sql_statement: state.generation,
-        table: db.allTables
+        table: db.allTables,
+        auto_supplied_columns: ['user_id, created_at, updated_at'],
     }) as QuestionEvaluatorOutput
 
     if (hasSufficientInfo.evaluation === 'Insufficient') {

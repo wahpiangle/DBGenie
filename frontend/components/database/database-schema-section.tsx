@@ -1,6 +1,6 @@
 "use client";
 
-import { Background, Edge, ReactFlow } from "@xyflow/react";
+import { Background, ReactFlow } from "@xyflow/react";
 import { DatabaseSchemaNode } from "@/components/database/database-schema-node";
 import { databaseInfo } from "@/types/types";
 

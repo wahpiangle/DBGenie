@@ -15,8 +15,7 @@ You are provided:
 - User ID: {user_id}
 
 Validation Rules:
-- Parse the JSON to extract the user_id and relationship details.
-- Ensure the SQL statement targets only rows in related tables corresponding to the user_id or its relationships. Any action outside these bounds must be flagged.
+- Ensure the SQL statement targets only rows in related tables corresponding to the user_id or its relationships. Any DELETE or UPDATE outside these bounds must be flagged.
 
 
 Validation Output:
