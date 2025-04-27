@@ -14,7 +14,7 @@ Check if the user's current query, possibly in context with the conversation his
 
 Response Rules:
 - If the query (with context) is a valid database operation, respond with: Yes
-- If it is unclear (e.g., missing table or column names), respond with a clarification such as:
+- If it is unclear (e.g., missing table or column names, vague terms like "data"), respond with a clarification such as:
     - “What table do you wish to create?”
     - “What column do you want to add and to which table?”
     - “What data do you want to show?”

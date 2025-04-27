@@ -11,6 +11,7 @@ import { readQueryGenerator } from "./tools/readQueryGenerator"
 import { ownDataChecker } from "./tools/ownDataChecker"
 import successExecuteMessageGeneration from "./tools/successExecuteMessageGeneration"
 import { SQLStatementGenerator } from "./tools/generateSQLStatement"
+import { SQLStatementGeneratorAdmin } from "./tools/generateSQLStatementAdmin"
 import { determineAlterSchema } from "./tools/determineAlterSchema"
 import { queryPg } from "./pgdb"
 import { determineValidQuery } from "./tools/determineValidQuery"
@@ -55,7 +56,7 @@ const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
 const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial<typeof GraphState.State>> => {
     console.log("Generating SQL query for question:", state.question)
     console.log("The messages state is:", state.messages)
-    const generatedQuery = await SQLStatementGenerator.invoke({
+    const inputObject = {
         generated_id: createId(),
         database_schema: db.allTables,
         user_query: state.question,
@@ -64,7 +65,11 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
             role: message.role,
             content: message.content,
         })) ?? [],
-    })
+    }
+    const generatedQuery =
+        state.user.role === "MANAGER" ?
+            await SQLStatementGeneratorAdmin.invoke(inputObject) :
+            await SQLStatementGenerator.invoke(inputObject)
     const extractSQL = (input: string) => {
         const regex = /```sql\n([\s\S]*?)\n```/;
         const match = input.match(regex);
