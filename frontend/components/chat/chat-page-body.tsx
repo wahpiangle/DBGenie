@@ -59,35 +59,37 @@ export default function ChatPageBody() {
             setPendingMessage('');
         }
     };
+    const lastMessage = chatHistoryQuery.data?.[chatHistoryQuery.data.length - 1];
+    const hasPendingEchoed = lastMessage?.message === pendingMessage && !lastMessage?.loading;
 
     return (
         <main className="flex-1 gap-4 overflow-auto px-4">
             <div className="flex flex-col rounded-xl 0 lg:col-span-2 h-full justify-between gap-4">
-                <div className="flex flex-col gap-4 max-w-full overflow-auto px-1">
-                    {chatHistoryQuery.isLoading ? (
-                        <div className="flex items-center justify-center">
-                            <Spinner />
-                        </div>
-                    ) : chatHistoryQuery.isError ? (
-                        <h2 className="text-2xl text-center">Error loading chat history</h2>
-                    ) : (chatHistoryQuery.data?.length ?? 0) === 0 && pendingMessage === '' ? (
-                        <h2 className="text-2xl text-center">Ask me anything about the database</h2>
-                    ) : (
-                        chatHistoryQuery?.data?.map((chat, index) => (
-                            <MessageDialog key={index} chat={chat} />
-                        ))
-                    )}
+                <div className="flex flex-col gap-4 max-w-full overflow-auto px-1 h-full">
+                    <>
+                        {(chatHistoryQuery.isLoading || chatHistoryQuery.isError || ((chatHistoryQuery.data?.length ?? 0) === 0 && pendingMessage === '')) ? (
+                            <div className="flex items-center justify-center h-full">
+                                {chatHistoryQuery.isLoading && <Spinner />}
+                                {chatHistoryQuery.isError && <h2 className="text-2xl text-center">Error loading chat history</h2>}
+                                {!chatHistoryQuery.isLoading && !chatHistoryQuery.isError && (
+                                    <h2 className="text-2xl text-center">Ask me anything about the database</h2>
+                                )}
+                            </div>
+                        ) : (
+                            chatHistoryQuery.data?.map((chat, index) => (
+                                <MessageDialog key={index} chat={chat} />
+                            ))
+                        )}
 
-                    {useChat.isPending && (
-                        <>
-                            <MessageDialog
-                                chat={{ message: pendingMessage, fromServer: false }}
-                            />
-                            <MessageDialog
-                                chat={{ message: '', fromServer: true, loading: true }}
-                            />
-                        </>
-                    )}
+                        {useChat.isPending && (
+                            <>
+                                {!hasPendingEchoed && (
+                                    <MessageDialog chat={{ message: pendingMessage, fromServer: false }} />
+                                )}
+                                <MessageDialog chat={{ message: '', fromServer: true, loading: true }} />
+                            </>
+                        )}
+                    </>
                 </div>
 
                 <Chatbox

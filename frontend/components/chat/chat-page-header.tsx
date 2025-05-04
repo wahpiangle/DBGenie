@@ -54,6 +54,7 @@ export default function ChatPageHeader() {
                 user &&
                 <Button className="hidden sm:block" onClick={logout}>Logout</Button>
             }
+            {user?.role.toString()}
             <Button onClick={handleClearChat}><TrashIcon className="mr-2" />Clear Chat</Button>
         </header>
     )

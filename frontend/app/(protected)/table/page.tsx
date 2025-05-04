@@ -1,5 +1,5 @@
 'use client'
-import { DataTableSection } from '@/components/database/data-table-section';
+import { DataTableSection } from '@/components/table/data-table-section';
 import withAuth from '@/components/hoc/withAuth';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/use-toast';

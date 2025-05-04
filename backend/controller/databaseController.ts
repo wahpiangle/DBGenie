@@ -11,6 +11,7 @@ export class DatabaseController {
             'checkpoint_writes',
             'checkpoint_migrations',
             'checkpoint_blobs',
+            'verification_token'
         ]
 
         const tablesWithColumnQuery = format(`SELECT
