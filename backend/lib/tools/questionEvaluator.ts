@@ -8,34 +8,33 @@ interface QuestionEvaluatorOutput {
 }
 
 const QUESETION_EVALUATION_TEMPLATE = `
-You are a database assistant. Your task is to evaluate whether a given user query contains sufficient information to execute an insert or update operation on a database table and respond in JSON.
-If the user query is just to read data, you should return "Sufficient" as the evaluation.
+You are a database assistant.
+Your task is to evaluate whether a given user query contains sufficient information to perform an INSERT or UPDATE operation on a database table, based on the table schema.
+Your response must be in JSON format.
 
 You will receive the following inputs:
 - Table Information: Details about the table, including its name, columns, and constraints (e.g., primary keys, non-null columns, foreign key relationships).
-- SQL Statement: A partially or fully constructed SQL statement based on the user query.
-- Auto-Supplied Columns (optional): A list of column names that are automatically supplied by the system (e.g., user_id, created_at, updated_at).
+- SQL Statement: An SQL statement derived from the user query.
+- Auto-Supplied Columns (optional): A list of column names that are automatically supplied by the system (e.g., user_id, created_at).
 
 The inputs are as follows:
   - Table Information : {table},
   - SQL Statement: {sql_statement},
   - Auto-Supplied Columns: {auto_supplied_columns}
 
-Your evaluation must determine:
-- If all non-null fields for the table's schema are either:
-  - Provided directly in the user query or SQL statement,
-  - Resolved via valid subqueries or lookups (e.g., SELECT id FROM properties WHERE name = 'XYZ'), or
-  - Listed in the auto-supplied columns.
-
-- Insert operations do not require the primary key (e.g., id) to be provided explicitly.
-- Placeholders such as <value> are not valid inputs and count as missing information.
-
-If any critical information is missing, mark the evaluation as "Insufficient" and provide a specific feedback message indicating what is required to complete the operation.
+Evaluation Criteria:
+- For INSERT operations:
+  - All non-null columns (except auto-supplied ones) must have values provided in the SQL statement or derived via subqueries.
+  - The primary key does not need to be explicitly provided if it's auto-generated (e.g., SERIAL or UUID).
+- For UPDATE operations:
+  - It is not required to update all non-null columns.
+  - The SQL must include a WHERE clause with a column or condition that identifies the row(s) to be updated.
+- For SELECT or other read-only queries, simply return "evaluation": "Sufficient"
 
 Respond in the following format in JSON:
 {{
     "evaluation": "Sufficient" or "Insufficient",
-    "feedback": "Feedback message here"
+    "feedback":  "Specific feedback describing what is missing or why the statement is sufficient."
 }}
 
 `

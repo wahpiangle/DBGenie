@@ -34,6 +34,13 @@ const GraphState = Annotation.Root({
     }[]>,
 })
 
+const getConversationHistory = (state: typeof GraphState.State) => {
+    return state.messages?.slice(-3).map((message) => ({
+        role: message.role,
+        content: message.content,
+    })) ?? []
+}
+
 const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
     console.log("====== Checking if the user query is valid ======")
     const result = await determineValidQuery.invoke({
@@ -41,10 +48,7 @@ const determineUserQueryIsValid = async (state: typeof GraphState.State) => {
         database_schema: db.allTables,
         user_query: state.question,
         sql_statement: state.generation,
-        conversation_history: state.messages?.map((message) => ({
-            role: message.role,
-            content: message.content,
-        })) ?? [],
+        conversation_history: getConversationHistory(state),
     })
     if (result.split(' ')[0].toLowerCase().includes('yes')) {
         return {}
@@ -61,10 +65,7 @@ const generateSqlQuery = async (state: typeof GraphState.State): Promise<Partial
         database_schema: db.allTables,
         user_query: state.question,
         user_id: state.user.id,
-        conversation_history: state.messages?.map((message) => ({
-            role: message.role,
-            content: message.content,
-        })) ?? [],
+        conversation_history: getConversationHistory(state),
     }
     const generatedQuery =
         state.user.role === "MANAGER" ?

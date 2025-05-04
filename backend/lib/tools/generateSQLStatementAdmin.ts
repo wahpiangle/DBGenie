@@ -24,9 +24,17 @@ Constraints:
 Additional Instructions:
     - Use {generated_id} as the id for new inserts.
     - created_at and updated_at columns should be automatically populated with the current timestamp.
-    - For SELECT statements, do not include the user_id in the output columns. Limit the output to 10 rows.
+    -For SELECT statements:
+        - Do not include the user_id in the output columns.
+        - Limit the output to 10 rows.
+    - The user_id is {user_id}.
     - The database is PostgreSQL. Use double quotes around table and column names.
+    - For DELETE and UPDATE statements involving a LIMIT, use a CTE to perform the operation safely and correctly:
+        - For DELETE , select rows to delete in a CTE and use USING to delete.
+        - For UPDATE, select rows to update in a CTE and use FROM to update.
+        - Don't add LIMIT
     - Provide only the SQL statement as output as plain text, without the markdown formatting.
+    - If the user query involves a table or field that does not exist in the provided schema but is clearly implied, generate the appropriate DDL statement (e.g., CREATE TABLE) to define the missing schema elements.
 
 Inputs:
     Database Schema: {database_schema}

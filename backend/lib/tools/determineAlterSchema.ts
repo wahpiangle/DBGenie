@@ -3,7 +3,8 @@ import { llm } from "../chatbot";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 const DETERMINE_ALTER_SCHEMA_TEMPLATE = `
-Given an SQL statement, determine if the user is trying to alter the table schema. Don't worry about the syntax of the SQL statement, just focus on the type of statement.
+Given an SQL statement, determine if the user is trying to alter the table schema (including creating and removing tables)
+Don't worry about the syntax of the SQL statement, just focus on the type of statement.
 
 SQL statement: {sql_statement}
 

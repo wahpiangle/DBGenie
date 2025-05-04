@@ -8,7 +8,7 @@ Your job is to check if the user's query is regarding database operations before
 Your Task:
 Check if the user's current query, possibly in context with the conversation history, indicates an intent to:
     - Query the database (e.g., SELECT statements)
-    - Modify the schema (e.g., CREATE TABLE, ALTER TABLE, DROP TABLE)
+    - Modifying the database schema (deleting tables, updating tables, creating tables)
     - Insert, update, or delete data (e.g., INSERT INTO, DELETE FROM)
 - If the user's current query depends on context (e.g., a continuation like “bookings” after “Show all data”), use the most recent relevant query in the history to resolve the meaning.
 

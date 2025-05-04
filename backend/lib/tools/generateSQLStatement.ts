@@ -27,11 +27,13 @@ Additional Instructions:
     -For SELECT statements:
         - Do not include the user_id in the output columns.
         - Limit the output to 10 rows.
+        - Make sure the query belongs to {user_id}
     - The user_id is {user_id}.
     - The database is PostgreSQL. Use double quotes around table and column names.
     - For DELETE and UPDATE statements involving a LIMIT, use a CTE to perform the operation safely and correctly:
         - For DELETE , select rows to delete in a CTE and use USING to delete.
         - For UPDATE, select rows to update in a CTE and use FROM to update.
+        - Don't add LIMIT
     - Provide only the SQL statement as output as plain text, without the markdown formatting.
 
 Inputs:
