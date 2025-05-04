@@ -187,6 +187,7 @@ const injectionPrevention = async (state: typeof GraphState.State) => {
         sql_statement: sqlQuery
     })
     if (isMalicious.split(' ')[0].toLowerCase() === 'yes') {
+        console.log('====== Malicious Query detected ======')
         return {
             errorMessage: "The query is invalid and cannot be processed. Please try again."
         }
