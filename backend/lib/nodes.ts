@@ -230,13 +230,11 @@ const runQueryToDb = async (state: typeof GraphState.State) => {
     try {
 
         const isReadQuery = isQuery.split(' ')[0].toLowerCase() === 'yes';
-        const queryResult = isReadQuery
-            ? await queryPg(state.generation)
-            : await prisma.$executeRawUnsafe(state.generation);
+        const queryResult = await queryPg(state.generation);
 
         const resultMessage = isReadQuery
             ? await readQueryGenerator.invoke({ sql_statement: state.generation, result: queryResult })
-            : await successExecuteMessageGeneration.invoke({ sql_statement: state.generation });
+            : await successExecuteMessageGeneration.invoke({ sql_statement: state.generation, result: queryResult });
 
         return {
             result: resultMessage,
