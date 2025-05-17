@@ -13,7 +13,8 @@ const DatabasePage = () => {
             return await axios.get(`${API_URL}/database`, {
                 withCredentials: true
             });
-        }
+        },
+        refetchOnWindowFocus: true
     })
     return (
         databaseInfo.isLoading ?
